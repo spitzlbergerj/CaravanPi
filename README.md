@@ -85,4 +85,7 @@ The repository MagicMirror describes the installation of a Raspberry Pi incl. th
 
 
 
+## links
+
+
  

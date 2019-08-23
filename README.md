@@ -1,7 +1,9 @@
 # CaravanPi
 System for measuring and displaying various values in caravans and motor homes, including climate values, filling levels and levelling data. Magic Mirror is used for presentation.
 
-This project is currently under development!
+(go directly to the Installation Guide)
+
+***This project is currently under development!***
 
 ## Motivation
 In a caravan or motorhome there are a number of measuring points. In many cases the measured values are even displayed. Normally the different systems are independent from each other and supply separate displays. With this project the different measuring points are to be evaluated via one system (Raspberry Pi) and displayed elegantly and configurably.
@@ -86,6 +88,8 @@ The repository MagicMirror describes the installation of a Raspberry Pi incl. th
 ## Housing construction
 
 
+
+## Installation
 
 ## links
 

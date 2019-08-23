@@ -45,7 +45,7 @@ Due to the construction with a GPIO Extender, only the 8 mixed colors from the b
 
 I have provided a total of 7 RGB LEDs on the caravan:
 ![matrix of LEDs](images/LED-Matrix.jpg)
-[^fu1]:In this illustration I have replaced the "white LED" with a "red LED" so that it can be perceived better. Red here means horizontal.
+In this illustration I have replaced the "white LED" with a "red LED" so that it can be perceived better. Red here means horizontal.
 
 Four LEDs indicate the position at the four corners of the caravan. Two LEDs indicate the position of the caravan on the axis in transverse direction. And one LED indicates the position of the caravan on the drawbar in the longitudinal direction. 
 

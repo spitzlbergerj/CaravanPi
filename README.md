@@ -1,7 +1,7 @@
 # CaravanPi
 System for measuring and displaying various values in caravans and motor homes, including climate values, filling levels and levelling data. Magic Mirror is used for presentation.
 
-***You'll find a lot of information to my motivation and a lot of technical details in the Wiki. Please read the Wiki before you start with your construction!***
+***Please read the [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki) before you start with your construction! There you'll find a lot of information to my idea behind CaravanPi and a lot of technical details.***
 
 ## Software
 

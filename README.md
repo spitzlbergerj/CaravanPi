@@ -6,6 +6,8 @@ This project is currently under development!
 ## Motivation
 In a caravan or motorhome there are a number of measuring points. In many cases the measured values are even displayed. Normally the different systems are independent from each other and supply separate displays. With this project the different measuring points are to be evaluated via one system (Raspberry Pi) and displayed elegantly and configurably.
 
+![CaravanPi](images/CaravanPi.jpg)
+
 ## Measuring points
 
 The following data points are to be read in or created:

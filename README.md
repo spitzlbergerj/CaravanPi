@@ -4,7 +4,7 @@ System for measuring and displaying various values in caravans and motor homes, 
 This project is currently under development!
 
 ## Motivation
-In a caravan or motorhome there are a number of measuring points. In many cases the measured values are even displayed. As a rule, however, the different systems are independent of each other and supply separate displays or displays. With this project the different measuring points are to be evaluated via a system (Raspberry Pi) and displayed elegantly and configurably.
+In a caravan or motorhome there are a number of measuring points. In many cases the measured values are even displayed. Normally the different systems are independent from each other and supply separate displays. With this project the different measuring points are to be evaluated via one system (Raspberry Pi) and displayed elegantly and configurably.
 
 ## Measuring points
 
@@ -18,7 +18,7 @@ In addition, the horizontal position of the caravan or motor home should be dete
 
 ## Used components and sensors
 
-The entire project is based on a **Raspberry Pi** with various sensors and corresponding software. Of course you can also use other components than the ones listed here. The brand names are only examples.
+The entire project is based on a **Raspberry Pi 3 Model B+** with various sensors and corresponding software. Of course you can also use other components than the ones listed here. The brand names are only examples.
 
 I used the following sensors for my setup:
 - Single point load cell for weighing the gas cylinder ([Bosche H10A for 20 kg](https://www.bosche.eu/en/scale-components/load-cells/single-point-load-cell/single-point-load-cell-h10a)) 
@@ -35,11 +35,11 @@ Different Python scripts are used to read out the different sensors. They read o
 
 For the display of all information the grandiose software [MagicMirror](https://magicmirror.builders/) is used. This software, which runs on modules, can be designed very flexibly and also comes with a number of existing modules that can usefully supplement the display in the caravan and motorhome. For the display of the sensor data own MMM modules ([MMM-Caravan](https://github.com/spitzlbergerj/MMM-Caravan)) were developed.
 
-## position determination and display for a caravan
+## Position determination and display for a caravan
 
 The horizontal position of the caravan is determined by the 3 axis accelerometer. This shows the respective acceleration due to gravity for the axes x, y and z in m/s². Knowing that the maximum acceleration displayed per axis is approx. 10.3 m/s², these values can be used to determine the position angle for the longitudinal and transverse axes of the caravan.
 
-Due to the dimensions of a medium to large caravan, the angles result in the respective corrections at the corners of the caravan, which are displayed there by means of RGB LEDs. In order to be able to perceive the displays inuitively, I have chosen the display color blue (= sky) for a too high position. A too low position of the corner is indicated as green (= meadow). A position close to the horizontal position is displayed as yellow (= attention as with traffic lights). The horizontal position is displayed as white. 
+Due to the dimensions of a medium to large caravan, the angles result in the respective corrections at the corners of the caravan, which are displayed there by means of RGB LEDs. In order to be able to perceive the displays inuitively, I have chosen the display color blue (= sky) for a too high position. A too low position of the corner is indicated as green (= meadow). A position close to the horizontal position is displayed as yellow (= attention as with traffic lights). The horizontal position itself is displayed as white. 
 
 Due to the construction with a GPIO Extender, only the 8 mixed colors from the basic colors of the RGB LEDs can be used, since the Extender does not support PWM.
 
@@ -50,7 +50,7 @@ Four LEDs indicate the position at the four corners of the caravan. Two LEDs ind
 The alignment of the caravan can be done as follows using these 7 LEDs:
 - First, the caravan is brought into the horizontal position by lifting one of the tyres, e.g. with a [lifting cushion] (https://www.emukairlift.de/) in the transverse direction.
 - The caravan is then brought into the horizontal position in both directions via the nose wheel in the longitudinal direction.
-- Now the four corner supports can be tensioned. The LEDS at the four corners will help.
+- Now the four corner steadies can be tensioned. The LEDS at the four corners will help.
 
 The position determination is designed for caravans. However, it can certainly also be adapted for campers with minor modifications.
 

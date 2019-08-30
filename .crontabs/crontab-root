@@ -1,0 +1,25 @@
+# crontab root
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
+#
+# Backup Image starten (Sonntags)
+#01 03 * * 0  /usr/local/bin/backup.sh >>/home/pi/backup.log 2>&1
+#05 20 * * *  /usr/local/bin/backup.sh >>/home/pi/backup.log 2>&1
+#
+# Backup Dateien starten
+#01 05 * * *  /usr/local/bin/backup-scripts.sh >>/home/pi/backup.log 2>&1
+#
+# beim Neustart Skript fuer Sensor starten
+@reboot python3 /home/pi/CaravanPi/pir/pir.py 120 1 2
+#
+# beim Neustart Skript fuer Taster starten
+#@reboot python /home/pi/CaravanPi/waage/taster.py
+#
+# beim Neustart Skript fuer Alexa Sprachausgabe starten
+#@reboot python /home/pi/speechconnector.py >>/home/pi/speechconnector.log 2>&1
+#
+# Logrotate starten
+#00 05 * * * logrotate /etc/logrotate.conf

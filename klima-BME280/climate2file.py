@@ -171,7 +171,7 @@ def readBME280All(addr=DEVICE):
 
 def write2file(chip_id, device, temperature, pressure, humidity):
 	try:
-		dateiName = "/home/pi/CaravanPi/sensorwerte/BME280-" + str(chip_id) + "-" + str(device)
+		dateiName = "/home/pi/CaravanPi/values/BME280-" + str(chip_id) + "-" + str(device)
 		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 		strTemperature = '{:.1f}'.format(temperature)

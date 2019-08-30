@@ -1,0 +1,20 @@
+# crontab pi
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
+#
+# Temperatursensoren alle 60 Sekunden auslesen
+* * * * * python3 /home/pi/CaravanPi/temperatur-DS1820/temp2file.py
+
+# Klimasensoren alle 60 Sekunden auslesen
+* * * * * python3 /home/pi/CaravanPi/klima-BME280/climate2file.py 76 1
+* * * * * python3 /home/pi/CaravanPi/klima-BME280/climate2file.py 77 1
+
+# Gasflaschenwaage alle 60 Sekunden auslesen
+* * * * * python /home/pi/CaravanPi/gewicht-hx711/gaswaage2file.py
+
+# Lagesensor alle 60 Sekunden auslesen
+* * * * * python3 /home/pi/CaravanPi/lage-ADXL345/position2file.py
+

@@ -18,7 +18,7 @@ accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
 def write2file(x, y, z):
 #	try:
-		dateiName = "/home/pi/CaravanPi/sensorwerte/lage"
+		dateiName = "/home/pi/CaravanPi/values/lage"
 		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 		strX = '{:.6f}'.format(x)

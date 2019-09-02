@@ -10,6 +10,8 @@ Different Python scripts are used to read out the different sensors. They read o
 For the display of all information the grandiose software [MagicMirror](https://magicmirror.builders/) is used. This software, which runs on modules, can be designed very flexibly and also comes with a number of existing modules that can usefully supplement the display in the caravan and motorhome. For the display of the sensor data own MMM modules ([MMM-Caravan](https://github.com/spitzlbergerj/MMM-Caravan)) were developed.
 
 
+`git clone https://github.com/spitzlbergerj/CaravanPi`
+
 ## Installation Raspberry Pi incl. MagicMirror
 
 The repository MagicMirror describes the installation of a Raspberry Pi incl. the MagicMirror base very well. Please use this [manual](https://github.com/MichMich/MagicMirror#raspberry-pi).

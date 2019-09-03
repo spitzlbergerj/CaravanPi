@@ -10,10 +10,10 @@ import time
 # waking / powering up Raspberry Pi when button is pressed
 # shutdownPin = 5
 
-# CaravanPi - Attention: GPIO Pin #5 is also SCL for i2c-bus
+# CaravanPi - Attention: GPIO pin #5 (GPIO3) is also SCL for i2c-bus
 # CaravanPi - i2c is intensivly used within CaravanPi scripts
-# CaravanPi - therefore we use pin # 7 and a diode between pin #7 and pin #5 to secure i2c
-shutdownPin = 7
+# CaravanPi - therefore we use pin #11 (GPIO17) and a diode between pin #7 and pin #5 to secure i2c
+shutdownPin = 11
 
 # if button pressed for at least this long then shut down. if less then reboot.
 shutdownMinSeconds = 3

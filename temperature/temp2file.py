@@ -54,7 +54,7 @@ def write2file(sensor, wert):
 		dateiName = "/home/pi/CaravanPi/values/" + sensor
 		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-		file.write("\n"+ sensor + " " + str_from_time_now + " " + wert)
+		file.write("\n"+ sensor + " " + str_from_time_now + wert)
 		file.close()
 		return 0
 	except:

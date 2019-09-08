@@ -51,14 +51,29 @@ def readLeergewicht():
 		print ("Die Datei konnte nicht gelesen werden.")
 		return -1
 
+def readVollGewicht():
+	global VOLLGEWICHT
+	try:
+		dateiName = "/home/pi/CaravanPi/defaults/gasCylinderFullWeight"
+		file = open(dateiName)
+		strVollGewicht = file.read()
+		file.close()
+		VOLLGEWICHT = float(strVollGewicht)
+		return 0
+	except:
+		# Lesefehler
+		print ("Die Datei konnte nicht gelesen werden.")
+		return -1
 
-def write2file(wert):
+
+def write2file(wert, relativ):
 	try:
 		dateiName = "/home/pi/CaravanPi/values/gasScale"
 		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 		strWert = '{:.0f}'.format(wert)
-		file.write("\n"+ str_from_time_now + " " + strWert)
+		strRelativ = '{:.0f}'.format(relativ)
+		file.write("\n"+ "gasScale " + str_from_time_now + " " + strWert + " " + strRelativ)
 		file.close()
 		return 0
 	except:
@@ -77,10 +92,17 @@ hx.reset()
 
 readTara()
 readLeergewicht()
+readVollGewicht()
 
 try:
 	weight = hx.get_weight(5)
-	write2file(weight - TARA - LEERGEWICHT)
+	# Test
+	weight = 2845
+	
+	nettoWeight = weight - TARA - LEERGEWICHT
+	nettoLevel = (nettoWeight/VOLLGEWICHT) * 100
+	# print ("Werte: ", weight, TARA, LEERGEWICHT, nettoWeight, VOLLGEWICHT, nettoLevel)
+	write2file(nettoWeight, nettoLevel)
 
 except (KeyboardInterrupt, SystemExit):
 	cleanAndExit()

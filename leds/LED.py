@@ -1,7 +1,13 @@
 #!/usr/bin/python
-from mcp23017 import mcp23017,pin
 from time import sleep
 import RPi.GPIO as GPIO
+
+# -----------------------------------------------
+# Sensoren libraries aus CaravanPi einbinden
+# -----------------------------------------------
+sys.path.append('/home/pi/CaravanPi/.lib')
+from mcp23017 import mcp23017,pin
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)

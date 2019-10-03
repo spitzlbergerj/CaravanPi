@@ -10,6 +10,12 @@ import time
 import sys
 import datetime
 import RPi.GPIO as GPIO
+
+
+# -----------------------------------------------
+# Sensoren libraries aus CaravanPi einbinden
+# -----------------------------------------------
+sys.path.append('/home/pi/CaravanPi/.lib')
 from hx711 import HX711
 
 GPIO.setwarnings(False)

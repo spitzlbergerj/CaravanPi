@@ -56,8 +56,17 @@ approximationY = 0
 fileLageLive = "/home/pi/CaravanPi/values/lage-live"
 fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
 
+# LED threads
+LED_HR = [None, None, None]
+LED_HL = [None, None, None]
+LED_ZR = [None, None, None]
+LED_ZL = [None, None, None]
+LED_VR = [None, None, None]
+LED_VL = [None, None, None]
+LED_Vo = [None, None, None]
+
 # -------------------------
-# functions 
+# 3-axis-sensor 
 # -------------------------
 
 def deleteFile():
@@ -70,16 +79,6 @@ def deleteFile():
 		# Schreibfehler
 		# print ("positionExit: The file could not be deleted.")
 		return(-1)
-
-
-def ledOff():
-	# LEDs ausschalten
-	setAlle(99)
-	return
-
-# -------------------------
-# 3-axis-sensor 
-# -------------------------
 
 def readAdjustment():
 	global fileAdjustments
@@ -129,10 +128,75 @@ def write2file(x, y, z, adjustX, adjustY, adjustZ):
 		raise
 		return -1
 
+# -------------------------
+# adjust Threats for LEDs
+# -------------------------
+
+def setupHR():
+	pinRed=Led(mymcp1,"gpiob",3)
+	pinGreen=Led(mymcp1,"gpiob",4)
+	pinBlue=Led(mymcp1,"gpiob",5)
+	
+	return([pinRed, pinGreen, pinBlue])
+
+
+def setupHL():
+	pinRed=Led(mymcp1,"gpioa",3)
+	pinGreen=Led(mymcp1,"gpioa",4)
+	pinBlue=Led(mymcp1,"gpioa",5)
+	
+	return([pinRed, pinGreen, pinBlue])
+
+
+def setupVR():
+	pinRed=Led(mymcp1,"gpiob",0)
+	pinGreen=Led(mymcp1,"gpiob",1)
+	pinBlue=Led(mymcp1,"gpiob",2)
+	
+	return([pinRed, pinGreen, pinBlue])
+
+
+def setupVL():
+	pinRed=Led(mymcp1,"gpioa",0)
+	pinGreen=Led(mymcp1,"gpioa",1)
+	pinBlue=Led(mymcp1,"gpioa",2)
+	
+	return ([pinRed, pinGreen, pinBlue])
+
+
+def setupZR():
+	pinRed=Led(mymcp2,"gpioa",5)
+	pinGreen=Led(mymcp2,"gpioa",4)
+	pinBlue=Led(mymcp2,"gpioa",3)
+	
+	return ([pinRed, pinGreen, pinBlue])
+
+
+def setupZL():
+	pinRed=Led(mymcp2,"gpioa",2)
+	pinGreen=Led(mymcp2,"gpioa",1)
+	pinBlue=Led(mymcp2,"gpioa",0)
+	
+	return ([pinRed, pinGreen, pinBlue])
+
+
+def setupVo():
+	pinRed=Led(mymcp1,"gpioa",6)
+	pinGreen=Led(mymcp1,"gpioa",7)
+	pinBlue=Led(mymcp1,"gpiob",7)
+	
+	return([pinRed, pinGreen, pinBlue])
+
 
 # -------------------------
 # LED management
 # -------------------------
+
+def ledOff():
+	# LEDs ausschalten
+	setAlle(99)
+	return
+
 
 def setPinMCP(pinRed, pinGreen, pinBlue, state):
 	# state:
@@ -161,79 +225,24 @@ def setPinMCP(pinRed, pinGreen, pinBlue, state):
 		pinGreen.on();
 	return
 
-def getHR():
-	pinRed=Led(mymcp1,"gpiob",3)
-	pinGreen=Led(mymcp1,"gpiob",4)
-	pinBlue=Led(mymcp1,"gpiob",5)
-	
-	return("mcp", pinRed, pinGreen, pinBlue)
-
-
-def getHL():
-	pinRed=Led(mymcp1,"gpioa",3)
-	pinGreen=Led(mymcp1,"gpioa",4)
-	pinBlue=Led(mymcp1,"gpioa",5)
-	
-	return("mcp", pinRed, pinGreen, pinBlue)
-
-
-def getVR():
-	pinRed=Led(mymcp1,"gpiob",0)
-	pinGreen=Led(mymcp1,"gpiob",1)
-	pinBlue=Led(mymcp1,"gpiob",2)
-	
-	return("mcp", pinRed, pinGreen, pinBlue)
-
-
-def getVL():
-	pinRed=Led(mymcp1,"gpioa",0)
-	pinGreen=Led(mymcp1,"gpioa",1)
-	pinBlue=Led(mymcp1,"gpioa",2)
-	
-	return ("mcp", pinRed, pinGreen, pinBlue)
-
-
-def getZR():
-	pinRed=Led(mymcp2,"gpioa",5)
-	pinGreen=Led(mymcp2,"gpioa",4)
-	pinBlue=Led(mymcp2,"gpioa",3)
-	
-	return ("mcp", pinRed, pinGreen, pinBlue)
-
-
-def getZL():
-	pinRed=Led(mymcp2,"gpioa",2)
-	pinGreen=Led(mymcp2,"gpioa",1)
-	pinBlue=Led(mymcp2,"gpioa",0)
-	
-	return ("mcp", pinRed, pinGreen, pinBlue)
-
-
-def getVo():
-	pinRed=Led(mymcp1,"gpioa",6)
-	pinGreen=Led(mymcp1,"gpioa",7)
-	pinBlue=Led(mymcp1,"gpiob",7)
-	
-	return("mcp", pinRed, pinGreen, pinBlue)
-
 
 def setPins(position,state):
 	if position == "HR":
-		pins=getHR()
+		pins=LED_HR
 	elif position == "HL":
-		pins=getHL()
+		pins=LED_HL
 	elif position == "VR":
-		pins=getVR()
+		pins=LED_VR
 	elif position == "VL":
-		pins=getVL()
+		pins=LED_VL
 	elif position == "ZR":
-		pins=getZR()
+		pins=LED_ZR
 	elif position == "ZL":
-		pins=getZL()
+		pins=LED_ZL
 	elif position == "Vo":
-		pins=getVo()
+		pins=LED_Vo
 	
-	setPinMCP(pins[1], pins[2], pins[3], state)
+	setPinMCP(pins[0], pins[1], pins[2], state)
 
 
 def setAlle(state):
@@ -393,13 +402,14 @@ def main():
 	# main 
 	# -------------------------
 
+	global LED_HR, LED_HL, LED_ZR, LED_ZL, LED_VR, LED_VL, LED_Vo
+	
 	# process call parameters
 	writeFile = 0
 	if len(sys.argv) >= 2:
 		writeFile = int(sys.argv[1])
-
-	# delete file to start clean
-	deleteFile()
+		# delete file to start clean
+		deleteFile()
 
 	# read defaults
 	# The 3-axis sensor may not be installed exactly horizontally. The values to compensate for this installation difference are read from a file.
@@ -407,6 +417,15 @@ def main():
 	# In addition, the LEDs should already indicate "horizontal" as soon as the deviation from the horizontal is within a tolerance.
 	# --> approximationX, approximationY
 	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY) = readAdjustment()
+	
+	# initialize LEDs
+	LED_HR=setupHR()
+	LED_HL=setupHL()
+	LED_ZR=setupZR()
+	LED_ZL=setupZL()
+	LED_VR=setupVR()
+	LED_VL=setupVL()
+	LED_Vo=setupVo()
 
 	# read sensor and adjust LEDs
 	while True:

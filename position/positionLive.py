@@ -265,10 +265,12 @@ def checkTolerance(origValue, adjustValue, toleranceValue):
 
 def checkApproximation(state, value, approximationValue):
 	# If the sensor value lies within the approximate values, the LED should indicate the approximation to the horizontal
-	
 	if (abs(value) < approximationValue):
 		# value approximately horizontal 
-		state = 1
+		if (state < 0):
+			state = -1
+		else:
+			state = 1
 	
 	return state
 

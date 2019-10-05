@@ -1,0 +1,13 @@
+/home/pi/CaravanPi/values/lage {
+	weekly
+	rotate 2
+	create 644 pi pi
+	missingok
+}
+
+/home/pi/CaravanPi/values/lage-live {
+	weekly
+	rotate 2
+	create 644 pi pi
+	missingok
+}

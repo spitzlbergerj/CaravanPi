@@ -1,0 +1,6 @@
+/home/pi/CaravanPi/values/gasScale {
+	weekly
+	rotate 2
+	create 644 pi pi
+	missingok
+}

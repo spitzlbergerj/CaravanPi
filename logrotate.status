@@ -1,9 +1,0 @@
-logrotate state -- version 2
-"/home/pi/CaravanPi/values/lage-live" 2019-10-5-13:0:0
-"/home/pi/CaravanPi/values/BME280-96-118" 2019-10-5-13:0:0
-"/home/pi/CaravanPi/values/BME280-96-119" 2019-10-5-13:0:0
-"/home/pi/CaravanPi/values/28-01144fea82aa" 2019-10-5-13:0:0
-"/home/pi/CaravanPi/values/gasScale" 2019-10-5-13:0:0
-"/home/pi/CaravanPi/values/lage" 2019-10-5-13:0:0
-"/home/pi/CaravanPi/values/28-01144febdbaa" 2019-10-5-13:0:0
-"/home/pi/CaravanPi/values/28-01144f936caa" 2019-10-5-13:0:0

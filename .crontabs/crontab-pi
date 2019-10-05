@@ -18,3 +18,7 @@
 # Lagesensor alle 60 Sekunden auslesen
 * * * * * python3 /home/pi/CaravanPi/position/position2file.py
 
+# Logrotate starten
+@reboot logrotate -s /home/pi/CaravanPi/logrotate.status /home/pi/CaravanPi/logrotate.conf
+00 05 * * * logrotate -s /home/pi/CaravanPi/logrotate.status /home/pi/CaravanPi/logrotate.conf
+

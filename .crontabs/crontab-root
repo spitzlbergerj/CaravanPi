@@ -10,10 +10,11 @@
 #05 20 * * *  /usr/local/bin/backup.sh >>/home/pi/backup.log 2>&1
 #
 # Backup Dateien starten
-#01 05 * * *  /usr/local/bin/backup-scripts.sh >>/home/pi/backup.log 2>&1
+@reboot sleep 300 && /usr/local/bin/backup-scripts.sh >>/home/pi/backup.log 2>&1
+01 02 * * * /usr/local/bin/backup-scripts.sh >>/home/pi/backup.log 2>&1
 #
 # beim Neustart Skript fuer Sensor starten
-@reboot python3 /home/pi/CaravanPi/pir/pir.py 120 1 2
+#@reboot python3 /home/pi/CaravanPi/pir/pir.py 120 1 2
 #
 # beim Neustart Skript fuer Taster starten
 #@reboot python /home/pi/CaravanPi/waage/taster.py
@@ -22,4 +23,4 @@
 #@reboot python /home/pi/speechconnector.py >>/home/pi/speechconnector.log 2>&1
 #
 # Logrotate starten
-#00 05 * * * logrotate /etc/logrotate.conf
+00 05 * * * logrotate /etc/logrotate.conf

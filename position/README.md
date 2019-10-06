@@ -17,3 +17,4 @@ A very good to good (= expensive) spirit level normally measures with an accurac
 
 The ADXL345 3-axis acceleration sensor used is capable of detecting even vibrations of a refrigerator as a change in position. According to technical specification it has an accuracy of approx. 0.0039 g (acceleration due to gravity). This corresponds to a measurable angle of approx. 0.23 degrees. With a caravan of 7 meters long and 2.3 meters wide and a positioning of the sensor at 2/3 of the length and 2/3 of the width respectively, the result is a measurable deviation from the length of approx. 18 mm and in the width of approx. 6 mm. 
  
+<img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/WindschiefeFlaecheWinkelBerechnung.jpg">

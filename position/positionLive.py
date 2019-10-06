@@ -14,14 +14,15 @@
 #-------------------------------------------------------------------------------
 
 import time, datetime
-import board
-import busio
-import adafruit_adxl34x
 import statistics
 import signal
 import sys
 from time import sleep
 import os
+
+import board
+import busio
+import adafruit_adxl34x
 
 # -----------------------------------------------
 # Sensoren libraries aus CaravanPi einbinden
@@ -53,7 +54,7 @@ approximationX = 0
 approximationY = 0
 
 # files
-fileLageLive = "/home/pi/CaravanPi/values/lage-live"
+filePositionLive = "/home/pi/CaravanPi/values/positionLive"
 fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
 
 # LED threads
@@ -70,10 +71,10 @@ LED_Vo = [None, None, None]
 # -------------------------
 
 def deleteFile():
-	global fileLageLive
+	global filePositionLive
 	
 	try:
-		os.remove(fileLageLive)
+		os.remove(filePositionLive)
 		return(0)
 	except:
 		# Schreibfehler
@@ -107,11 +108,11 @@ def readAdjustment():
 		print ("readAdjustment: The file could not be read.")
 		return(0,0,0,0,0,0,0)
 
-def write2file(x, y, z, adjustX, adjustY, adjustZ):
-	global fileLageLive
+def write2file(x, y, z, adjustX, adjustY, adjustZ, lastX, secondLastX):
+	global filePositionLive
 	
 	try:
-		dateiName = fileLageLive
+		dateiName = filePositionLive
 		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 		strX = '{:.6f}'.format(x)
@@ -119,9 +120,22 @@ def write2file(x, y, z, adjustX, adjustY, adjustZ):
 		strZ = '{:.6f}'.format(z)
 		strAdjustX = '{:.6f}'.format(adjustX)
 		strAdjustY = '{:.6f}'.format(adjustY)
-		strAdjustZ = '{:.6f}'.format(adjustZ)
-		file.write("\n"+ str_from_time_now + " " + strX + " " + strY + " " + strZ + " with Adjustment: " + strAdjustX + " " + strAdjustY + " " + strAdjustZ)
+		if (lastX == None):
+			strLastX = ""
+		else:
+			strLastX = '{:.6f}'.format(lastX)
+		if (secondLastX == None):
+			strSecondLastX = ""
+		else:
+			strSecondLastX = '{:.6f}'.format(secondLastX)
+
+		valueStr = "\n"+ str_from_time_now + " adjusted & tolerant: " + strAdjustX + " " + strAdjustY + " original: " + strX + " " + strY + " " + strZ + " last and second last X: " + strLastX + " " + strSecondLastX
+
+		file.write(valueStr)
 		file.close()
+
+		print(valueStr)
+		
 		return 0
 	except:
 		print("write2file: The file could not be written - unprocessed Error:", sys.exc_info()[0])
@@ -252,9 +266,9 @@ def setAlle(state):
 	return
 	
 def checkTolerance(origValue, adjustValue, toleranceValue):
-	# Values within the tolerance are evaluated as horizontal
+	# values within the tolerance are evaluated as horizontal
 	
-	# value Adjustment
+	# value adjustment
 	value = origValue - adjustValue
 	
 	if (abs(value) < toleranceValue):
@@ -264,15 +278,17 @@ def checkTolerance(origValue, adjustValue, toleranceValue):
 	return value
 
 def checkApproximation(state, value, approximationValue):
+	newState = state
 	# If the sensor value lies within the approximate values, the LED should indicate the approximation to the horizontal
 	if (abs(value) < approximationValue):
 		# value approximately horizontal 
 		if (state < 0):
-			state = -1
+			newState = -1
 		else:
-			state = 1
+			newState = 1
+	print (state, abs(value), approximationValue, "-->", newState)
 	
-	return state
+	return newState
 
 
 def LED(origX, origY, origZ, adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY):
@@ -374,17 +390,6 @@ def LED(origX, origY, origZ, adjustX, adjustY, adjustZ, toleranceX, toleranceY, 
 		setPins('VR',checkApproximation(-2, x, approximationX))
 		setPins('VL',checkApproximation(-2, x, approximationX))
 		setPins('Vo',checkApproximation(-2, x, approximationX))
-
-		positions = ['VR', 'VL']
-		for pos in positions:
-			setPins(pos,-2) 
-		positions = ['ZR', 'ZL']
-		for pos in positions:
-			setPins(pos,0)
-		positions = ['HR','HL']
-		for pos in positions:
-			setPins(pos,2)
-		setPins('Vo',-2)
 	elif (x  > 0 and y == 0):
 		# Wagen ist hinten tief und rechts und links in Waage
 		setPins('HR',checkApproximation(-2, x, approximationX))
@@ -405,6 +410,12 @@ def main():
 	# -------------------------
 
 	global LED_HR, LED_HL, LED_ZR, LED_ZL, LED_VR, LED_VL, LED_Vo
+
+	# avoid outliers - init values
+	lastX = None
+	lastY = None
+	lastZ = None
+	secondLastX = None
 	
 	# process call parameters
 	writeFile = 0
@@ -450,14 +461,46 @@ def main():
 			# normalize values over the calculation of the median (extreme values/outliers are not considered)
 			# Adjustment of the values by subtraction of the initial value
 			x = statistics.median(arrayX)
-			y = statistics.median(arrayY)
-			z = statistics.median(arrayZ)
+	
+			# determine the index of the first occurrence of x in the list
+			try:
+				i = arrayX.index(x)
+				# set the counterparts for y and z belonging to the value x
+				y = arrayY[i]
+				z = arrayZ[i]
+			except (ValueError, IndexError):
+				# the median did not result in a value that appears in the list (i.e. an actually calculated value).
+				# Then set the other median values as well
+				y = statistics.median(arrayY)
+				z = statistics.median(arrayZ)
 			
 			if writeFile == 1:
-				write2file(x, y, z, x-adjustX, y-adjustY, z-adjustZ)
+				write2file(x, y, z, checkTolerance(x, adjustX, toleranceX), checkTolerance(y, adjustY, toleranceY), z-adjustZ, lastX, secondLastX)
+
+			ledX = x
+			ledY = y
+			ledZ = z
 			
-			LED(x, y, z, adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
+			# avoid outliers
+			# if lastX and secondLastX have already been assigned values once 
+			# and the current value is not equal to lastX and is also not equal to secondLastX, 
+			# but the two values lastX and secondLastX are equal, it may be an outlier. 
+			# Then the current values are not used for LED control, but the previous values.
+			#Only the comparison with the X values is necessary, because y and z are dependent on x.
+			if (lastX != None and secondLastX != None):
+				if (x != lastX and x != secondLastX and lastX == secondLastX):
+					ledX = lastX
+					ledY = lastY
+					ledZ = lastZ
 			
+			LED(ledX, ledY, ledZ, adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
+			
+			# avoid outliers - swap vars
+			secondLastX = lastX
+			lastX = x
+			lastY = y
+			lastZ = z
+
 			sleep(.1)
 		except KeyboardInterrupt:
 			ledOff()

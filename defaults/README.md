@@ -8,9 +8,9 @@ A whole series of sensors must be adjusted before use. It is therefore almost im
 ## Correction values position sensor (adjustmentPosition)
 
 - adjustment X
-  X value, if caravan is in horizontal position
+  - X value, if caravan is in horizontal position
 - adjustment Y
-  Y value, if caravan is in horizontal position
+  - Y value, if caravan is in horizontal position
 - adjustment Z
   Z value, if caravan is in horizontal position
 - tolerance X

@@ -13,7 +13,7 @@
 * * * * * python3 /home/pi/CaravanPi/climate/climate2file.py 77 1
 
 # Gasflaschenwaage alle 60 Sekunden auslesen
-* * * * * python /home/pi/CaravanPi/gas-weight/gaswaage2file.py
+* * * * * python3 /home/pi/CaravanPi/gas-weight/gasScale2file.py
 
 # Lagesensor alle 60 Sekunden auslesen
 * * * * * python3 /home/pi/CaravanPi/position/position2file.py

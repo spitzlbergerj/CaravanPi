@@ -1,3 +1,11 @@
+#!/usr/bin/python3
+# coding=utf-8
+# ledClass.py
+#
+# Ansteuerung von LEDs an MCP23017
+#
+#-------------------------------------------------------------------------------
+
 import time
 import sys
 import threading

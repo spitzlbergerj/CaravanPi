@@ -7,9 +7,11 @@
 # and write them to the defaults file
 #
 # Aufruf-Parameter
-# setupPositionDefaults.py <file> <print>
-# <file> path and filename for the defaults file
-# <print> if exist and =1 then print values
+# setupPositionDefaults.py -h -t -s -w <seconds>
+# 	-h	display guide 
+# 	-t	write values to a separate testfile 
+# 	-s	display values on screen 
+#	-w seconds
 #-------------------------------------------------------------------------------
 
 import time, datetime
@@ -18,10 +20,21 @@ import signal
 import sys
 from time import sleep
 import os
+import getopt
 
+# 3-axis-sensor
 import board
 import busio
 import adafruit_adxl34x
+
+# buzzer
+import RPi.GPIO as io
+
+# -----------------------------------------------
+# libraries from CaravanPi 
+# -----------------------------------------------
+sys.path.append('/home/pi/CaravanPi/.lib')
+from filesClass import CaravanPiFiles
 
 # -----------------------------------------------
 # global variables
@@ -40,102 +53,87 @@ toleranceY = 0
 # When should the approach color be selected?
 approximationX = 0
 approximationY = 0
+# Distance of the 3-axis sensor to the right side (in driving direction) and to the front of the caravan 
+# If the 3-axis sensor is mounted behind the axis (in driving direction), 
+# the distance to the axis (distAxis) is positive. Otherwise this constant is negative.
+# in mm
+distRight = 0
+distFront = 0
+distAxis = 0
 
-# files
-fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
+# buzzer
+BUZZER_PIN = 26
+
+# -------------------------
+# call options 
+# -------------------------
+shortOptions = 'htsw:'
+longOptions = ['help', 'test', 'screen', 'wait=']
+
+def usage():
+	print ("---------------------------------------------------------------------")
+	print (sys.argv[0], "-h -f")
+	print ("  -h          show this guide")
+	print ("  -t          write values not to origin file but to a testfile")
+	print ("  -s          display values on this screen")
+	print ("  -w seconds  waiting time until the values are read out from the sensor\n")
+
 
 # -------------------------
 # 3-axis-sensor 
 # -------------------------
 
-def readAdjustment():
-	global fileAdjustments
-	
-	try:
-		dateiName = fileAdjustments
-		file = open(dateiName)
-		strAdjustX = file.readline()
-		strAdjustY = file.readline()
-		strAdjustZ = file.readline()
-		strtoleranceX = file.readline()
-		strtoleranceY = file.readline()
-		strApproximationX = file.readline()
-		strApproximationY = file.readline()
-		file.close()
-		adjustX = float(strAdjustX)
-		adjustY = float(strAdjustY)
-		adjustZ = float(strAdjustZ)
-		toleranceX = float(strtoleranceX)
-		toleranceY = float(strtoleranceY)
-		approximationX = float(strApproximationX)
-		approximationY = float(strApproximationY)
-		return(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
-	except:
-		# Lesefehler
-		print ("readAdjustment: The file could not be read.")
-		return(0,0,0,0,0,0,0)
-
-def writeAdjustments(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, shouldBePrinted):
-	global fileAdjustments
-	
-	try:
-		dateiName = fileAdjustments
-		# test
-		dateiName = fileAdjustments+"-test"
-
-		file = open(dateiName, 'w')
-		strAdjustX = '{:.6f}'.format(adjustX) + "\n"
-		strAdjustY = '{:.6f}'.format(adjustY) + "\n"
-		strAdjustZ = '{:.6f}'.format(adjustZ) + "\n"
-		strtoleranceX = '{:.6f}'.format(toleranceX) + "\n"
-		strtoleranceY = '{:.6f}'.format(toleranceY) + "\n"
-		strApproximationX = '{:.6f}'.format(approximationX) + "\n"
-		strApproximationY = '{:.6f}'.format(approximationY) + "\n"
-		file.write(strAdjustX)
-		file.write(strAdjustY)
-		file.write(strAdjustZ)
-		file.write(strtoleranceX)
-		file.write(strtoleranceY)
-		file.write(strApproximationX)
-		file.write(strApproximationY)
-		file.close()
-		
-		if (shouldBePrinted == 1):
-			print("adjustX: "+strAdjustX)
-			print("adjustY: "+strAdjustY)
-			print("adjustZ: "+strAdjustZ)
-			print("toleranceX: "+strtoleranceX)
-			print("toleranceY: "+strtoleranceY)
-			print("approximationX: "+strApproximationX)
-			print("approximationY: "+strApproximationY)
-
-		return 0
-	except:
-		print("writeAdjustments: The file could not be written - unprocessed Error:", sys.exc_info()[0])
-		raise
-		return -1
-
-	
 def main():
 	# -------------------------
 	# main 
 	# -------------------------
 
+	# -------------------------
 	# process call parameters
-	shouldBePrinted = 0
-	if len(sys.argv) >= 3:
-		shouldBePrinted = 1
+	# -------------------------
+	opts = []
+	args = []
+	writeTestFile = 0
+	displayScreen = 0
+	buzzerWait = 120 # seconds
+	
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
+	except getopt.GetoptError:
+		print("ERROR: options not correct")
+		usage()
+		sys.exit()
+	
+	for o, a in opts:
+		if o == "--help" or o == "-h":
+			print("HELP")
+			usage()
+			sys.exit()
+		elif o == "--test" or o == "-t":
+			print("output not to origin file but to test file")
+			writeTestFile = 1
+		elif o == "--screen" or o == "-s":
+			print("output also to this screen")
+			displayScreen = 1
+		elif o == "--wait" or o == "-w":
+			buzzerWait = int(a)
 
-	# test
-	shouldBePrinted = 1
+	for a in args:
+		print("further argument: ", a)
+		
+	
 
+	# buzzer
+	io.setmode(io.BCM)
+	io.setup(BUZZER_PIN, io.OUT)
+	io.output(BUZZER_PIN, io.LOW)
 
 	# read defaults
 	# The 3-axis sensor may not be installed exactly horizontally. The values to compensate for this installation difference are read from a file.
 	# --> adjustX, adjustY, adjustZ
 	# In addition, the LEDs should already indicate "horizontal" as soon as the deviation from the horizontal is within a tolerance.
 	# --> approximationX, approximationY
-	(adjustX_orig, adjustY_orig, adjustZ_orig, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig) = readAdjustment()
+	(adjustX_orig, adjustY_orig, adjustZ_orig, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
 	
 	# read sensor
 	i=0
@@ -143,7 +141,27 @@ def main():
 	arrayY = []
 	arrayZ = []
 	
+	# Wait 2 minutes so that any vibrations of the caravan can subside
+	# during this waiting time slow beeping of the buzzer
+	while i < buzzerWait:
+		io.output(BUZZER_PIN, io.HIGH)
+		sleep(.1)
+		io.output(BUZZER_PIN, io.LOW)
+		sleep(.9)
+		i+=1
+		
+	# buzzer beeps rapidly to signal imminent measurement
+	i=0
+	while i < 5:
+		io.output(BUZZER_PIN, io.HIGH)
+		sleep(.1)
+		io.output(BUZZER_PIN, io.LOW)
+		sleep(.1)
+		i+=1
+
+	
 	# read sensor 200 times and put values in a list
+	i=0
 	while i < 200:
 		(x, y, z) = accelerometer.acceleration
 		arrayX.append(x)
@@ -169,7 +187,13 @@ def main():
 		y = statistics.median(arrayY)
 		z = statistics.median(arrayZ)
 	
-	writeAdjustments(x, y, z, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, shouldBePrinted)
+	CaravanPiFiles.writeAdjustment(writeTestFile, displayScreen, x, y, z, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, distRight, distFront, distAxis)
+
+	# long beep of the buzzer to signal completion
+	io.output(BUZZER_PIN, io.HIGH)
+	sleep(1)
+	io.output(BUZZER_PIN, io.LOW)
+	io.cleanup()
 
 
 if __name__ == "__main__":

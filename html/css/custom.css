@@ -1,0 +1,135 @@
+/*****************************************************
+ * Magic Mirror                                      *
+ * Custom CSS                                        *
+ *                                                   *
+ * By Michael Teeuw http://michaelteeuw.nl           *
+ * MIT Licensed.                                     *
+ *                                                   *
+ * Add any custom CSS below.                         *
+ * Changes to this files will be ignored by GIT. *
+ *****************************************************/
+
+body {
+}
+ 
+h3 {
+  border-bottom: 1px solid;
+}
+
+h4 {
+  margin: 0px;
+  padding: 0px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid;
+}
+
+p {
+  margin: 0px;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+  padding: 0px;
+}
+
+.config-block {
+  border: 1px solid;
+  margin: 2px;
+  padding: 10px;
+}  
+
+.helpmessage {
+  font-size: 12px;
+  line-height: 14px;
+  padding-bottom: 10px;
+}
+
+.formbutton {
+  background-color: #aaaaaa;
+  border-radius: 8px;
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  width: 100%;
+}
+
+ 
+/* Schriften */
+
+.dimmed {
+  /* color: #666; */
+  color: #999;
+}
+
+.normal {
+  color: #bbb;
+}
+
+.bright {
+  color: #fff;
+}
+
+.xsmall {
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.small {
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.medium {
+  font-size: 30px;
+  line-height: 35px;
+}
+
+.large {
+  font-size: 65px;
+  line-height: 65px;
+}
+
+.xlarge {
+  font-size: 75px;
+  line-height: 75px;
+  letter-spacing: -3px;
+}
+
+.thin {
+  font-family: Roboto, sans-serif;
+  /* font-weight: 100; */
+  font-weight: 500;
+}
+
+.light {
+  font-family: "Roboto Condensed", sans-serif;
+  /* font-weight: 300; */
+  font-weight: 700;
+}
+
+.regular {
+  font-family: "Roboto Condensed", sans-serif;
+  /* font-weight: 400; */
+  font-weight: 700;
+}
+
+.bold {
+  font-family: "Roboto Condensed", sans-serif;
+  font-weight: 700;
+}
+
+
+
+/* Abstaende, Weiten */
+
+.region.top.left {
+   width: 50%;
+}
+
+.region.top.right {
+   width: 45%;
+}
+
+

@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 # coding=utf-8
-# position2file.py
+# positionLive.py
 #
 # nutzt die aus dem Beschleunigungssensor ADXL345 gelesenen Lagewerte
-# um den Wohnwagen über LEDS auszurichten
-#
-# Schreibt die Werte zudem in eine Datei zum Debuggen
+# um den Wohnwagen über LEDs auszurichten
 #
 # Aufruf-Parameter
-# position-live.py >file>
-# <file> = 1: Werte werden in ein File geschrieben
+# position-live.py -f
+# 	-h	display guide 
+# 	-f	write values to file 
+# 	-s	display values on screen 
 #
 #-------------------------------------------------------------------------------
 
@@ -19,10 +19,13 @@ import signal
 import sys
 from time import sleep
 import os
+import getopt
 
 import board
 import busio
 import adafruit_adxl34x
+
+import RPi.GPIO as GPIO
 
 # -----------------------------------------------
 # Sensoren libraries aus CaravanPi einbinden
@@ -30,6 +33,7 @@ import adafruit_adxl34x
 sys.path.append('/home/pi/CaravanPi/.lib')
 from mcp23017 import mcp23017,pin
 from ledClass import Led
+from filesClass import CaravanPiFiles
 
 # -----------------------------------------------
 # global variables
@@ -43,19 +47,36 @@ mymcp1=mcp23017(1,0x20)
 mymcp2=mcp23017(1,0x21)
 
 # Correction of axis values
+# x longitudinal direction
+# y traverse direction
+# z vertical direction
 adjustX = 0
 adjustY = 0
 adjustZ = 0
+# manual correction with tactile switch to mark the current position in transverse direction as horizontal
+globY = 0
+globAdjustY = 0
+globAdjustSwitchY = 0
 # what is still considered horizontal
 toleranceX = 0
 toleranceY = 0
 # When should the approach color be selected?
 approximationX = 0
 approximationY = 0
+# Distance of the 3-axis sensor to the right side (in driving direction) and to the front of the caravan 
+# If the 3-axis sensor is mounted behind the axis (in driving direction), 
+# the distance to the axis (distAxis) is positive. Otherwise this constant is negative.
+# in mm
+distRight = 0
+distFront = 0
+distAxis = 0
+# dimensions Caravan (in mm)
+lengthOverAll = 0
+lengthBody = 0
+width = 0
 
 # files
 filePositionLive = "/home/pi/CaravanPi/values/positionLive"
-fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
 
 # LED threads
 LED_HR = [None, None, None]
@@ -65,6 +86,23 @@ LED_ZL = [None, None, None]
 LED_VR = [None, None, None]
 LED_VL = [None, None, None]
 LED_Vo = [None, None, None]
+
+# tactile switch to mark the current position in transverse direction as horizontal
+pinSwitch = 12
+ 
+# -------------------------
+# call options 
+# -------------------------
+shortOptions = 'hfs'
+longOptions = ['help', 'file', 'screen']
+
+def usage():
+	print ("---------------------------------------------------------------------")
+	print (sys.argv[0], "-h -f")
+	print ("  -h   show this guide")
+	print ("  -f   write values to file ", filePositionLive)
+	print ("  -s   display values on this screen\n")
+
 
 # -------------------------
 # 3-axis-sensor 
@@ -81,39 +119,10 @@ def deleteFile():
 		# print ("positionExit: The file could not be deleted.")
 		return(-1)
 
-def readAdjustment():
-	global fileAdjustments
-	
-	try:
-		dateiName = fileAdjustments
-		file = open(dateiName)
-		strAdjustX = file.readline()
-		strAdjustY = file.readline()
-		strAdjustZ = file.readline()
-		strtoleranceX = file.readline()
-		strtoleranceY = file.readline()
-		strApproximationX = file.readline()
-		strApproximationY = file.readline()
-		file.close()
-		adjustX = float(strAdjustX)
-		adjustY = float(strAdjustY)
-		adjustZ = float(strAdjustZ)
-		toleranceX = float(strtoleranceX)
-		toleranceY = float(strtoleranceY)
-		approximationX = float(strApproximationX)
-		approximationY = float(strApproximationY)
-		return(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
-	except:
-		# Lesefehler
-		print ("readAdjustment: The file could not be read.")
-		return(0,0,0,0,0,0,0)
-
-def write2file(x, y, z, adjustX, adjustY, adjustZ, lastX, secondLastX):
+def write2file(file, screen, x, y, z, adjustX, adjustY, adjustZ, lastX, secondLastX):
 	global filePositionLive
 	
 	try:
-		dateiName = filePositionLive
-		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 		strX = '{:.6f}'.format(x)
 		strY = '{:.6f}'.format(y)
@@ -131,10 +140,13 @@ def write2file(x, y, z, adjustX, adjustY, adjustZ, lastX, secondLastX):
 
 		valueStr = "\n"+ str_from_time_now + " adjusted & tolerant: " + strAdjustX + " " + strAdjustY + " original: " + strX + " " + strY + " " + strZ + " last and second last X: " + strLastX + " " + strSecondLastX
 
-		file.write(valueStr)
-		file.close()
-
-		print(valueStr)
+		if file == 1:
+			file = open(filePositionLive, 'a')
+			file.write(valueStr)
+			file.close()
+		
+		if screen == 1:
+			print(valueStr)
 		
 		return 0
 	except:
@@ -286,12 +298,12 @@ def checkApproximation(state, value, approximationValue):
 			newState = -1
 		else:
 			newState = 1
-	print (state, abs(value), approximationValue, "-->", newState)
+	# print (state, abs(value), approximationValue, "-->", newState)
 	
 	return newState
 
 
-def LED(origX, origY, origZ, adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY):
+def LED(origX, origY, origZ, adjustX, adjustY, adjustSwitchY, adjustZ, toleranceX, toleranceY, approximationX, approximationY):
 	#*************************************
 	# Activation of the LEDs
 	#*************************************
@@ -316,7 +328,7 @@ def LED(origX, origY, origZ, adjustX, adjustY, adjustZ, toleranceX, toleranceY, 
 	
 	# Adjustment sensor installation deviation
 	x = checkTolerance(origX, adjustX, toleranceX)
-	y = checkTolerance(origY, adjustY, toleranceY)
+	y = checkTolerance(origY, adjustY + adjustSwitchY, toleranceY)
 
 	# x  < 0: hinten tiefer
 	# y > 0: rechts tiefer
@@ -403,6 +415,12 @@ def LED(origX, origY, origZ, adjustX, adjustY, adjustZ, toleranceX, toleranceY, 
 		# Wagen ist vollstaendig in der Waage
 		setAlle(0)
 	return
+
+def switchInterrupt(channel):  
+	global globY, globAdjustY, globAdjustSwitchY
+	globAdjustSwitchY = globY - globAdjustY
+	print ("ACHTUNG: manuelles Waagrecht setzen in Querrichtung !!!")
+
 	
 def main():
 	# -------------------------
@@ -410,27 +428,63 @@ def main():
 	# -------------------------
 
 	global LED_HR, LED_HL, LED_ZR, LED_ZL, LED_VR, LED_VL, LED_Vo
+	global globY, globAdjustY, globAdjustSwitchY
+	global pinSwitch
 
+	# -------------------------
+	# process call parameters
+	# -------------------------
+	opts = []
+	args = []
+	writeFile = 0
+	displayScreen = 0
+	
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
+	except getopt.GetoptError:
+		print("ERROR: options not correct")
+		usage()
+		sys.exit()
+	
+	for o, a in opts:
+		if o == "--help" or o == "-h":
+			print("HELP")
+			usage()
+			sys.exit()
+		elif o == "--file" or o == "-f":
+			print("output also to file ", filePositionLive)
+			deleteFile()
+			writeFile = 1
+		elif o == "--screen" or o == "-s":
+			print("output also to this screen")
+			displayScreen = 1
+
+	for a in args:
+		print("further argument: ", a)
+		
+	
+	# -------------------------
+	# tactile switch
+	# -------------------------
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(pinSwitch, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+	GPIO.add_event_detect(pinSwitch, GPIO.RISING, callback = switchInterrupt, bouncetime = 400)
+	
+	# -------------------------
 	# avoid outliers - init values
+	# -------------------------
 	lastX = None
 	lastY = None
 	lastZ = None
 	secondLastX = None
 	
-	# process call parameters
-	writeFile = 0
-	if len(sys.argv) >= 2:
-		writeFile = int(sys.argv[1])
-		# delete file to start clean
-		deleteFile()
-
 	# read defaults
 	# The 3-axis sensor may not be installed exactly horizontally. The values to compensate for this installation difference are read from a file.
 	# --> adjustX, adjustY, adjustZ
 	# In addition, the LEDs should already indicate "horizontal" as soon as the deviation from the horizontal is within a tolerance.
 	# --> approximationX, approximationY
-	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY) = readAdjustment()
-	
+	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
+
 	# initialize LEDs
 	LED_HR=setupHR()
 	LED_HL=setupHL()
@@ -474,8 +528,12 @@ def main():
 				y = statistics.median(arrayY)
 				z = statistics.median(arrayZ)
 			
-			if writeFile == 1:
-				write2file(x, y, z, checkTolerance(x, adjustX, toleranceX), checkTolerance(y, adjustY, toleranceY), z-adjustZ, lastX, secondLastX)
+			# save values for tactile switch adjustment
+			globY = y
+			globAdjustY = adjustY
+			
+			# write values to file and or screen
+			write2file(writeFile, displayScreen, x, y, z, checkTolerance(x, adjustX, toleranceX), checkTolerance(y, adjustY, toleranceY), z-adjustZ, lastX, secondLastX)
 
 			ledX = x
 			ledY = y
@@ -493,7 +551,7 @@ def main():
 					ledY = lastY
 					ledZ = lastZ
 			
-			LED(ledX, ledY, ledZ, adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
+			LED(ledX, ledY, ledZ, adjustX, adjustY, globAdjustSwitchY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
 			
 			# avoid outliers - swap vars
 			secondLastX = lastX
@@ -504,11 +562,15 @@ def main():
 			sleep(.1)
 		except KeyboardInterrupt:
 			ledOff()
+			GPIO.cleanup()
 			break
 		except:
 			print("unprocessed Error:", sys.exc_info()[0])
 			ledOff()
+			GPIO.cleanup()
 			raise
+			
+	GPIO.cleanup()
 
 if __name__ == "__main__":
 	main()

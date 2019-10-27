@@ -18,9 +18,21 @@ distance right		distance of the sensor from the right side
 distance front		distance of the sensor from the front side
 distance axis		Distance of the sensor from the axis in longitudinal direction
 
-## Tara of the gas bottles scales
+## dimensions of the carvan or motor home (dimensions)
+	#
+	# content of file
+	# 		length over all		length of the caravan over all 
+	#		width				width of the caravan over all
+	#		lenght body			legth of the body of the caravan without drawbar
+  
+## gas scale and gas cylinder (gasScaleDefaults1)
 
-## Empty weight of the gas cylinder
+	#
+	# content of file
+	# 		tare			value from gas scale without a gas cylinder 
+	#		empty weight	weight of the empty gas cylinder
+	#		full weight		weight of the full gas cylinder
+
 
 
 

@@ -33,8 +33,6 @@ The CaravanPi has actually the following functionalities:
 
 The CaravanPi was designed and developed for use in a caravan. But the CaravanPi can also be used very well in motorhomes. Only the position determination and display with the LEDs must be adapted, since the display via LEDs makes no sense here. But the indication of the height differences at the corners will help here.
 
-***Please read the [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki) before you start with your construction! There you'll find a lot of information to my idea behind CaravanPi and a lot of technical details.***
-
 ## Components
 
 The CaravanPi consists of the following components:
@@ -57,3 +55,5 @@ The CaravanPi consists of the following components:
 ## Wiki
 
 All components, the software, the assembly, the installation, the configuration and much more is explained in detail in the Wiki.
+
+***Please read the [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki) before you start with your construction! There you'll find a lot of information to my idea behind CaravanPi and a lot of technical details.***

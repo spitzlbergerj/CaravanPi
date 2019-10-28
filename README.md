@@ -42,7 +42,7 @@ The CaravanPi consists of the following components:
 - software MagicMirror incl. new modules
 - a lot of Python scripts
 - a lot of hardware like 
-  - Battery hat ([StromPi] (https://strompi.joy-it.net/))
+  - Battery hat ([StromPi](https://strompi.joy-it.net/))
   - Load cell (Bosche)
   - various sensors
     - ADXL345 - 3-axis position sensor

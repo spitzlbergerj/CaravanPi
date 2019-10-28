@@ -33,6 +33,14 @@ The CaravanPi has actually the following functionalities:
 
 The CaravanPi was designed and developed for use in a caravan. But the CaravanPi can also be used very well in motorhomes. Only the position determination and display with the LEDs must be adapted, since the display via LEDs makes no sense here. But the indication of the height differences at the corners will help here.
 
+## Current development status (November 2019)
+
+All sensors are now working and all values are read and stored cyclically. The levelling of the caravan by means of the LEDs works reliably. The display of all collected data on the MagicMirror also works with the exception of the position/level display.
+
+I'm currently working on a website where all necessary configurations can be done.
+
+I am also working on the "circuit board design" and on the sensible combination of all components in one housing.
+
 ## Components
 
 The CaravanPi consists of the following components:

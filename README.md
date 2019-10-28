@@ -26,7 +26,8 @@ The CaravanPi has actually the following functionalities:
 - Calibration of the gas scale and the position sensor via keystroke
 - Adaptation of all constants via a website
 - Use of the display and also the configuration website via mobile devices
-- and more ....
+- Use other MagicMirror modules on the same display
+- and more (to come) ....
 
 ## Caravan or motorhome?
 

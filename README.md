@@ -14,6 +14,22 @@ System for measuring and displaying various values in caravans and motor homes, 
 	</tbody>
 </table>
 
+## Functionality
+The CaravanPi has actually the following functionalities:
+- Display of various data in a caravan or motorhome
+  - Several climate sensors (e.g. inside and outside) with temperature, air pressure, air humidity
+  - Multiple temperature sensors (e.g. freezer compartment, refrigerator)
+  - Several filling levels (e.g. fresh water tank, waste water tank)
+  - Filling level of a gas cylinder via weight determination
+- Saving of all sensor data, so that course analyses can be made and represented
+- Display of the current position of the caravan or motorhome using a display and LEDs at the corners of the caravan
+- Calibration of the gas scale and the position sensor via keystroke
+- Adaptation of all constants via a website
+- Use of the display and also the configuration website via mobile devices
+- and more ....
+
+## Caravan or motorhome?
+
 I have developed the CaravanPi for use in a caravan. But the CaravanPi can also be used very well in motorhomes. Only the position determination and display with the LEDs must be adapted, since the display via LEDs makes no sense here. But the indication of the height differences at the corners will help here. I plan these adjustments in a later expansion step.
 
 ***Please read the [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki) before you start with your construction! There you'll find a lot of information to my idea behind CaravanPi and a lot of technical details.***

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # coding=utf-8
-# position2file.py
+# setupPositionDefaults.py
 #
 # explore default values for the position sensor
 # adjustments, tolerances, approximation values
@@ -76,7 +76,7 @@ def usage():
 	print ("  -h          show this guide")
 	print ("  -t          write values not to origin file but to a testfile")
 	print ("  -s          display values on this screen")
-	print ("  -w seconds  waiting time until the values are read out from the sensor\n")
+	print ("  -w seconds  waiting time until the values are read out from the sensor (default 120 seconds)\n")
 
 
 # -------------------------
@@ -95,7 +95,7 @@ def main():
 	args = []
 	writeTestFile = 0
 	displayScreen = 0
-	buzzerWait = 120 # seconds
+	calibrationWait = 120 # seconds
 	
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
@@ -116,7 +116,7 @@ def main():
 			print("output also to this screen")
 			displayScreen = 1
 		elif o == "--wait" or o == "-w":
-			buzzerWait = int(a)
+			calibrationWait = int(a)
 
 	for a in args:
 		print("further argument: ", a)
@@ -143,7 +143,7 @@ def main():
 	
 	# Wait 2 minutes so that any vibrations of the caravan can subside
 	# during this waiting time slow beeping of the buzzer
-	while i < buzzerWait:
+	while i < calibrationWait:
 		io.output(BUZZER_PIN, io.HIGH)
 		sleep(.1)
 		io.output(BUZZER_PIN, io.LOW)

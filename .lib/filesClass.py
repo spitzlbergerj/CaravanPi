@@ -148,19 +148,27 @@ class CaravanPiFiles:
 			print ("readDimensions: The file ", CaravanPiFiles.fileDimensions, " could not be read. unprocessed Error:", sys.exc_info()[0])
 			return(0,0,0)
 
-	def writeDimensions(lengthOverAll, width, lengthBody):
+	def writeDimensions(test, screen, lengthOverAll, width, lengthBody):
 		try:
 			strLengthOverAll = '{:.0f}'.format(lengthOverAll)
 			strWidth = '{:.0f}'.format(width)
 			strLengthBody = '{:.0f}'.format(lengthBody)
 			
-			file = open(CaravanPiFiles.fileDimensions+"_test", 'w')
-			
+			if test == 1:
+				file = open(CaravanPiFiles.fileDimensions+"_test", 'w')
+			else:
+				file = open(CaravanPiFiles.fileDimensions, 'w')
+				
 			file.write(strLengthOverAll + "\n")
 			file.write(strWidth + "\n")
 			file.write(strLengthBody)
 			
 			file.close()
+			
+			if screen == 1:
+				print("lengthOverAll: ",strLengthOverAll)
+				print("width: ",strWidth)
+				print("lengthBody: ",strLengthBody)
 			
 			return 0
 		except:
@@ -198,19 +206,27 @@ class CaravanPiFiles:
 			print ("readGasScale: The file ", CaravanPiFiles.fileGasScale, " could not be read. unprocessed Error:", sys.exc_info()[0])
 			return(0,0,0)
 
-	def writeGasScale(tare, emptyWeight, fullWeight):
+	def writeGasScale(test, screen, tare, emptyWeight, fullWeight):
 		try:
 			strTare = '{:.0f}'.format(tare)
 			strEmptyWeight = '{:.0f}'.format(emptyWeight)
 			strFullWeight = '{:.0f}'.format(fullWeight)
 			
-			file = open(CaravanPiFiles.fileGasScale+"_test", 'w')
-			
+			if test == 1:
+				file = open(CaravanPiFiles.fileGasScale+"_test", 'w')
+			else:
+				file = open(CaravanPiFiles.fileGasScale, 'w')
+				
 			file.write(strTare + "\n")
 			file.write(strEmptyWeight + "\n")
 			file.write(strFullWeight)
 			
 			file.close()
+			
+			if screen == 1:
+				print("tare: ",strTare)
+				print("emptyWeight: ",strEmptyWeight)
+				print("fullWeight: ",strFullWeight)
 			
 			return 0
 		except:

@@ -1,6 +1,5 @@
 /*****************************************************
  * Magic Mirror                                      *
- * CaravanPi                                         *
  * Custom CSS                                        *
  *                                                   *
  * By Michael Teeuw http://michaelteeuw.nl           *
@@ -10,15 +9,198 @@
  * Changes to this files will be ignored by GIT. *
  *****************************************************/
 
+ body {
+ }
  
+
+ 
+/* Schriften */
+
+.dimmed {
+  /* color: #666; */
+  color: #999;
+}
+
+.normal {
+  color: #bbb;
+}
+
+.bright {
+  color: #fff;
+}
+
+.xsmall {
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.small {
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.medium {
+  font-size: 30px;
+  line-height: 35px;
+}
+
+.large {
+  font-size: 65px;
+  line-height: 65px;
+}
+
+.xlarge {
+  font-size: 75px;
+  line-height: 75px;
+  letter-spacing: -3px;
+}
+
+.thin {
+  font-family: Roboto, sans-serif;
+  /* font-weight: 100; */
+  font-weight: 500;
+}
+
+.light {
+  font-family: "Roboto Condensed", sans-serif;
+  /* font-weight: 300; */
+  font-weight: 700;
+}
+
+.regular {
+  font-family: "Roboto Condensed", sans-serif;
+  /* font-weight: 400; */
+  font-weight: 700;
+}
+
+.bold {
+  font-family: "Roboto Condensed", sans-serif;
+  font-weight: 700;
+}
+
+
+
+/* Abstaende, Weiten */
+
+.region.top.left {
+   width: 50%;
+}
+
+.region.top.right {
+   width: 45%;
+}
+
+
+/* calendar */
+.calendar {
+   padding-bottom: 50px;
+}
+
+.calendar .title {
+   font-size: 120%;
+   line-height: 1.4em;
+}
+
+.calendar .time {
+   font-size: 120%;
+   width: 250px;
+}}
+
+.time.light {
+    color: #fff;
+}
+
+/* weatherforecast */
+
+.weatherforecast {
+   padding-bottom: 115px;
+}
+
+.weatherforecast .module-header {
+   text-align: left;
+}
+
+.weatherforecast .day {
+  line-height: 1.4em;
+  font-size: 120%;
+  text-align: left;
+}
+
+.weatherforecast .weather-icon {
+  font-size: 120%;
+}
+
+.weatherforecast .min-temp {
+  font-size: 120%;
+}
+
+.weatherforecast .rain {
+  font-size: 120%;
+}
+
+/* newsfeed */
+
+.newsfeed {
+   padding-bottom: 50px;
+}
+
+/* MMM-NetworkScanner */
+
+
+.MMM-NetworkScanner {
+   padding-bottom: 20px;
+}
+
+.MMM-NetworkScanner .module-header {
+   text-align: left;
+}
+
+.MMM-NetworkScanner .headerDev {
+   text-align: center;
+   padding-bottom: 10px;
+}
+
+.MMM-NetworkScanner .devState {
+   text-align: center;
+}
+
+
+
+/* MMM-DWD-WarnWeather */
+
+.MMM-DWD-WarnWeather .module-header {
+   text-align: left;
+}
+
+
 /* MMM-CaravanPiClimate */
+
+.MMM-CaravanPiClimate .sensorContainer {
+	font-size: 80%;
+	line-height: 1.2em;
+}
 
 .MMM-CaravanPiClimate .sensorDate {
 	font-size: 10px;
 }
 
 /* MMM-CaravanPiTemperature */
+.MMM-CaravanPiTemperature .sensorContainer {
+	font-size: 80%;
+	line-height: 1.2em;
+}
+
 .MMM-CaravanPiTemperature .sensorDate {
+	font-size: 10px;
+}
+
+/* MMM-CaravanPiGasWeight */
+.MMM-CaravanPiGasWeight .sensorContainer {
+	font-size: 80%;
+	line-height: 1.2em;
+}
+
+.MMM-CaravanPiGasWeight .sensorDate {
 	font-size: 10px;
 }
 

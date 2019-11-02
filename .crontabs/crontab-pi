@@ -15,8 +15,11 @@
 # Gasflaschenwaage alle 60 Sekunden auslesen
 * * * * * python3 /home/pi/CaravanPi/gas-weight/gasScale2file.py
 
-# Lagesensor alle 60 Sekunden auslesen
-* * * * * python3 /home/pi/CaravanPi/position/position2file.py
+# Lagesensor auslesen, Zeitsteuerung im Skript inkl. Live Modus
+@reboot python3 /home/pi/CaravanPi/position/position2file.py -f
+
+# Taster für Kalibrierung Lagesensor und Gaswaage aktivieren
+@reboot python3 /home/pi/CaravanPi/tactileSwitch/tactileSwitches.py
 
 # Logrotate starten
 @reboot logrotate -s /home/pi/CaravanPi/logrotate.status /home/pi/CaravanPi/logrotate.conf

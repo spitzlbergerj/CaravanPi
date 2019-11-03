@@ -6,15 +6,15 @@ System for measuring and displaying various values in caravans and motor homes, 
 		<tr>
 			<td>
 				<img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg">
-				[show full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg)
 			</td>
 			<td>
 				<img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg">
-				[show full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg)
 			</td>
 		</tr>
 	</tbody>
 </table>
+[show full size image CaravanPi](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg)
+[show full size image MagicMirror for CaravanPi](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg)
 
 ## Functionality
 The CaravanPi has actually the following functionalities:

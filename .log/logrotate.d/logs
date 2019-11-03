@@ -1,4 +1,4 @@
-/home/pi/CaravanPi/values/gasScale {
+/home/pi/CaravanPi/.log/*.log {
 	weekly
 	rotate 2
 	create 644 pi pi

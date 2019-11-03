@@ -1,0 +1,13 @@
+/home/pi/CaravanPi/values/28-01144f936caa 
+/home/pi/CaravanPi/values/28-01144fea82aa 
+/home/pi/CaravanPi/values/28-01144febdbaa 
+/home/pi/CaravanPi/values/BME280-96-118
+/home/pi/CaravanPi/values/BME280-96-119
+/home/pi/CaravanPi/values/gasScale
+/home/pi/CaravanPi/values/position
+{
+	weekly
+	rotate 2
+	create 644 pi pi
+	missingok
+}

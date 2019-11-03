@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # coding=utf-8
-# positionLive.py
+# position2file.py
 #
 # nutzt die aus dem Beschleunigungssensor ADXL345 gelesenen Lagewerte
 # um den Wohnwagen über LEDs auszurichten
@@ -316,7 +316,6 @@ def checkApproximation(state, value, approximationValue):
 			newState = -1
 		else:
 			newState = 1
-	# print (state, abs(value), approximationValue, "-->", newState)
 	
 	return newState
 
@@ -442,7 +441,7 @@ def switchInterruptNowHorizontal(channel):
 
 	global globY, globAdjustY, globAdjustSwitchY
 	globAdjustSwitchY = globY - globAdjustY
-	print ("ACHTUNG: manuelles Waagrecht setzen in Querrichtung !!!")
+	print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: manuelles Waagrecht setzen in Querrichtung !!!")
 
 def switchInterruptLive(channel):  
 	# -------------------------
@@ -457,17 +456,28 @@ def switchInterruptLive(channel):
 	global globAdjustSwitchY
 	global liveMode
 	if liveMode == 1:
-		print ("ACHTUNG: Live Modus beendet !!!")
+		print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: Live Modus beendet !!!")
 		liveMode = 0
 		GPIO.output(pinLEDLive, False)
 		ledOff()
 		globAdjustSwitchY = 0
 	else:
-		print ("ACHTUNG: Live Modus startet !!!")
+		print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: Live Modus startet !!!")
 		liveMode = 1
 		GPIO.output(pinLEDLive, True)
 
-	print("live Modus:", liveMode)
+def signalInterruptUSR1(signum, stack):
+	# -------------------------
+	# signalInterruptUSR1 
+	# SIGUSR1 was send to this process (from setDefaults)
+	#
+	# read Defaults again
+	# -------------------------
+
+	global adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis
+	print(signum, ' received: read defaults again')
+	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
+
 
 	
 def main():
@@ -475,6 +485,7 @@ def main():
 	# main 
 	# -------------------------
 
+	global adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis
 	global LED_HR, LED_HL, LED_ZR, LED_ZL, LED_VR, LED_VL, LED_Vo
 	global globY, globAdjustY, globAdjustSwitchY
 	global lengthOverAll, width, lengthBody
@@ -506,7 +517,7 @@ def main():
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
 	except getopt.GetoptError:
-		print("ERROR: options not correct")
+		print(datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ERROR: options not correct")
 		usage()
 		sys.exit()
 	
@@ -548,7 +559,14 @@ def main():
 	# dimensions of the caravan
 	(lengthOverAll, width, lengthBody) = CaravanPiFiles.readDimensions()
 
+	# -------------------------
+	# listen to SIGUSR1 for renew the defaults
+	# -------------------------
+	signal.signal(signal.SIGUSR1, signalInterruptUSR1)
+	
+	# -------------------------
 	# initialize LEDs
+	# -------------------------
 	LED_HR=setupHR()
 	LED_HL=setupHL()
 	LED_ZR=setupZR()
@@ -565,7 +583,7 @@ def main():
 	
 	# read sensor and adjust LEDs
 	while True:
-		print("live Modus:", liveMode)
+		print(datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "live Modus:", liveMode)
 		try:
 			i=0
 			arrayX = []
@@ -624,15 +642,31 @@ def main():
 			# difference negative = position is "too high"
 			diffHL = round((distLeft * tolY / 10) + (distBack * tolX / 10) * -1)
 			diffHR = round((distRight * tolY / 10) + (distBack * tolX / 10) * -1)
-			diffVL = round((distLeft * tolY / 10) + (distFront * tolX / 10))
-			diffVR = round((distRight * tolY / 10) + (distFront * tolX / 10))
 			diffZL = round((distLeft * tolY / 10) + (distAxis * tolX / 10))
 			diffZR = round((distRight * tolY / 10) + (distAxis * tolX / 10))
+			diffVL = round((distLeft * tolY / 10) + (distFront * tolX / 10))
+			diffVR = round((distRight * tolY / 10) + (distFront * tolX / 10))
 
-			if distRight <= (width/2):
+			# where is the sensor left or right of the middle?
+			if distRight <= (width/2): 
+				# sensor is on the right side in driving direction of the caravan
 				diffVo = round((((width/2) - distRight) * tolY / 10) + ((distFront + (lengthOverAll - lengthBody)) * tolX / 10))
 			else:
 				diffVo = round((((width/2) - distLeft) * tolY / 10) + ((distFront + (lengthOverAll - lengthBody)) * tolX / 10))
+			
+			# one of the Z-values should be zero - normalise the others
+			if diffZL >= diffZR:
+				diffNormal = diffZL
+			else:
+				diffNormal = diffZR
+				
+			diffHL = diffHL - diffNormal
+			diffHR = diffHR - diffNormal
+			diffZL = diffZL - diffNormal
+			diffZR = diffZR - diffNormal
+			diffVL = diffVL - diffNormal
+			diffVR = diffVR - diffNormal
+			diffVo = diffVo - diffNormal
 			
 			# write values to file and or screen
 			write2file(writeFile, displayScreen, x, y, z, tolX, tolY, z-adjustZ, lastX, secondLastX, diffHL, diffHR, diffVL, diffVR, diffZL, diffZR, diffVo)

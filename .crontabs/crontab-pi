@@ -3,23 +3,27 @@
 # Output of the crontab jobs (including errors) is sent through
 # email to the user the crontab file belongs to (unless redirected).
 #
+# ATTENTION
+# Python uses line-buffering when stdout is a tty device!
+# Therefore start all python scripts with the option -u
+#
 # min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
 #
 # Temperatursensoren alle 60 Sekunden auslesen
-* * * * * python3 /home/pi/CaravanPi/temperature/temp2file.py
+* * * * * python3 -u /home/pi/CaravanPi/temperature/temp2file.py  >/home/pi/CaravanPi/.log/temp2file.log 2>&1
 
 # Klimasensoren alle 60 Sekunden auslesen
-* * * * * python3 /home/pi/CaravanPi/climate/climate2file.py 76 1
-* * * * * python3 /home/pi/CaravanPi/climate/climate2file.py 77 1
+* * * * * python3 -u /home/pi/CaravanPi/climate/climate2file.py 76 1  >/home/pi/CaravanPi/.log/climate2file76.log 2>&1
+* * * * * python3 -u /home/pi/CaravanPi/climate/climate2file.py 77 1  >/home/pi/CaravanPi/.log/climate2file77.log 2>&1
 
 # Gasflaschenwaage alle 60 Sekunden auslesen
-* * * * * python3 /home/pi/CaravanPi/gas-weight/gasScale2file.py
+* * * * * python3 -u /home/pi/CaravanPi/gas-weight/gasScale2file.py  >/home/pi/CaravanPi/.log/gasScale2file.log 2>&1
 
 # Lagesensor auslesen, Zeitsteuerung im Skript inkl. Live Modus
-@reboot python3 /home/pi/CaravanPi/position/position2file.py -f
+@reboot python3 -u /home/pi/CaravanPi/position/position2file.py -f  >/home/pi/CaravanPi/.log/position2file.log 2>&1
 
 # Taster für Kalibrierung Lagesensor und Gaswaage aktivieren
-@reboot python3 /home/pi/CaravanPi/tactileSwitch/tactileSwitches.py
+@reboot python3 -u /home/pi/CaravanPi/tactileSwitch/tactileSwitches.py  >/home/pi/CaravanPi/.log/tactileSwitches.log 2>&1
 
 # Logrotate starten
 @reboot logrotate -s /home/pi/CaravanPi/logrotate.status /home/pi/CaravanPi/logrotate.conf

@@ -4,12 +4,14 @@ System for measuring and displaying various values in caravans and motor homes, 
 <table width="100%" border="0">
 	<tbody>
 		<tr>
-   <td>
-    <img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg">
-   </td>
 			<td>
-    <img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg">
-   </td>
+				<img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg">
+				[show full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg)
+			</td>
+			<td>
+				<img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg">
+				[show full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg)
+			</td>
 		</tr>
 	</tbody>
 </table>

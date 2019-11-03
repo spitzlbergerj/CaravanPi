@@ -12,7 +12,9 @@ System for measuring and displaying various values in caravans and motor homes, 
 			</td>
 		</tr>
 	</tbody>
-</table><br/>
+</table>
+<br/>
+
 full size image [CaravanPi](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg) <br/>
 full size image [MagicMirror for CaravanPi](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg) 
 

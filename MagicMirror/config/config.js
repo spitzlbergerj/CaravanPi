@@ -20,9 +20,6 @@ modules: [
 	module: 'MMM-Remote-Control',
 	// uncomment the following line to show the URL of the remote control on the mirror
 	// , position: 'top_bar'
-	//
-	// Menü für CaravanPi
-	customMenu: "CaravanPi_menu.json",
 },
 /*
 {
@@ -38,7 +35,7 @@ modules: [
 		sensorPin: 25,
 		sensorState: 1,
 		powerSaving: 1,
-		powerSavingDelay: 60, // 60 Sekunden bis power off
+		powerSavingDelay: 10, // 60 Sekunden bis power off
 		powerSavingNotification: true,
 		powerSavingMessage: "Bildschirm wird ausgeschaltet",
 	}
@@ -64,7 +61,7 @@ modules: [
 	header: 'Klimawerte',
 	config: {
 		updateInterval: 60000,
-		style: "boxes",
+		style: "boxlines",
 		tempPrecision: 0,
 		humPrecision: 0,
 		pressPrecision: 0,
@@ -112,7 +109,7 @@ modules: [
 	header: 'Füllstand Gasflasche',
 	config: {
 		updateInterval: 60000,
-		style: "boxes",
+		style: "boxlines",
 		weightPrecision: 0,
 		sensors: [
 			{
@@ -125,11 +122,10 @@ modules: [
 
 {
 	module: "MMM-CaravanPiPosition",
-	position: "top_right",
+	position: "top_left",
 	header: 'Lage Caravan',
 	config: {
 		updateInterval: 500,
-		style: "boxes",
 		sensors: [
 			{
 				name: "Lagesensor",
@@ -138,8 +134,6 @@ modules: [
 		]
 	}
 },
-
-
 
 {
 	module: "currentweather",
@@ -169,7 +163,7 @@ modules: [
 	}
 },
 
-
+/*
 {
 	module: 'MMM-DWD-WarnWeather',
 	position: 'top_right',
@@ -186,7 +180,7 @@ modules: [
 		severityThreshold: 2,
 	}
 },
-
+*/
 
 
 {

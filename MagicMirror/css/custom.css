@@ -173,6 +173,13 @@
 }
 
 
+/* MMM-CaravanPi**** */
+
+.sensorBoxRowElement {
+	padding: 5px;
+	padding-bottom: 0px;
+}
+
 /* MMM-CaravanPiClimate */
 
 .MMM-CaravanPiClimate .sensorContainer {
@@ -201,6 +208,10 @@
 }
 
 .MMM-CaravanPiGasWeight .sensorDate {
+	font-size: 10px;
+}
+
+.MMM-CaravanPiPosition .sensorDate {
 	font-size: 10px;
 }
 

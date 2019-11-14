@@ -6,10 +6,10 @@ The subdirectories config and css contain corresponding sample files which can b
 ## Magic Mirror modules
 The following modules were created:
 
-- MMM-CaravanPiClimate
-- MMM-CaravanPiGasWeight
-- MMM-CaravanPiPosition
-- MMM-CaravanPiTemperature
+- [MMM-CaravanPiClimate](https://github.com/spitzlbergerj/MMM-CaravanPiTemperature)
+- [MMM-CaravanPiGasWeight](https://github.com/spitzlbergerj/MMM-CaravanPiGasWeight)
+- [MMM-CaravanPiPosition](https://github.com/spitzlbergerj/MMM-CaravanPiPosition)
+- [MMM-CaravanPiTemperature](https://github.com/spitzlbergerj/MMM-CaravanPiTemperature)
 
 ### MMM-CaravanPiClimate
 The MMM-CaravanPiClimate module displays climate values from the BME280 sensors. The corresponding Python scripts in CaravanPi can be found in the CaravanPi/climate/ directory.

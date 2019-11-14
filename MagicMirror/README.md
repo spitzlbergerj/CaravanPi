@@ -14,13 +14,20 @@ The following modules were created:
 ### MMM-CaravanPiClimate
 The MMM-CaravanPiClimate module displays climate values from the BME280 sensors. The corresponding Python scripts in CaravanPi can be found in the CaravanPi/climate/ directory.
 
+<img src="https://raw.githubusercontent.com/spitzlbergerj/MMM-CaravanPiTemperature/master/img/MMM-CaravanPiTemperature-Screendump-Boxlines.jpg">
+
 ### MMM-CaravanPiGasWeight
 The MMM-CaravanPiGasWeight module displays measured values from the gas cylinder scale. The corresponding Python scripts in CaravanPi can be found in the CaravanPi/gas-weight/ directory.
 
+<img src="https://raw.githubusercontent.com/spitzlbergerj/MMM-CaravanPiGasWeight/master/img/MMM-CaravanPiGasWeight-Screendump-Boxlines.jpg">
+
 ### MMM-CaravanPiPosition
 The MMM-CaravanPiPosition module displays measured values and calculation results based on them from the ADXL345 position sensor. The corresponding Python scripts in CaravanPi are located in the CaravanPi/position/ directory.
-https://raw.githubusercontent.com/spitzlbergerj/MMM-CaravanPiPosition/master/img/MMM-CaravanPiPosition-Screendump.jpg
+
+<img src="https://raw.githubusercontent.com/spitzlbergerj/MMM-CaravanPiPosition/master/img/MMM-CaravanPiPosition-Screendump.jpg">
 
 
 ### MMM-CaravanPiTemperature
 The MMM-CaravanPiTemperature module displays measured values from the DS18B20 wired thermal sensors. The corresponding Python scripts in CaravanPi can be found in the CaravanPi/temperature/ directory.
+
+<img src="https://raw.githubusercontent.com/spitzlbergerj/MMM-CaravanPiTemperature/master/img/MMM-CaravanPiTemperature-Screendump-Boxlines.jpg">

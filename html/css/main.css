@@ -1,13 +1,14 @@
 html {
   cursor: none;
-  overflow: hidden;
+/*   overflow: hidden; */
   background: #000;
 }
 
+/*
 ::-webkit-scrollbar {
   display: none;
 }
-
+*/
 body {
   margin: 60px;
   position: absolute;
@@ -124,7 +125,7 @@ sup {
 
 .no-wrap {
   white-space: nowrap;
-  overflow: hidden;
+  /* overflow: hidden; */
   text-overflow: ellipsis;
 }
 

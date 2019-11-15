@@ -32,6 +32,9 @@ import math
 # import for GPIO Input tactile switches
 import RPi.GPIO as GPIO
 
+# import for opening URL to change update Intervall on magic Mirror
+import urllib.request
+
 # -----------------------------------------------
 # libraries from CaravanPi
 # -----------------------------------------------
@@ -460,11 +463,15 @@ def switchInterruptLive(channel):
 		liveMode = 0
 		GPIO.output(pinLEDLive, False)
 		ledOff()
+		# change update Intervall on MagicMirror
+		urllib.request.urlopen('http://127.0.0.1:8080/MMM-CaravanPiPosition/changeUpdateInterval')
 		globAdjustSwitchY = 0
 	else:
 		print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: Live Modus startet !!!")
 		liveMode = 1
 		GPIO.output(pinLEDLive, True)
+		# change update Intervall on MagicMirror
+		urllib.request.urlopen('http://127.0.0.1:8080/MMM-CaravanPiPosition/changeUpdateInterval')
 
 def signalInterruptUSR1(signum, stack):
 	# -------------------------

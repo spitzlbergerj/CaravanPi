@@ -125,7 +125,7 @@ class CaravanPiFiles:
 	# content of file
 	# 		length over all		length of the caravan over all 
 	#		width				width of the caravan over all
-	#		lenght body			legth of the body of the caravan without drawbar
+	#		length body			legth of the body of the caravan without drawbar
 	# ----------------------------------------------------------------------------------------------
 
 	def readDimensions():

@@ -1,0 +1,8 @@
+/home/pi/.pm2/pm2.log 
+/home/pi/.pm2/logs/*
+{
+	weekly
+	rotate 2
+	create 644 pi pi
+	missingok
+}

@@ -99,6 +99,10 @@
 					</div>
 				</div>
 
+				<div class="respimglage">
+					<img src="img/CaravanPiLagesensor.png" alt="Lagesensor CaravanPi" class="responsive" width="600" height="255">
+				</div>
+
 				<!-- Abstände LageSensor -->
 				<div class="row">
 					<div class="col-75">

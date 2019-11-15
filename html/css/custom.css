@@ -115,6 +115,22 @@ label {
   margin-top: 6px;
 }
 
+.responsive {
+	padding-right: 80px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	max-width: 100%;
+	height: auto;
+}
+
+.respimglage {
+	float: right;
+	right: 10px;
+	width: 100%;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
 /* Clear floats after the columns */
 .row:after {
   content: "";

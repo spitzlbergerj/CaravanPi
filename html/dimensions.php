@@ -44,8 +44,10 @@
 		?>
 	
 		<div class="container">
+			
 			<form class="caravanpi-form" action="writeDimensionDefaults.py" method="post">
-
+				<img src="img/CaravanPiDimensionen.png" alt="Dimensionen CaravanPi" class="responsive" width="600" height="258">
+				
 				<!-- Länge über alles -->
 				<div class="row">
 					<div class="col-75">

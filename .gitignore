@@ -3,7 +3,12 @@ logrotate.status
 .lib/__pycache__/*
 .lib/hx711py
 .lib/hx711py/*
+.lib/hx711pySJJSJJSJJSJJ
+.lib/hx711pySJJSJJSJJSJJ/*
 .lib/*pyc
+!.log/
+.log/*
+!.log/logrotate.d/
 !values/
 values/*
 !values/logrotate.d/

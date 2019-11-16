@@ -1,6 +1,0 @@
-/home/pi/CaravanPi/bottleFramework/logs/*.log {
-	weekly
-	rotate 2
-	create 644 pi pi
-	missingok
-}

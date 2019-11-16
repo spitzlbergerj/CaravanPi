@@ -1,7 +1,0 @@
-Bottle v0.12.17 server starting up (using WSGIRefServer())...
-Listening on http://0.0.0.0:8089/
-Hit Ctrl-C to quit.
-
-/home/pi/.local/lib/python3.7/site-packages/bottle.py:3133: ResourceWarning: unclosed <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 8089)>
-  pass
-ResourceWarning: Enable tracemalloc to get the object allocation traceback

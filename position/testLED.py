@@ -22,7 +22,7 @@ from time import sleep
 # -----------------------------------------------
 sys.path.append('/home/pi/CaravanPi/.lib')
 from mcp23017 import mcp23017,pin
-from ledClass import Led
+from CaravanPiLedClass import Led
 
 # -----------------------------------------------
 # globale Variable

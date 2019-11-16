@@ -10,14 +10,17 @@ import time, datetime
 import signal
 import sys
 from time import sleep
-import os
-import subprocess
+
+# CGI handling
+import cgi
+import cgitb
 
 # -----------------------------------------------
 # libraries from CaravanPi
 # -----------------------------------------------
 sys.path.append('/home/pi/CaravanPi/.lib')
-from filesClass import CaravanPiFiles
+from CaravanPiFilesClass import CaravanPiFiles
+from CaravanPiFunctionsClass import CaravanPiFunctions
 
 # -----------------------------------------------
 # global variables
@@ -28,7 +31,17 @@ def main():
 	# main 
 	# -------------------------
 
-	subprocess.run(["python3","/home/pi/CaravanPi/position/setupPositionDefaults.py"])
+	# lesen der Werte aus der HTML form
+	cgitb.enable(display=0, logdir="/var/log/apache2")
+	
+	form = cgi.FieldStorage()
+	
+	cgi_color = form.getvalue('color')
+	
+	#print(cgi_color)
+	
+	if (cgi_color != None):
+		CaravanPiFiles.writeTestColor(0, 0, cgi_color)
 
 	# Ergebnis Website schreiben
 	print("Content-Type: text/html; charset=utf-8\n\n")
@@ -43,7 +56,10 @@ def main():
 
 	print("<body>")
 	print('<header class="header">CaravanPi Konfiguration - LED Test</header>')
-	print("Die Testroutine wurde gestartet. Die LEDs sind für 60 Sekunden an.")
+	if (cgi_color != None):
+		print("Die Testroutine wurde gestartet. Die LEDs schalten in Kürze für 60 Sekunden ein.")
+	else:
+		print("ES KONNTEN KEINE WERTE AUS DEM FORMULAR GELESEN WERDEN!")
 	print("<br/><br/>Sie werden zur Eingabeseite weitergeleitet")
 	print("</body>")
 	print("</html>")

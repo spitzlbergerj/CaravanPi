@@ -40,8 +40,8 @@ import urllib.request
 # -----------------------------------------------
 sys.path.append('/home/pi/CaravanPi/.lib')
 from mcp23017 import mcp23017,pin
-from ledClass import Led
-from filesClass import CaravanPiFiles
+from CaravanPiLedClass import Led
+from CaravanPiFilesClass import CaravanPiFiles
 
 # -----------------------------------------------
 # global variables
@@ -484,6 +484,22 @@ def signalInterruptUSR1(signum, stack):
 	global adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis
 	print(signum, ' received: read defaults again')
 	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
+
+def signalInterruptUSR2(signum, stack):
+	# -------------------------
+	# signalInterruptUSR1 
+	# SIGUSR2 was send to this process (from Config Website)
+	#
+	# read color from file to test LEDs
+	# -------------------------
+
+	print(signum, ' received: test LEDs')
+	color = int(CaravanPiFiles.readTestColor())
+	print('test LEDs with color ', color)
+	setAlle(color)
+	
+
+	
 
 
 	

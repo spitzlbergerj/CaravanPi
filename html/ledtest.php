@@ -39,10 +39,12 @@
 						<label for="color">LED auf ff. Farbe schalten: </label>  
 					</div>
 					<div class="col-25">
-					  <select name="color" size="3">
-              <option selected value="red">rot</option>
-              <option value="blue">blau</option>
-              <option value="green">grün</option>
+					  <select name="color" size="1">
+               <option value="2">blau</option>
+              <option value="1">blau blinkend</option>
+             <option selected value="0">rot</option>
+              <option value="-1">grün blinkend</option>
+              <option value="-2">grün</option>
             </select>
 					</div>
 				</div>

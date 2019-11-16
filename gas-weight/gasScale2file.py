@@ -17,7 +17,7 @@ import RPi.GPIO as GPIO
 # -----------------------------------------------
 sys.path.append('/home/pi/CaravanPi/.lib')
 from hx711 import HX711
-from filesClass import CaravanPiFiles
+from CaravanPiFilesClass import CaravanPiFiles
 
 
 def cleanAndExit():

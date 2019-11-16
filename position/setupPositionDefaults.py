@@ -22,7 +22,7 @@ from time import sleep
 import os
 import getopt
 
-# 3-axis-sensor
+# 3-axis-sensor (adafruit)
 import board
 import busio
 import adafruit_adxl34x
@@ -34,7 +34,8 @@ import RPi.GPIO as io
 # libraries from CaravanPi 
 # -----------------------------------------------
 sys.path.append('/home/pi/CaravanPi/.lib')
-from filesClass import CaravanPiFiles
+from CaravanPiFilesClass import CaravanPiFiles
+from CaravanPiFunctionsClass import CaravanPiFunctions
 
 # -----------------------------------------------
 # global variables
@@ -78,10 +79,6 @@ def usage():
 	print ("  -s          display values on this screen")
 	print ("  -w seconds  waiting time until the values are read out from the sensor (default 120 seconds)\n")
 
-
-# -------------------------
-# 3-axis-sensor 
-# -------------------------
 
 def main():
 	# -------------------------
@@ -188,6 +185,10 @@ def main():
 		z = statistics.median(arrayZ)
 	
 	CaravanPiFiles.writeAdjustment(writeTestFile, displayScreen, x, y, z, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, distRight, distFront, distAxis)
+
+	# signal the program position2file.py that default values have changed
+	pid = CaravanPiFunctions.process_running("position2file.py")
+	os.kill(pid, signal.SIGUSR1)
 
 	# long beep of the buzzer to signal completion
 	io.output(BUZZER_PIN, io.HIGH)

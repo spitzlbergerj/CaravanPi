@@ -38,24 +38,6 @@ def usage():
 	print (sys.argv[0], "-h")
 	print ("  -h   show this guide")
 
-def process_running(name):
-    for fso in os.listdir('/proc'):
-        path = os.path.join('/proc', fso)
-        if os.path.isdir(path):
-            try:
-                # das Verzeichnis eines Prozesses trägt die
-                # numerische UID als Namen
-                uid = int(fso)
-                stream = open(os.path.join(path, 'cmdline'))
-                cmdline = stream.readline()
-                stream.close()
-                if name in cmdline and "/bin/sh" not in cmdline:
-                    return uid
-            except ValueError:
-                # kein Prozessverzeichnis
-                continue
-    return 0
-	
 def switchInterruptPosition(channel):  
 	# -------------------------
 	# switchInterruptPosition
@@ -63,9 +45,6 @@ def switchInterruptPosition(channel):
 	# -------------------------
 	print ("ACHTUNG: Kalibrierung Lage Sensor wird gestartet!")
 	subprocess.run(["python3","/home/pi/CaravanPi/position/setupPositionDefaults.py","-w","5"])
-	pid = process_running("position2file.py")
-	print ("send SIGUSR1 to process ", pid)
-	os.kill(pid, signal.SIGUSR1)
 	print ("ACHTUNG: Kalibrierung Lage Sensor wurde beendet")
 
 def switchInterruptGasscale(channel):  

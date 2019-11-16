@@ -4,6 +4,8 @@
 #
 # liest und schreibt Werte aus den und in die default files
 #
+#Since this class is not initialized via __init__, the functions do not contain a fist parameter self
+#
 #-------------------------------------------------------------------------------
 
 import sys
@@ -18,6 +20,7 @@ class CaravanPiFiles:
 	fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
 	fileDimensions = "/home/pi/CaravanPi/defaults/dimensionsCaravan"
 	fileGasScale = "/home/pi/CaravanPi/defaults/gasScaleDefaults1"
+	fileTestColor = "/home/pi/CaravanPi/temp/testColor"
 
 	# ---------------------------------------------------------------------------------------------
 	# adjustmentPosition
@@ -231,6 +234,48 @@ class CaravanPiFiles:
 			return 0
 		except:
 			print("writeGasScale: The file ", CaravanPiFiles.fileGasScale, " could not be written - unprocessed Error:", sys.exc_info()[0])
+			raise
+			return -1
+
+
+	# ---------------------------------------------------------------------------------------------
+	# testColor
+	#
+	# content of file
+	# 		color			Color to show for testing LEDs 
+	# ----------------------------------------------------------------------------------------------
+
+	def readTestColor():
+		try:
+			file = open(CaravanPiFiles.fileTestColor)
+			strColor = file.readline()
+			file.close()
+			
+			return(strColor)
+		except:
+			# Lesefehler
+			print ("readTestColor: The file ", CaravanPiFiles.fileTestColor, " could not be read. unprocessed Error:", sys.exc_info()[0])
+			return("")
+
+	def writeTestColor(test, screen, color):
+		try:
+			if color == "-2" or color == "-1" or color == "0" or color == "1" or color == "2": 
+				if test == 1:
+					file = open(CaravanPiFiles.fileTestColor+"_test", 'w')
+				else:
+					file = open(CaravanPiFiles.fileTestColor, 'w')
+					
+				file.write(color)
+				file.close()
+				
+				if screen == 1:
+					print("color: ",color)
+				
+				return 0
+			else:
+				return -2
+		except:
+			print("writeTestColor: The file ", CaravanPiFiles.fileTestColor, " could not be written - unprocessed Error:", sys.exc_info()[0])
 			raise
 			return -1
 

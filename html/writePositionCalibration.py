@@ -18,11 +18,14 @@ import subprocess
 import cgi
 import cgitb
 
+# import for opening URL to change update Intervall on magic Mirror
+import urllib.request
+
 # -----------------------------------------------
 # libraries from CaravanPi
 # -----------------------------------------------
 sys.path.append('/home/pi/CaravanPi/.lib')
-from filesClass import CaravanPiFiles
+from CaravanPiFilesClass import CaravanPiFiles
 
 # -----------------------------------------------
 # global variables
@@ -33,7 +36,10 @@ def main():
 	# main 
 	# -------------------------
 
-	subprocess.run(["python3","/home/pi/CaravanPi/position/setupPositionDefaults.py"])
+	# change update Intervall on MagicMirror
+	urllib.request.urlopen('http://127.0.0.1:8089/ConfigSite/positionCalibration')
+
+	# subprocess.run(["python3","/home/pi/CaravanPi/position/setupPositionDefaults.py"])
 
 	# Ergebnis Website schreiben
 	print("Content-Type: text/html; charset=utf-8\n\n")

@@ -20,7 +20,7 @@ import cgitb
 # libraries from CaravanPi
 # -----------------------------------------------
 sys.path.append('/home/pi/CaravanPi/.lib')
-from filesClass import CaravanPiFiles
+from CaravanPiFilesClass import CaravanPiFiles
 
 # -----------------------------------------------
 # global variables

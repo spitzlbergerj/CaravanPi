@@ -5,7 +5,15 @@
 from bottle import route, run, template
 import subprocess
 import time
+import sys
 import shlex
+
+# -----------------------------------------------
+# libraries from CaravanPi
+# -----------------------------------------------
+sys.path.append('/home/pi/CaravanPi/.lib')
+from CaravanPiFunctionsClass import CaravanPiFunctions
+
 
 @route('/ConfigSite/<cmd>')
 def index(cmd):
@@ -15,6 +23,11 @@ def index(cmd):
 		return template('<b>Kommando {{cmdstring}} ausgeführt</b>!', cmdstring=cmdstring)
 	elif cmd == "gasScaleCalibration":
 		cmdstring = 'python3 /home/pi/CaravanPi/gas-weight/setupGasscaleDefaults.py';
+		subprocess.Popen(shlex.split(cmdstring));
+		return template('<b>Kommando {{cmdstring}} ausgeführt</b>!', cmdstring=cmdstring)
+	elif cmd == "LEDtest":
+		pid = CaravanPiFunctions.process_running("position2file.py")
+		cmdstring = 'kill -SIGUSR2 '+ str(pid);
 		subprocess.Popen(shlex.split(cmdstring));
 		return template('<b>Kommando {{cmdstring}} ausgeführt</b>!', cmdstring=cmdstring)
 	else:

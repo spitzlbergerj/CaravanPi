@@ -36,7 +36,7 @@ def main():
 	# main 
 	# -------------------------
 
-	# change update Intervall on MagicMirror
+	# start position/setupPositionDefaults.py
 	urllib.request.urlopen('http://127.0.0.1:8089/ConfigSite/positionCalibration')
 
 	# subprocess.run(["python3","/home/pi/CaravanPi/position/setupPositionDefaults.py"])

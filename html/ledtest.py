@@ -15,6 +15,9 @@ from time import sleep
 import cgi
 import cgitb
 
+# import for opening URL to change update Intervall on magic Mirror
+import urllib.request
+
 # -----------------------------------------------
 # libraries from CaravanPi
 # -----------------------------------------------
@@ -42,6 +45,22 @@ def main():
 	
 	if (cgi_color != None):
 		CaravanPiFiles.writeTestColor(0, 0, cgi_color)
+		# send kill SIGUSR2 to position2file.py
+		urllib.request.urlopen('http://127.0.0.1:8089/ConfigSite/LEDtest')
+		if cgi_color == "-2":
+			strColor = "grün"
+		elif cgi_color == "-1":
+			strColor = "grün blinkend"
+		elif cgi_color == "0":
+			strColor = "rot"
+		elif cgi_color == "1":
+			strColor = "blau blinkend"
+		elif cgi_color == "2":
+			strColor = "blau"
+		elif cgi_color == "99":
+			strColor = "aus"
+		else:
+			strColor = "----"
 
 	# Ergebnis Website schreiben
 	print("Content-Type: text/html; charset=utf-8\n\n")
@@ -57,7 +76,7 @@ def main():
 	print("<body>")
 	print('<header class="header">CaravanPi Konfiguration - LED Test</header>')
 	if (cgi_color != None):
-		print("Die Testroutine wurde gestartet. Die LEDs schalten in Kürze für 60 Sekunden ein.")
+		print("Die Testroutine wurde gestartet. Die LEDs schalten für mindestens 60 Sekunden auf "+strColor)
 	else:
 		print("ES KONNTEN KEINE WERTE AUS DEM FORMULAR GELESEN WERDEN!")
 	print("<br/><br/>Sie werden zur Eingabeseite weitergeleitet")

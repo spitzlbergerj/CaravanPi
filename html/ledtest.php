@@ -45,6 +45,7 @@
              <option selected value="0">rot</option>
               <option value="-1">grün blinkend</option>
               <option value="-2">grün</option>
+              <option value="99">LEDs aus</option>
             </select>
 					</div>
 				</div>

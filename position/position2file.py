@@ -491,11 +491,14 @@ def signalInterruptUSR2(signum, stack):
 	# SIGUSR2 was send to this process (from Config Website)
 	#
 	# read color from file to test LEDs
+	# first switchLiveMode if live
 	# -------------------------
 
 	print(signum, ' received: test LEDs')
 	color = int(CaravanPiFiles.readTestColor())
 	print('test LEDs with color ', color)
+	if liveMode == 1:
+		switchInterruptLive(0)
 	setAlle(color)
 	
 
@@ -536,6 +539,7 @@ def main():
 	args = []
 	writeFile = 0
 	displayScreen = 0
+	liveMode=0
 	
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
@@ -563,7 +567,7 @@ def main():
 
 	for a in args:
 		print("further argument: ", a)
-		
+	
 	
 	# -------------------------
 	# avoid outliers - init values
@@ -586,6 +590,7 @@ def main():
 	# listen to SIGUSR1 for renew the defaults
 	# -------------------------
 	signal.signal(signal.SIGUSR1, signalInterruptUSR1)
+	signal.signal(signal.SIGUSR2, signalInterruptUSR2)
 	
 	# -------------------------
 	# initialize LEDs
@@ -725,6 +730,8 @@ def main():
 				while j< 120 and liveMode == 0: # 120/.5 = 60 Sekunden
 					j=j+1
 					sleep (.5)
+				# falls inzwsichen LEDtest gestartet wurde, alle LEDs aus
+				ledOff()
 				
 		except KeyboardInterrupt:
 			ledOff()

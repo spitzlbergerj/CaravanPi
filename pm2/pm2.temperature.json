@@ -1,0 +1,16 @@
+{
+    "apps": [
+	{
+        "name": "temp2file",
+        "script": "/home/pi/CaravanPi/temperature/temp2file.py",
+        "args": [""],
+		"exec_mode": "cluster_mode",
+        "wait_ready": true,
+        "watch": false,
+        "autorestart": false,
+        "max_restarts": 5,
+        "interpreter" : "python3",
+		"restart_delay": 30000
+    }
+	]
+}

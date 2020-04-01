@@ -1,0 +1,24 @@
+{
+    "apps": [{
+        "name": "position2file",
+        "script": "/home/pi/CaravanPi/position/position2file.py",
+        "args": ["-f"],
+        "wait_ready": true,
+        "watch": false,
+        "autorestart": false,
+        "max_restarts": 5,
+        "interpreter" : "python3",
+		"exp-backoff-restart-delay": 100,
+    },
+	{
+        "name": "temp2file",
+        "script": "/home/pi/CaravanPi/temperature/temp2file.py",
+        "args": [""],
+        "wait_ready": true,
+        "watch": false,
+        "autorestart": false,
+        "max_restarts": 5,
+        "interpreter" : "python3",
+		"restart_delay": 30000
+    }]
+}

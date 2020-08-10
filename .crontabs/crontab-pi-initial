@@ -1,0 +1,13 @@
+# crontab pi
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# ATTENTION
+# Python uses line-buffering when stdout is a tty device!
+# Therefore start all python scripts with the option -u
+#
+# min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
+#
+# Webservice bottleFramework starten
+@reboot python3 /home/pi/CaravanPi/bottleFramework/bottleCommands.py >>/home/pi/CaravanPi/.log/bottleCommands.log 2>&1

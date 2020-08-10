@@ -26,7 +26,7 @@
 @reboot python3 -u /home/pi/CaravanPi/tactileSwitch/tactileSwitches.py  >/home/pi/CaravanPi/.log/tactileSwitches.log 2>&1
 
 # Webservice bottleFramework starten
-@reboot python3 /home/pi/CaravanPi/bottleFramework/bottleCommands.py >>/home/pi/CaravanPi/.log/bottleCommands.log 2>&1
+@reboot python3 -u /home/pi/CaravanPi/bottleFramework/bottleCommands.py >>/home/pi/CaravanPi/.log/bottleCommands.log 2>&1
 
 # Logrotate starten
 @reboot logrotate -s /home/pi/CaravanPi/logrotate.status /home/pi/CaravanPi/logrotate.conf

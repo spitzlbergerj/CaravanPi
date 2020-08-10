@@ -7,6 +7,7 @@ import subprocess
 import time
 import sys
 import shlex
+import requests
 
 # -----------------------------------------------
 # libraries from CaravanPi
@@ -29,6 +30,10 @@ def index(cmd):
 		pid = CaravanPiFunctions.process_running("position2file.py")
 		cmdstring = 'kill -SIGUSR2 '+ str(pid);
 		subprocess.Popen(shlex.split(cmdstring));
+		return template('<b>Kommando {{cmdstring}} ausgeführt</b>!', cmdstring=cmdstring)
+	elif cmd == "MMtest":
+		cmdstring = 'http://127.0.0.1:8080/api/module/alert/showalert?message=Dies%20ist%20ein%20Test&timer=4000';
+		r = requests.get(url = cmdstring);
 		return template('<b>Kommando {{cmdstring}} ausgeführt</b>!', cmdstring=cmdstring)
 	else:
 		return template('<b>Kommando nicht korrekt</b>!')

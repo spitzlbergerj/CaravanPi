@@ -10,4 +10,4 @@
 # min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
 #
 # Webservice bottleFramework starten
-@reboot python3 /home/pi/CaravanPi/bottleFramework/bottleCommands.py >>/home/pi/CaravanPi/.log/bottleCommands.log 2>&1
+@reboot python3 -u /home/pi/CaravanPi/bottleFramework/bottleCommands.py >>/home/pi/CaravanPi/.log/bottleCommands.log 2>&1

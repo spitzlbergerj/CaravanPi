@@ -1,43 +1,17 @@
 # CaravanPi
 
 ## Motivation
-<table width="100%" border="0">
-	<tbody>
-		<tr>
-			<td width="50%">
-				<p>
-					System zur Messung und Anzeige verschiedener Sensorenwerte in Wohnwagen und Wohnmobilen, wie z.B. Klimawerte, Füllstände und Nivellierungsdaten. Zur Darstellung wird die Software <a href="https://magicmirror.builders/">Magic Mirror</a> verwendet.  </br></br>
-	Derzeit sind die meisten Beschreibungen nur in english verfügbar. Ich arbeite daran, auch diese auf deutsch zur Verfügung zu stellen</br></br>
-					<a href="https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/">direkt zur Aufbauanleitung</a>
-				</p>
-			</td>
-			<td>
-				<p>
-					System for measuring and displaying various values in caravans and motor homes, including climate values, filling levels and levelling data. <a href="https://magicmirror.builders/">Magic Mirror</a> is used for presentation.</br></br>
-					Currently most of the descriptions are only available in English. I am working on making them available in german as well</br></br>
-					<a href="https://github.com/spitzlbergerj/CaravanPi/wiki/Installation">directly to assembly instructions</a>
-				</p>
-			</td>
-		</tr>
-	</tbody>
-</table>
 
-<table width="100%" border="0">
-	<tbody>
-		<tr>
-			<td>
-				<img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg">
-			</td>
-			<td>
-				<img src="https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg">
-			</td>
-		</tr>
-	</tbody>
-</table>
-<br/>
+deutsch | english
+----- | -----
+System zur Messung und Anzeige verschiedener Sensorenwerte in Wohnwagen und Wohnmobilen, wie z.B. Klimawerte, Füllstände und Nivellierungsdaten. Zur Darstellung wird die Software <a href="https://magicmirror.builders/">Magic Mirror</a> verwendet. | System for measuring and displaying various values in caravans and motor homes, including climate values, filling levels and levelling data. <a href="https://magicmirror.builders/">Magic Mirror</a> is used for presentation.
+Derzeit sind die meisten Beschreibungen nur in english verfügbar. Ich arbeite daran, auch diese auf deutsch zur Verfügung zu stellen|Currently most of the descriptions are only available in English. I am working on making them available in german as well
+<a href="https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/">[direkt zur Aufbauanleitung](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/)|[directly to assembly instructions](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation)
 
-full size image [CaravanPi](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg) <br/>
-full size image [MagicMirror for CaravanPi](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg) 
+schematic drawing | MagicMirror display
+----- | -----
+![schema](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg) | ![MagicMirror](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg)
+[full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg) | [full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg) 
 
 ## Functionality
 The CaravanPi has actually the following functionalities:

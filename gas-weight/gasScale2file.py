@@ -61,8 +61,6 @@ def main():
 
 	try:
 		weight = hx.get_weight(5)
-		# Test
-		weight = 2845
 		
 		nettoWeight = weight - tare - emptyWeight
 		nettoLevel = (nettoWeight/fullWeight) * 100

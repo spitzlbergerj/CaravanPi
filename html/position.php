@@ -65,7 +65,7 @@
 						<label for="tolX">Toleranz Längsrichtung(in m/s)</label>  
 					</div>
 					<div class="col-25">
-						<input type="number" id="tolX" name="tolX" value="<?php echo $AD_tolX; ?>" step="0,05" min="-10" max="10">
+						<input type="number" id="tolX" name="tolX" value="<?php echo $AD_tolX; ?>" step="0.05" min="-10" max="10">
 					</div>
 				</div>
 				
@@ -75,7 +75,7 @@
 						<label for="tolY">Toleranz Querrichtung (in m/s)</label>  
 					</div>
 					<div class="col-25">
-						<input type="number" id="tolY" name="tolY" value="<?php echo $AD_tolY; ?>" step="0,05" min="-10" max="10">
+						<input type="number" id="tolY" name="tolY" value="<?php echo $AD_tolY; ?>" step="0.05" min="-10" max="10">
 					</div>
 				</div>
 
@@ -85,7 +85,7 @@
 						<label for="approxX">Toleranz Längsrichtung(in m/s)</label>  
 					</div>
 					<div class="col-25">
-						<input type="number" id="approxX" name="approxX" value="<?php echo $AD_approxX; ?>" step="0,05" min="-10" max="10">
+						<input type="number" id="approxX" name="approxX" value="<?php echo $AD_approxX; ?>" step="0.05" min="-10" max="10">
 					</div>
 				</div>
 				
@@ -95,7 +95,7 @@
 						<label for="approxY">Toleranz Querrichtung (in m/s)</label>  
 					</div>
 					<div class="col-25">
-						<input type="number" id="approxY" name="approxY" value="<?php echo $AD_approxY; ?>" step="0,05">
+						<input type="number" id="approxY" name="approxY" value="<?php echo $AD_approxY; ?>" step="0.05">
 					</div>
 				</div>
 
@@ -167,7 +167,7 @@
 						<label for="adjustX">Ruhewert X Längsrichtung (in m/s)</label>  
 					</div>
 					<div class="col-25">
-						<input type="number" id="adjustX" name="adjustX" value="<?php echo $AD_adjustX; ?>" step="0,000001" min="-10" max="10">
+						<input type="number" id="adjustX" name="adjustX" value="<?php echo $AD_adjustX; ?>" step="0.000001" min="-10" max="10">
 					</div>
 				</div>
 				
@@ -177,7 +177,7 @@
 						<label for="adjustY">Ruhewert Y Querrichtung (in m/s)</label>  
 					</div>
 					<div class="col-25">
-						<input type="number" id="adjustY" name="adjustY" value="<?php echo $AD_adjustY; ?>" step="0,000001" min="-10" max="10">
+						<input type="number" id="adjustY" name="adjustY" value="<?php echo $AD_adjustY; ?>" step="0.000001" min="-10" max="10">
 					</div>
 				</div>
 
@@ -187,7 +187,7 @@
 						<label for="adjustZ">Ruhewert Z senkrecht (in m/s)</label>  
 					</div>
 					<div class="col-25">
-						<input type="number" id="adjustZ" name="adjustZ" value="<?php echo $AD_adjustZ; ?>" step="0,000001" min="-10" max="10">
+						<input type="number" id="adjustZ" name="adjustZ" value="<?php echo $AD_adjustZ; ?>" step="0.000001" min="-10" max="10">
 					</div>
 				</div>
 

@@ -13,3 +13,4 @@ logrotate.status
 values/*
 !values/logrotate.d/
 !values/examples/
+images/doku/*

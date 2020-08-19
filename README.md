@@ -1,6 +1,5 @@
 # CaravanPi
 
-## detailed Wiki
 [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/)
 
 ## Motivation

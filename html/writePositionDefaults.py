@@ -48,7 +48,7 @@ def main():
 	
 	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
 	
-	if (cgi_tolX != None and cgi_tolY != None and cgi_approxX != None and cgi_approxX != None and cgi_distF != None and cgi_distR != None and distA != None):
+	if (cgi_tolX != None and cgi_tolY != None and cgi_approxX != None and cgi_approxX != None and cgi_distF != None and cgi_distR != None and cgi_distA != None):
 		toleranceX = float(cgi_tolX)
 		toleranceY = float(cgi_tolY)
 		approximationX = float(cgi_approxX)
@@ -71,7 +71,7 @@ def main():
 
 	print("<body>")
 	print('<header class="header">CaravanPi Konfiguration - Einstellungen Lage-Sensor</header>')
-	if (cgi_tolX != None and cgi_tolY != None and cgi_approxX != None and cgi_approxX != None and cgi_distF != None and cgi_distR != None and distA != None):
+	if (cgi_tolX != None and cgi_tolY != None and cgi_approxX != None and cgi_approxX != None and cgi_distF != None and cgi_distR != None and cgi_distA != None):
 		print("Die eingegebenen Werte wurden erfolgreich gespeichert")
 	else:
 		print("ES KONNTEN KEINE WERTE AUS DEM FORMULAR GELESEN WERDEN!")

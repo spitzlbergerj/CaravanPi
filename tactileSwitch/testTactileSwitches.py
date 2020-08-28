@@ -1,14 +1,12 @@
 #!/usr/bin/python3
 # coding=utf-8
-# tactileSwitches.py
+# testTactileSwitches.py
 #
 # use tactile switches to start python scripts
 #
 # Aufruf-Parameter
 # tactileSwitches.py -f
 # 	-h	display guide 
-# 	-f	write values to file 
-# 	-s	display values on screen 
 #
 #-------------------------------------------------------------------------------
 
@@ -26,6 +24,12 @@ import os
 pinSwitchPosition = 23
 # tactile switch calibration gasscale
 pinSwitchGasscale = 24
+# tactile switch to set the current position in transverse direction as horizontal
+pinSwitchNowHorizontal = 12
+# tactile switch to activate the 'live' mode
+pinSwitchLive = 13
+pinLEDLive = 16
+ 
 
 # -------------------------
 # call options 
@@ -43,18 +47,32 @@ def switchInterruptPosition(channel):
 	# switchInterruptPosition
 	# tactile switch was pressed start calibrating the position sensor
 	# -------------------------
-	print ("ACHTUNG: Kalibrierung Lage Sensor wird gestartet!")
-	subprocess.run(["python3","/home/pi/CaravanPi/position/setupPositionDefaults.py","-w","5"])
-	print ("ACHTUNG: Kalibrierung Lage Sensor wurde beendet")
+	print ("Taster Kalibrierung Lage Sensor wurde gedrückt")
 
 def switchInterruptGasscale(channel):  
 	# -------------------------
 	# switchInterruptGasscale 
 	# tactile switch was pressed start calibrating the gas scale
 	# -------------------------
-	print ("ACHTUNG: Kalibrierung Gaswaage wird gestartet!")
-	subprocess.run(["python3","/home/pi/CaravanPi/gas-weight/setupGasscaleDefaults.py"])
-	print ("ACHTUNG: Kalibrierung Gaswaage wurde beendet")
+	print ("Taster Kalibrierung Gaswaage wurde gedrückt")
+
+def switchInterruptNowHorizontal(channel):  
+	# -------------------------
+	# switchInterruptGasscale 
+	# tactile switch was pressed start calibrating the gas scale
+	# -------------------------
+	print ("Taster Querlage = Horizontal wurde gedrückt")
+
+def switchInterruptLive(channel):  
+	# -------------------------
+	# switchInterruptGasscale 
+	# tactile switch was pressed start calibrating the gas scale
+	# -------------------------
+	print ("Taster Live-Modus wurde gedrückt")
+	print ("--> LED Live Modus leuchtet für 1/2 Sekunde")
+	GPIO.output(pinLEDLive, True)
+	time.sleep(.5)
+	GPIO.output(pinLEDLive, False)
 
 
 
@@ -86,8 +104,8 @@ def main():
 
 	for a in args:
 		print("further argument: ", a)
-		
-	
+
+
 	# -------------------------
 	# tactile switches
 	# -------------------------
@@ -98,6 +116,15 @@ def main():
 
 	GPIO.setup(pinSwitchGasscale, GPIO.IN)
 	GPIO.add_event_detect(pinSwitchGasscale, GPIO.RISING, callback = switchInterruptGasscale, bouncetime = 400)
+	
+	GPIO.setup(pinSwitchNowHorizontal, GPIO.IN)
+	GPIO.add_event_detect(pinSwitchNowHorizontal, GPIO.RISING, callback = switchInterruptNowHorizontal, bouncetime = 400)
+
+	GPIO.setup(pinSwitchLive, GPIO.IN)
+	GPIO.add_event_detect(pinSwitchLive, GPIO.RISING, callback = switchInterruptLive, bouncetime = 400)
+
+	GPIO.setup(pinLEDLive, GPIO.OUT)	
+	GPIO.output(pinLEDLive, False)
 	
 	# -------------------------
 	# endless loop

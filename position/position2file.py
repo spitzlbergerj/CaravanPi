@@ -523,10 +523,10 @@ def main():
 	# -------------------------
 	GPIO.setmode(GPIO.BCM)
 
-	GPIO.setup(pinSwitchNowHorizontal, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+	GPIO.setup(pinSwitchNowHorizontal, GPIO.IN)
 	GPIO.add_event_detect(pinSwitchNowHorizontal, GPIO.RISING, callback = switchInterruptNowHorizontal, bouncetime = 400)
 
-	GPIO.setup(pinSwitchLive, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+	GPIO.setup(pinSwitchLive, GPIO.IN)
 	GPIO.add_event_detect(pinSwitchLive, GPIO.RISING, callback = switchInterruptLive, bouncetime = 400)
 
 	GPIO.setup(pinLEDLive, GPIO.OUT)	

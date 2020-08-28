@@ -179,60 +179,58 @@ def write2file(file, screen, x, y, z, adjustX, adjustY, adjustZ, lastX, secondLa
 # adjust Threats for LEDs
 # -------------------------
 
-def setupHR():
-	pinRed=Led(mymcp1,"gpiob",3)
-	pinGreen=Led(mymcp1,"gpiob",4)
-	pinBlue=Led(mymcp1,"gpiob",5)
+def setupVL():
+	pinBlue=Led(mymcp1,"gpioa",0)
+	pinRed=Led(mymcp1,"gpioa",1)
+	pinGreen=Led(mymcp1,"gpioa",2)
+	
+	return ([pinRed, pinGreen, pinBlue])
+
+def setupVR():
+	pinBlue=Led(mymcp1,"gpioa",3)
+	pinRed=Led(mymcp1,"gpioa",4)
+	pinGreen=Led(mymcp1,"gpioa",5)
 	
 	return([pinRed, pinGreen, pinBlue])
+
+def setupVo():
+	pinBlue=Led(mymcp1,"gpioa",6)
+	pinRed=Led(mymcp1,"gpioa",7)
+	pinGreen=Led(mymcp1,"gpiob",7)
+	
+	return([pinRed, pinGreen, pinBlue])
+
+def setupZL():
+	pinBlue=Led(mymcp2,"gpioa",0)
+	pinRed=Led(mymcp2,"gpioa",1)
+	pinGreen=Led(mymcp2,"gpioa",2)
+	
+	return ([pinRed, pinGreen, pinBlue])
+
+def setupZR():
+	pinBlue=Led(mymcp2,"gpioa",3)
+	pinRed=Led(mymcp2,"gpioa",4)
+	pinGreen=Led(mymcp2,"gpioa",5)
+	
+	return ([pinRed, pinGreen, pinBlue])
 
 
 def setupHL():
-	pinRed=Led(mymcp1,"gpioa",3)
-	pinGreen=Led(mymcp1,"gpioa",4)
-	pinBlue=Led(mymcp1,"gpioa",5)
+	pinBlue=Led(mymcp2,"gpioa",6)
+	pinRed=Led(mymcp2,"gpioa",7)
+	pinGreen=Led(mymcp2,"gpiob",7)
+	
+	return([pinRed, pinGreen, pinBlue])
+
+def setupHR():
+	pinBlue=Led(mymcp2,"gpiob",0)
+	pinRed=Led(mymcp2,"gpiob",1)
+	pinGreen=Led(mymcp2,"gpiob",2)
 	
 	return([pinRed, pinGreen, pinBlue])
 
 
-def setupVR():
-	pinRed=Led(mymcp1,"gpiob",0)
-	pinGreen=Led(mymcp1,"gpiob",1)
-	pinBlue=Led(mymcp1,"gpiob",2)
-	
-	return([pinRed, pinGreen, pinBlue])
 
-
-def setupVL():
-	pinRed=Led(mymcp1,"gpioa",0)
-	pinGreen=Led(mymcp1,"gpioa",1)
-	pinBlue=Led(mymcp1,"gpioa",2)
-	
-	return ([pinRed, pinGreen, pinBlue])
-
-
-def setupZR():
-	pinRed=Led(mymcp2,"gpioa",5)
-	pinGreen=Led(mymcp2,"gpioa",4)
-	pinBlue=Led(mymcp2,"gpioa",3)
-	
-	return ([pinRed, pinGreen, pinBlue])
-
-
-def setupZL():
-	pinRed=Led(mymcp2,"gpioa",2)
-	pinGreen=Led(mymcp2,"gpioa",1)
-	pinBlue=Led(mymcp2,"gpioa",0)
-	
-	return ([pinRed, pinGreen, pinBlue])
-
-
-def setupVo():
-	pinRed=Led(mymcp1,"gpioa",6)
-	pinGreen=Led(mymcp1,"gpioa",7)
-	pinBlue=Led(mymcp1,"gpiob",7)
-	
-	return([pinRed, pinGreen, pinBlue])
 
 
 # -------------------------

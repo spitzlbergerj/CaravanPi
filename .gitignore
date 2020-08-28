@@ -1,4 +1,9 @@
+# .gitignore CaravanPi
+
+# ignoriere logrotate Steuerung
 logrotate.status
+
+# ignoriere fremde libraries
 .lib/__pycache__
 .lib/__pycache__/*
 .lib/hx711py
@@ -6,11 +11,23 @@ logrotate.status
 .lib/hx711pySJJSJJSJJSJJ
 .lib/hx711pySJJSJJSJJSJJ/*
 .lib/*pyc
+
+# Verzeichnis log (Loggig Daten)
+# Verzeichnis anlegen
 !.log/
+# Inhalt igornieren
 .log/*
+# logrotate Anweisung synchronisieren
 !.log/logrotate.d/
+
+# Verzeichnis values
+# Verzeichnis anlegen
 !values/
+# Enthaltene Werte jedoch ignorieren
 values/*
+# Beispiele und logrotate Anweisung wiederum synchronisieren
 !values/logrotate.d/
 !values/examples/
-images/doku/*
+
+# ignoriere alle Images im Verzeichnis doku (Dokumentation/Wiki)
+images/doku/

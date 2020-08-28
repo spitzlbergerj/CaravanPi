@@ -59,6 +59,20 @@
 		<div class="container">
 			<form class="caravanpi-form" action="writePositionDefaults.py" method="post">
 
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+							<b>Defaultwerte Lagesensor</b><br/>
+							Der verwendete Lagesensor ist sehr empfinglich und registriert auch kleine Erschütterungen. Um das Ausrichten 
+							des Caravan dennoch sicher zu ermöglichen, wurden Toleranzabweichungen eingeführt. Unterscheidet sich der aktuelle Lagewert
+							nur um max. diese Toleranz (+/-) vom idealen Horizontalwert, so gilt diese Lage immer noch als waagrecht und wird als solche angezeigt.<br/>
+							Um die Annäherung an den "tolerierten" Idealwert anzuzeigen, blinken die LEDs. Ab welcher Differenz zum Idelawert das Blinken beginnen soll,
+							wird mit den Annäherungswerten eingestellt. <br/><br/>
+						</p>
+					</div>
+				</div>
+				
 				<!-- Toleranz X -->
 				<div class="row">
 					<div class="col-75">
@@ -82,7 +96,7 @@
 				<!-- Approximation X -->
 				<div class="row">
 					<div class="col-75">
-						<label for="approxX">Toleranz Längsrichtung(in m/s)</label>  
+						<label for="approxX">Annäherung Längsrichtung(in m/s)</label>  
 					</div>
 					<div class="col-25">
 						<input type="number" id="approxX" name="approxX" value="<?php echo $AD_approxX; ?>" step="0.05" min="-10" max="10">
@@ -92,13 +106,24 @@
 				<!-- Approximation Y -->
 				<div class="row">
 					<div class="col-75">
-						<label for="approxY">Toleranz Querrichtung (in m/s)</label>  
+						<label for="approxY">Annäherung Querrichtung (in m/s)</label>  
 					</div>
 					<div class="col-25">
 						<input type="number" id="approxY" name="approxY" value="<?php echo $AD_approxY; ?>" step="0.05">
 					</div>
 				</div>
 
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+						<br/><br/><b>Abmessungen des Caravans</b><br/>
+							Zur Errechnung der Abweichung vom Idealwert in cm werden die Dimensionen des Caravans benötigt. <br/>
+							Bitte geben Sie hierbei immer die Werte bis zu den <b>Auflagepunkten der Stützen</b> an.
+						</p>
+					</div>
+				</div>
+				
 				<div class="respimglage">
 					<img src="img/CaravanPiLagesensor.png" alt="Lagesensor CaravanPi" class="responsive" width="600" height="255">
 				</div>
@@ -106,7 +131,7 @@
 				<!-- Abstände LageSensor -->
 				<div class="row">
 					<div class="col-75">
-						<label for="dist-front">Abstand Lagesensor zur Aufbaufront (in mm)</label>  
+						<label for="dist-front">Abstand Lagesensor zur Aufbaufront bzw. der vorderen Stützen (in mm)</label>  
 					</div>
 					<div class="col-25">
 						<input type="number" id="distF" name="dist-front" value="<?php echo $AD_distF; ?>" >

@@ -48,6 +48,17 @@
 			<form class="caravanpi-form" action="writeDimensionDefaults.py" method="post">
 				<img src="img/CaravanPiDimensionen.png" alt="Dimensionen CaravanPi" class="responsive" width="600" height="258">
 				
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+						<br/><br/><b>Abmessungen des Caravans</b><br/>
+							Zur Errechnung der Abweichung vom Idealwert in cm werden die Dimensionen des Caravans benötigt. <br/>
+							Bitte geben Sie hierbei immer die Werte bis zu den <b>Auflagepunkten der Stützen</b> an.
+						</p>
+					</div>
+				</div>
+				
 				<!-- Länge über alles -->
 				<div class="row">
 					<div class="col-75">

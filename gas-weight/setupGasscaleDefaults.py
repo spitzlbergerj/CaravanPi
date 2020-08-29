@@ -85,7 +85,7 @@ def main():
 	(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale()
 	
 	# start sensor
-	hx = HX711(5, 6)
+	hx = HX711(23, 24)
 	hx.set_reading_format("MSB", "MSB")
 	hx.set_reference_unit(205)
 

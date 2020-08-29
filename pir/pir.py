@@ -14,7 +14,7 @@ import signal
 io.setmode(io.BCM)
 
 #Variablen deklarieren
-PIR_PIN = 25       # 22 on the board
+PIR_PIN = 4
 LED_PIN = 27
 SHUTOFF_DELAY = 120 # Default 2 Minutzen = 120 Sekundennds
 turned_off = False

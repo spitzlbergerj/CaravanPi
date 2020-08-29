@@ -109,10 +109,10 @@ LED_VL = [None, None, None]
 LED_Vo = [None, None, None]
 
 # tactile switch to set the current position in transverse direction as horizontal
-pinSwitchNowHorizontal = 12
+pinSwitchNowHorizontal = 6
 # tactile switch to activate the 'live' mode
 pinSwitchLive = 13
-pinLEDLive = 16
+pinLEDLive = 5
  
 # -------------------------
 # call options 

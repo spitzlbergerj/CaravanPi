@@ -23,9 +23,9 @@ import os
 
 
 # tactile switch calibration position sensor
-pinSwitchPosition = 23
+pinSwitchPosition = 19
 # tactile switch calibration gasscale
-pinSwitchGasscale = 24
+pinSwitchGasscale = 22
 
 # -------------------------
 # call options 

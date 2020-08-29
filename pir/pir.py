@@ -15,7 +15,7 @@ io.setmode(io.BCM)
 
 #Variablen deklarieren
 PIR_PIN = 25       # 22 on the board
-LED_PIN = 21
+LED_PIN = 27
 SHUTOFF_DELAY = 120 # Default 2 Minutzen = 120 Sekundennds
 turned_off = False
 LED_signal = True

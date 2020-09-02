@@ -1,6 +1,6 @@
 /* Magic Mirror Config 
  *
- * Magic Mirror Bad Schloss Lustheim 1
+ * Magic Mirror CaravanPi
  * (c) Spitzlberger josef
  *
  */
@@ -8,7 +8,7 @@
 var config = {
 port: 8080,
 address: "0.0.0.0",
-// ipWhitelist: ["127.0.0.1", "::ffff:127.0.0.1", "::1","192.168.178.61","192.168.178.144","192.168.178.101","192.168.178.138","192.168.178.160"], 
+// ipWhitelist: ["127.0.0.1", "::ffff:127.0.0.1", "::1","192.168.178.1","192.168.178.2","192.168.178.3","192.168.178.4","192.168.178.5"], 
 ipWhitelist: [], 
 language: "de",
 timeFormat: 24,
@@ -141,7 +141,7 @@ modules: [
 	config: {
 		location: "Oberschleißheim",
 		locationID: "2859147",  //ID from http://www.openweathermap.org/help/city_list.txt
-		appid: "92d386a20fe1111220b40687a49bddc1",
+		appid: "APPID",
 		roundTemp: "true",
 		showWindDirection: "true",
 		showWindDirectionAsArrow: "true",
@@ -156,7 +156,7 @@ modules: [
 	config: {
 		location: "Oberschleißheim",
 		locationID: "2859147",  //ID from http://www.openweathermap.org/help/city_list.txt
-		appid: "92d386a20fe1111220b40687a49bddc1",
+		appid: "APPID",
 		roundTemp: true,
 		showRainAmount: true,
 		fade: false,

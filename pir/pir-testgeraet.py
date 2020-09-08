@@ -4,6 +4,8 @@ import sys
 import os
 import time
 import RPi.GPIO as io
+import signal
+import atexit
 
 # GPIO konfigurieren
 io.setmode(io.BCM)

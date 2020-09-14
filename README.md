@@ -1,6 +1,15 @@
 # CaravanPi
 
-[deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/)
+- [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/)
+
+- [Movitation](#motivation)
+- [Functionality](#functionality)
+- [Caravan or Motorhome?](#caravan-or-motorhome)
+- [current development state](#current-development-state)
+- [Components](#components)
+- [Documentation (Wiki)](#wiki)
+- [To Do](#to-do)
+
 
 ## Motivation
 
@@ -30,19 +39,22 @@ The CaravanPi has actually the following functionalities:
 - Use other MagicMirror modules on the same display
 - and more (to come) ....
 
-## Caravan or motorhome?
+## Caravan or motorhome
 
 The CaravanPi was designed and developed for use in a caravan. But the CaravanPi can also be used very well in motorhomes. Only the position determination and display with the LEDs must be adapted, since the display via LEDs makes no sense here. But the indication of the height differences at the corners will help here.
 
-## Current development status (November 2019)
+## Current development state
 
-All sensors are now working and all values are read and stored cyclically. The levelling of the caravan by means of the LEDs works reliably. The display of all collected data on the MagicMirror also works.
+(September 2020)
+All sensors (temperature, climate, 3-axis, load cell) are now working and all values are read and stored cyclically. The levelling of the caravan by means of the LEDs works reliably. The display of all collected data on the MagicMirror also works. And there is now a German Wiki with a step-by-step guide, which was tested in parallel by an interested peson.
 
-I'm currently working on a website where all necessary configurations can be done.
+A website where all necessary configurations can be done is also working.
 
 I am also working on the "circuit board design" and on the sensible combination of all components in one housing.
 
-## Components
+In my caravan all components are already installed and wired. As soon as the board is completely developed and equipped, the CaravanPi and the board are installed.
+
+## Components 
 
 The CaravanPi consists of the following components:
 - Raspberry Pi
@@ -68,3 +80,10 @@ The CaravanPi consists of the following components:
 All components, the software, the assembly, the installation, the configuration and much more is explained in detail in the Wiki.
 
 ***Please read the [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki) before you start with your construction! There you'll find a lot of information to my idea behind CaravanPi and a lot of technical details.***
+
+## To Do
+- development of a circuit board, which can then be purchased, etched or ordered from a online circuid board shop
+- python and MMM-Module for filling level in fresh water tank
+- python and MMM-Module for filling level in waste tank
+- adopt climate section for the BME 680 with air qualitiy value
+- do all the documentation

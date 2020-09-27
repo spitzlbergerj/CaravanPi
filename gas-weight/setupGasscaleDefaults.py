@@ -56,6 +56,7 @@ def main():
 	writeTestFile = 0
 	displayScreen = 0
 	calibrationWait = 0 # seconds
+	gasCylinderNumber = 1
 	
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
@@ -82,7 +83,7 @@ def main():
 		print("further argument: ", a)
 		
 	# read defaults
-	(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale()
+	(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale(gasCylinderNumber)
 	
 	# start sensor
 	hx = HX711(23, 24)
@@ -101,7 +102,7 @@ def main():
 	weight = hx.get_weight(5)
 	
 	# write new defaults
-	CaravanPiFiles.writeGasScale(writeTestFile, displayScreen, weight, emptyWeight, fullWeight)
+	CaravanPiFiles.writeGasScale(gasCylinderNumber, writeTestFile, displayScreen, weight, emptyWeight, fullWeight)
 	
 	# cleanup GPIO
 	hx.GPIOcleanup()

@@ -133,7 +133,7 @@ def usage():
 # 3-axis-sensor 
 # -------------------------
 
-def write2file(file, screen, x, y, z, adjustX, adjustY, adjustZ, lastX, secondLastX, diffHL, diffHR, diffVL, diffVR, diffZL, diffZR, diffVo):
+def write2file(toFile, toScreen, x, y, z, adjustX, adjustY, adjustZ, lastX, secondLastX, diffHL, diffHR, diffVL, diffVR, diffZL, diffZR, diffVo):
 	global filePosition
 	
 	try:
@@ -161,12 +161,12 @@ def write2file(file, screen, x, y, z, adjustX, adjustY, adjustZ, lastX, secondLa
 
 		valueStr = "\n"+ str_from_time_now + " adjusted_tolerant " + strAdjustX + " " + strAdjustY + " original " + strX + " " + strY + " " + strZ + " last_secondlastX " + strLastX + " " + strSecondLastX + " differences " + strDiffHL + " " + strDiffHR + " " + strDiffZL + " " + strDiffZR + " " + strDiffVL + " " + strDiffVR + " " + strDiffVo
 
-		if file == 1:
+		if toFile == 1:
 			file = open(filePosition, 'a')
 			file.write(valueStr)
 			file.close()
 		
-		if screen == 1:
+		if toScreen == 1:
 			print(valueStr)
 		
 		return 0

@@ -47,6 +47,8 @@ def main():
 	# -------------------------
 	GPIO.setwarnings(False)
 	
+	gasCylinderNumber = 1
+
 	tare = 0
 	emptyWeight = 0
 	fullWeight = 0
@@ -57,7 +59,7 @@ def main():
 
 	hx.reset()
 
-	(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale()
+	(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale(gasCylinderNumber)
 
 	try:
 		weight = hx.get_weight(5)

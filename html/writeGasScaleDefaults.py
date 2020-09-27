@@ -36,15 +36,17 @@ def main():
 	
 	form = cgi.FieldStorage()
 	
+	cgi_number = 1  # form.getvalue('Flaschennummer')
 	cgi_tara = form.getvalue('tara')
 	
 	#print(cgi_tara)
 	
-	(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale()
+	if (cgi_number != None):
+		(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale(cgi_number)
 	
 	if (cgi_tara != None):
 		tare = float(cgi_tara)
-		CaravanPiFiles.writeGasScale(0, 0, tare, emptyWeight, fullWeight)
+		CaravanPiFiles.writeGasScale(cgi_number, 0, 0, tare, emptyWeight, fullWeight)
 
 	# Ergebnis Website schreiben
 	print("Content-Type: text/html; charset=utf-8\n\n")
@@ -59,7 +61,7 @@ def main():
 
 	print("<body>")
 	print('<header class="header">CaravanPi Konfiguration - Gasflaschen-Gewichte</header>')
-	if (cgi_tara != None):
+	if (cgi_number != None and cgi_tara != None):
 		print("Die eingegebenen Werte wurden erfolgreich gespeichert")
 	else:
 		print("ES KONNTEN KEINE WERTE AUS DEM FORMULAR GELESEN WERDEN!")

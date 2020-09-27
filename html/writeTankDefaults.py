@@ -36,18 +36,24 @@ def main():
 	
 	form = cgi.FieldStorage()
 	
-	cgi_number = 1  # form.getvalue('Flaschennummer')
-	cgi_voll = form.getvalue('gewicht-voll')
-	cgi_leer = form.getvalue('gewicht-leer')
+	cgi_number = form.getvalue('tankNumber')
+	tankNumber = int(cgi_number)
+	cgi_level1 = form.getvalue('level1')
+	cgi_level2 = form.getvalue('level2')
+	cgi_level3 = form.getvalue('level3')
+	cgi_level4 = form.getvalue('level4')
 	
-	#print(cgi_voll, cgi_leer)
+	# print(cgi_number, cgi_level1, cgi_level2, cgi_level3, cgi_level4)
+
 	if (cgi_number != None):
-		(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale(cgi_number)
+		(level1, level2, level3, level4) = CaravanPiFiles.readFillLevels(tankNumber)
 	
-	if (cgi_number != None and cgi_voll != None and cgi_leer != None):
-		emptyWeight = float(cgi_leer)
-		fullWeight = float(cgi_voll)
-		CaravanPiFiles.writeGasScale(cgi_number, 0, 0, tare, emptyWeight, fullWeight)
+	if (cgi_number != None and cgi_level1 != None and cgi_level2 != None and cgi_level3 != None and cgi_level4 != None):
+		level1 = float(cgi_level1)
+		level2 = float(cgi_level2)
+		level3 = float(cgi_level3)
+		level4 = float(cgi_level4)
+		CaravanPiFiles.writeFillLevels(tankNumber, 0, 0, level1, level2, level3, level4)
 
 	# Ergebnis Website schreiben
 	print("Content-Type: text/html; charset=utf-8\n\n")
@@ -55,14 +61,14 @@ def main():
 	
 	print("<head>")
 	print("<title>CaravanPi Konfiguration</title>")
-	print("<meta http-equiv='refresh' content='2; URL=gas-scale.php'>")
+	print("<meta http-equiv='refresh' content='2; URL=fill-levels.php'>")
 	print("<link rel='stylesheet' type='text/css' href='css/main.css'>")
 	print("<link rel='stylesheet' type='text/css' href='css/custom.css'>")
 	print("</head>")
 
 	print("<body>")
-	print('<header class="header">CaravanPi Konfiguration - Gasflaschen-Gewichte</header>')
-	if (cgi_number != None and cgi_voll != None and cgi_leer != None):
+	print('<header class="header">CaravanPi Konfiguration - Füllstände Tanks</header>')
+	if (cgi_number != None and cgi_level1 != None and cgi_level2 != None and cgi_level3 != None and cgi_level4 != None):
 		print("Die eingegebenen Werte wurden erfolgreich gespeichert")
 	else:
 		print("ES KONNTEN KEINE WERTE AUS DEM FORMULAR GELESEN WERDEN!")

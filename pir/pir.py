@@ -20,8 +20,6 @@ SHUTOFF_DELAY = 120 # Default 2 Minutzen = 120 Sekundennds
 turned_off = False
 LED_signal = True
 motion_count = 0
-dateiname = '/home/pi/pir.log'
-dateiname_alt = '/home/pi/pir-alt.log'
 loglevel = 0
 
 # Funktionen
@@ -119,10 +117,6 @@ signal.signal(signal.SIGTERM, signal_term_handler)
 
 # Abfangen von KeyboardInterrupt CRTL-C
 atexit.register(goodbye)
-
-# altes Log retten und dann Ausgabe umlenken
-os.rename(dateiname, dateiname_alt)
-sys.stdout = open(dateiname, 'w')
 
 # Parameter verarbeiten
 SHUTOFF_DELAY = 2 # seconds

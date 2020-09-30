@@ -19,7 +19,10 @@ class CaravanPiFiles:
 	# files
 	fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
 	fileDimensions = "/home/pi/CaravanPi/defaults/dimensionsCaravan"
-	fileGasScale = "/home/pi/CaravanPi/defaults/gasScaleDefaults1"
+	# the gas cylinder number is appended to the file name specified here
+	fileGasScale = "/home/pi/CaravanPi/defaults/gasScaleDefaults"
+	# the tank number is appended to the file name specified here
+	fileTanks = "/home/pi/CaravanPi/defaults/tankDefaults"
 	fileTestColor = "/home/pi/CaravanPi/temp/testColor"
 
 	# ---------------------------------------------------------------------------------------------
@@ -189,9 +192,10 @@ class CaravanPiFiles:
 	#		full weight		weight of the full gas cylinder
 	# ----------------------------------------------------------------------------------------------
 
-	def readGasScale():
+	def readGasScale(gasCylinderNumber):
 		try:
-			file = open(CaravanPiFiles.fileGasScale)
+			filename = CaravanPiFiles.fileGasScale + '{:.0f}'.format(gasCylinderNumber)
+			file = open(filename)
 			
 			strTare = file.readline()
 			strEmptyWeight = file.readline()
@@ -206,19 +210,20 @@ class CaravanPiFiles:
 			return(tare, emptyWeight, fullWeight)
 		except:
 			# Lesefehler
-			print ("readGasScale: The file ", CaravanPiFiles.fileGasScale, " could not be read. unprocessed Error:", sys.exc_info()[0])
+			print ("readGasScale: The file ", filename, " could not be read. unprocessed Error:", sys.exc_info()[0])
 			return(0,0,0)
 
-	def writeGasScale(test, screen, tare, emptyWeight, fullWeight):
+	def writeGasScale(gasCylinderNumber, test, screen, tare, emptyWeight, fullWeight):
 		try:
 			strTare = '{:.0f}'.format(tare)
 			strEmptyWeight = '{:.0f}'.format(emptyWeight)
 			strFullWeight = '{:.0f}'.format(fullWeight)
 			
+			filename = CaravanPiFiles.fileGasScale + '{:.0f}'.format(gasCylinderNumber)
 			if test == 1:
-				file = open(CaravanPiFiles.fileGasScale+"_test", 'w')
+				file = open(filename+"_test", 'w')
 			else:
-				file = open(CaravanPiFiles.fileGasScale, 'w')
+				file = open(filename, 'w')
 				
 			file.write(strTare + "\n")
 			file.write(strEmptyWeight + "\n")
@@ -233,7 +238,75 @@ class CaravanPiFiles:
 			
 			return 0
 		except:
-			print("writeGasScale: The file ", CaravanPiFiles.fileGasScale, " could not be written - unprocessed Error:", sys.exc_info()[0])
+			print("writeGasScale: The file ", filename, " could not be written - unprocessed Error:", sys.exc_info()[0])
+			raise
+			return -1
+
+
+	# ---------------------------------------------------------------------------------------------
+	# filling levels
+	#
+	# level 1 is the smallest amount of water, level 4 is the largest amount of water in the tank
+	#
+	# content of file
+	# 		liter level 1		amount of water in the tank at level 1 
+	#		liter level 2		amount of water in the tank at level 2
+	#		liter level 3		amount of water in the tank at level 3
+	#		liter level 4		amount of water in the tank at level 4
+	# ----------------------------------------------------------------------------------------------
+
+	def readFillLevels(tankNumber):
+		try:
+			filename = CaravanPiFiles.fileTanks + '{:.0f}'.format(tankNumber)
+			file = open(filename)
+			
+			strLevel1 = file.readline()
+			strLevel2 = file.readline()
+			strLevel3 = file.readline()
+			strLevel4 = file.readline()
+			
+			file.close()
+			
+			level1 = float(strLevel1)
+			level2 = float(strLevel2)
+			level3 = float(strLevel3)
+			level4 = float(strLevel4)
+			
+			return(level1, level2, level3, level4)
+		except:
+			# Lesefehler
+			print ("readFillLevels: The file ", filename, " could not be read. unprocessed Error:", sys.exc_info()[0])
+			return(0,0,0)
+
+	def writeFillLevels(tankNumber, test, screen, level1, level2, level3, level4):
+		try:
+			strLevel1 = '{:.0f}'.format(level1)
+			strLevel2 = '{:.0f}'.format(level2)
+			strLevel3 = '{:.0f}'.format(level3)
+			strLevel4 = '{:.0f}'.format(level4)
+			
+			filename = CaravanPiFiles.fileTanks + '{:.0f}'.format(tankNumber)
+			if test == 1:
+				file = open(filename+"_test", 'w')
+			else:
+				file = open(filename, 'w')
+				
+			file.write(strLevel1 + "\n")
+			file.write(strLevel2 + "\n")
+			file.write(strLevel3 + "\n")
+			file.write(strLevel4)
+			
+			file.close()
+			
+			if screen == 1:
+				print("Fill Level 1 liter: ",strLevel1)
+				print("Fill Level 2 liter: ",strLevel2)
+				print("Fill Level 3 liter: ",strLevel3)
+				print("Fill Level 4 liter: ",strLevel4)
+			
+			return 0
+		except:
+			print("writeFillLevels: The file ", filename, " could not be written - unprocessed Error:", sys.exc_info()[0])
 			raise
 			return -1
 

@@ -12,12 +12,12 @@
 # Temperatursensoren alle 60 Sekunden auslesen
 * * * * * python3 -u /home/pi/CaravanPi/temperature/temp2file.py  >/home/pi/CaravanPi/.log/temp2file.log 2>&1
 
+# Gasflaschenwaage alle 60 Sekunden auslesen
+* * * * * python3 -u /home/pi/CaravanPi/gas-weight/gasScale2file.py  >/home/pi/CaravanPi/.log/gasScale2file.log 2>&1
+
 # Klimasensoren alle 60 Sekunden auslesen
 * * * * * python3 -u /home/pi/CaravanPi/climate/climate2file.py 76 1  >/home/pi/CaravanPi/.log/climate2file76.log 2>&1
 * * * * * python3 -u /home/pi/CaravanPi/climate/climate2file.py 77 1  >/home/pi/CaravanPi/.log/climate2file77.log 2>&1
-
-# Gasflaschenwaage alle 60 Sekunden auslesen
-* * * * * python3 -u /home/pi/CaravanPi/gas-weight/gasScale2file.py  >/home/pi/CaravanPi/.log/gasScale2file.log 2>&1
 
 # Lagesensor auslesen, Zeitsteuerung im Skript inkl. Live Modus
 @reboot python3 -u /home/pi/CaravanPi/position/position2file.py -f  >/home/pi/CaravanPi/.log/position2file.log 2>&1
@@ -25,10 +25,12 @@
 # Taster für Kalibrierung Lagesensor und Gaswaage aktivieren
 @reboot python3 -u /home/pi/CaravanPi/tactileSwitch/tactileSwitches.py  >/home/pi/CaravanPi/.log/tactileSwitches.log 2>&1
 
+# Füllmenge Tanks auslesen
+@reboot python3 -u /home/pi/CaravanPi/levels/levels2file.py -t 1 -f >/home/pi/CaravanPi/.log/levels.log 2>&1
+# @reboot python3 -u /home/pi/CaravanPi/levels/levels2file.py -t 2 -f  >/home/pi/CaravanPi/.log/levels.log 2>&1
+
 # Webservice bottleFramework starten
-@reboot python3 -u /home/pi/CaravanPi/bottleFramework/bottleCommands.py >>/home/pi/CaravanPi/.log/bottleCommands.log 2>&1
+@reboot python3 -u /home/pi/CaravanPi/bottleFramework/bottleCommands.py >/home/pi/CaravanPi/.log/bottleCommands.log 2>&1
 
-# Logrotate starten
-@reboot logrotate -s /home/pi/CaravanPi/logrotate.status /home/pi/CaravanPi/logrotate.conf
-00 05 * * * logrotate -s /home/pi/CaravanPi/logrotate.status /home/pi/CaravanPi/logrotate.conf
-
+# Zeit zwischen StromPi und Raspberry Pi synchronisieren
+@reboot python /home/pi/StromPi3/RTCSerial.py >/home/pi/CaravanPi/.log/StromPi-RTC-sync.log 2>&1

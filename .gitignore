@@ -18,7 +18,7 @@ logrotate.status
 # Inhalt igornieren
 .log/*
 # logrotate Anweisung synchronisieren
-!.log/logrotate.d/
+!.log/.logrotate.conf
 
 # Verzeichnis values
 # Verzeichnis anlegen
@@ -26,7 +26,7 @@ logrotate.status
 # Enthaltene Werte jedoch ignorieren
 values/*
 # Beispiele und logrotate Anweisung wiederum synchronisieren
-!values/logrotate.d/
+!values/.logrotate.conf
 !values/examples/
 
 # ignoriere alle Images im Verzeichnis doku (Dokumentation/Wiki)

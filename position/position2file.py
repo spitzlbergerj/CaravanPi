@@ -557,7 +557,7 @@ def main():
 		elif o == "--screen" or o == "-s":
 			print("output also to this screen")
 			displayScreen = 1
-		elif o == "--screen" or o == "-l":
+		elif o == "--live" or o == "-l":
 			print("start in live mode")
 			liveMode = 1
 			GPIO.output(pinLEDLive, True)

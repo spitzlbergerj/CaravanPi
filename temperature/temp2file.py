@@ -41,7 +41,7 @@ def ds1820auslesen():
             # Temperaturwerte auslesen und konvertieren
             stringvalue = filecontent.split("\n")[1].split(" ")[9]
             sensorwert = float(stringvalue[2:]) / 1000
-            temperatur = '%6.2f' % sensorwert #Sensor- bzw. Temperaturwert auf 2 Dezimalstellen formatiert
+            temperatur = "{:.2f}".format(sensorwert) #Sensor- bzw. Temperaturwert auf 2 Dezimalstellen formatiert
             tempSensorWert.insert(x,temperatur) #Wert in Liste aktualisieren
             x = x + 1
     except:
@@ -54,7 +54,7 @@ def write2file(sensor, wert):
 		dateiName = "/home/pi/CaravanPi/values/" + sensor
 		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-		file.write("\n"+ sensor + " " + str_from_time_now + wert)
+		file.write("\n"+ sensor + " " + str_from_time_now + " " + wert)
 		file.close()
 		return 0
 	except:

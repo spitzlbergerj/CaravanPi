@@ -1,3 +1,4 @@
+![CaraavanPiLogo](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-Logo.png)  
 # CaravanPi
 
 - [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/)

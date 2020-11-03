@@ -1,6 +1,7 @@
+![CaraavanPiLogo](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-Logo.png)  
 # CaravanPi
 
-- [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/)
+- [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)
 
 - [Movitation](#motivation)
 - [Functionality](#functionality)
@@ -15,9 +16,9 @@
 
 deutsch | english
 ----- | -----
-System zur Messung und Anzeige verschiedener Sensorenwerte in Wohnwagen und Wohnmobilen, wie z.B. Klimawerte, Füllstände und Nivellierungsdaten. Zur Darstellung wird die Software <a href="https://magicmirror.builders/">Magic Mirror</a> verwendet. | System for measuring and displaying various values in caravans and motor homes, including climate values, filling levels and levelling data. <a href="https://magicmirror.builders/">Magic Mirror</a> is used for presentation.
-Derzeit sind die meisten Beschreibungen nur in english verfügbar. Ich arbeite daran, auch diese auf deutsch zur Verfügung zu stellen|Currently most of the descriptions are only available in English. I am working on making them available in german as well
-<a href="https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/">[direkt zur Aufbauanleitung](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation-(german)/)|[directly to assembly instructions](https://github.com/spitzlbergerj/CaravanPi/wiki/Installation)
+System zur Messung und Anzeige verschiedener Sensorenwerte in Wohnwagen, Caravans und Wohnmobilen, wie z.B. Klimawerte, Füllstände von Tanks und Gasflaschen sowie Nivellierungsdaten. Zur Darstellung wird die Software <a href="https://magicmirror.builders/">Magic Mirror</a> verwendet. | System for measuring and displaying various values in caravans and motor homes, including climatic values, filling levels of tanks and gas cylinders and levelling data. <a href="https://magicmirror.builders/">Magic Mirror</a> is used for presentation.
+Es existiert eine Schritt für Schritt Anleitung in deutsch. Englische Schnipsel sind bereits vorhanden und werden ausgebaut werden.|There is a step by step guide in German. English snippets are already available and will be extended.
+[direkt zur Anleitung](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)|[directly to assembly instructions](https://github.com/spitzlbergerj/CaravanPi/wiki/Wiki-Home-english)
 
 schematic drawing | MagicMirror display
 ----- | -----
@@ -34,25 +35,25 @@ The CaravanPi has actually the following functionalities:
 - Saving of all sensor data, so that course analyses can be made and represented
 - Display of the current position of the caravan or motorhome using a display and LEDs at the corners of the caravan
 - Calibration of the gas scale and the position sensor via keystroke
-- Adaptation of all constants via a website
+- Adaptation of all constants via a website 
 - Use of the display and also the configuration website via mobile devices
 - Use other MagicMirror modules on the same display
 - and more (to come) ....
 
 ## Caravan or motorhome
 
-The CaravanPi was designed and developed for use in a caravan. But the CaravanPi can also be used very well in motorhomes. Only the position determination and display with the LEDs must be adapted, since the display via LEDs makes no sense here. But the indication of the height differences at the corners will help here.
+The CaravanPi was designed and developed for use in a caravan. But the CaravanPi can also be used very well in motorhomes. Only the position determination and display with the LEDs must be adapted, since the display via LEDs makes no sense here. But the indication of the height differences at the corners will help also in motorhomes.
 
 ## Current development state
 
-(September 2020)
-All sensors (temperature, climate, 3-axis, load cell) are now working and all values are read and stored cyclically. The levelling of the caravan by means of the LEDs works reliably. The display of all collected data on the MagicMirror also works. And there is now a German Wiki with a step-by-step guide, which was tested in parallel by an interested peson.
+(Oktober 2020)
+All sensors (temperature, climate, 3-axis, load cell) are now working and all values are read and stored cyclically. The levelling of the caravan by means of the LEDs works reliably. The display of all collected data on the MagicMirror also works. And there is now a German Wiki with a step-by-step guide, which was tested in parallel by an interested person. Appropriate circuit diagrams exist for all components of the caravanPi, which facilitate reproduction and are useful for troubleshooting. 
 
 A website where all necessary configurations can be done is also working.
 
-I am also working on the "circuit board design" and on the sensible combination of all components in one housing.
+With a friend I am also working on the "circuit board design" and on the sensible combination of all components in one housing.
 
-In my caravan all components are already installed and wired. As soon as the board is completely developed and equipped, the CaravanPi and the board are installed.
+The CaravanPi including all sensors is installed in my Tabbert caravan and tested there. Everything works perfectly. The next step is the circuit board design, so that the creation of the necessary circuit board is considerably simplified.
 
 ## Components 
 
@@ -68,7 +69,7 @@ The CaravanPi consists of the following components:
     - ADXL345 - 3-axis position sensor
     - hx711 - scale control
     - BME280 - climate sensor
-    - ?? temperature sensor
+    - DS18B20 temperature sensor
     - MCP23017 GPIO extension
     - I2C extender
   - RGB LEDs

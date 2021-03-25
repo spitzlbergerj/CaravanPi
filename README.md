@@ -84,8 +84,8 @@ All components, the software, the assembly, the installation, the configuration 
 
 ## To Do
 - ~~development of a circuit board,~~
-- circuit board, which can then be purchased, etched or ordered from a online circuid board shop
+- ~~circuit board, which can then be purchased, etched or ordered from a online circuid board shop~~
 - ~~python and MMM-Module for filling level in fresh water tank~~
 - python and MMM-Module for filling level in waste tank
 - adopt climate section for the BME 680 with air qualitiy value
-- do all the documentation
+- ~~do all the documentation~~

@@ -21,9 +21,19 @@ Es existiert eine Schritt für Schritt Anleitung in deutsch. Englische Schnipsel
 [direkt zur Anleitung](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)|[directly to assembly instructions](https://github.com/spitzlbergerj/CaravanPi/wiki/Wiki-Home-english)
 
 schematic drawing | MagicMirror display
+
 ----- | -----
 ![schema](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg) | ![MagicMirror](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg)
 [full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg) | [full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg) 
+
+## Circuit design
+For the CaravanPi, there is now a circuit board design that can be produced by appropriate service providers, also pre-assembled. 
+
+front | back
+----- | -----
+![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Vorderseite.png) | ![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Rückseite.png) 
+
+
 
 ## Functionality
 The CaravanPi has actually the following functionalities:

@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # coding=utf-8
-# wasteLevels2file.py
+# wasteLevels2filePeriodic.py
 #
 # Liest die GPIO Ports der MCP23017 zur Bestimmung der Fülllevel von Tanks
 #
 # Aufruf-Parameter
-# positionLive.py -f
+# wasteLevels2filePeriodic.py -f
 # 	-h	display guide 
 # 	-f	write values to file 
 # 	-s	display values on screen 
@@ -65,15 +65,10 @@ longOptions = ['help', 'file', 'screen', 'tank=']
 tank = 2
 
 # -------------------------
-# GPIO Pins
-# -------------------------
-pinPumpeAn = 25
-
-# -------------------------
 # Zeiten
 # -------------------------
-waitAfterPumpSeconds = 30
-pumpOnTime = None
+waitAfterReadingSeconds = 600
+
 
 # -------------------------
 # Funktionen
@@ -85,14 +80,6 @@ def usage():
 	print ("  -f        write values to file ", filePosition)
 	print ("  -s        display values on this screen\n")
 	print ("  -t <nr>   welcher Tank soll abgefragt werden\n")
-
-
-def interruptPumpOn(pin):
-	# high = Pumpe laeuft nicht, low = Pumpe laeuft
-	global pumpOnTime
-	global waitAfterPumpSeconds
-	print(datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "INTERRUPT: Pumpe läuft - Wartezeit: ", waitAfterPumpSeconds, " Sekunden")
-	pumpOnTime = datetime.datetime.now()
 
 
 def write2file(liter):
@@ -119,9 +106,6 @@ def main():
 
 	global mymcp1, mymcp2
 	global tank
-	global waitAfterPumpSeconds
-	global pumpOnTime
-	global pinPumpeAn
 
 	# -----------------------------------------------
 	# Initialize the I2C bus and the GPIO port expander
@@ -176,8 +160,7 @@ def main():
 	# -------------------------
 	# initialize IO Pins on MCP23017
 	# pin number from 0 to 15 for the GPIOA0...GPIOA7, GPIOB0...GPIOB7 pins (i.e. pin 12 is GPIOB4)
-	# Füllstände: 1 an Pin GPIOB0 (8), ..., 4 an Pin GPIOB3 (11)
-	# Relais an Pin GPIOB4 (12)
+	# Füllstände: 1 an Pin GPIOB3 (11), ..., 4 an Pin GPIOB6 (14)
 	# -------------------------
 
 	fillingLevel1 = mymcp2.get_pin(11)
@@ -193,63 +176,47 @@ def main():
 	fillingLevel4.direction = digitalio.Direction.INPUT
 
 	# -------------------------
-	# Interrupt for switching on the pump
-	# -------------------------
-	GPIO.setup(pinPumpeAn, GPIO.IN)
-	# Wenn Pumpe wieder ausschaltet, dann Interruptbehandlung
-	GPIO.add_event_detect(pinPumpeAn, GPIO.RISING, callback = interruptPumpOn, bouncetime = 400)	
-
-	# -------------------------
-	# set things for meassuring at startup
-	# -------------------------
-	actLiter = 0
-	pumpOnTime = datetime.datetime.now() -  datetime.timedelta(seconds=waitAfterPumpSeconds+1)
-
-	# -------------------------
-	# Main loop
+	# Main 
 	# -------------------------
 
 	try:
 		while True:
-			if pumpOnTime is not None:
-				elapsed = (datetime.datetime.now() - pumpOnTime).total_seconds()
-				# print("Sekunden seit Interrupt: ", elapsed)
-				if elapsed >= waitAfterPumpSeconds:
-					# print(datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "Spannung anlegen")
-					level1contact = not fillingLevel1.value
-					level2contact = not fillingLevel2.value
-					level3contact = not fillingLevel3.value
-					level4contact = not fillingLevel4.value
+			if displayScreen == 1:
+				print("Level prüfen ...")
 
-					pumpOnTime = None
+			level1contact = fillingLevel1.value
+			level2contact = fillingLevel2.value
+			level3contact = fillingLevel3.value
+			level4contact = fillingLevel4.value
 
-					if displayScreen == 1:
-						print("Level 1 erreicht? {0}".format(level1contact))
-						print("Level 2 erreicht? {0}".format(level2contact))
-						print("Level 3 erreicht? {0}".format(level3contact))
-						print("Level 4 erreicht? {0}".format(level4contact))
+			if displayScreen == 1:
+				print("Level 1 erreicht? {0}".format(level1contact), literLevel1, " Liter")
+				print("Level 2 erreicht? {0}".format(level2contact), literLevel2, " Liter")
+				print("Level 3 erreicht? {0}".format(level3contact), literLevel3, " Liter")
+				print("Level 4 erreicht? {0}".format(level4contact), literLevel4, " Liter")
 
-					if level4contact:
-						actLiter = literLevel4
-					elif level3contact:
-						actLiter = literLevel3
-					elif level2contact:
-						actLiter = literLevel2
-					elif level1contact:
-						actLiter = literLevel1
-					else:
-						actLiter = 0
+			if level4contact:
+				actLiter = literLevel4
+			elif level3contact:
+				actLiter = literLevel3
+			elif level2contact:
+				actLiter = literLevel2
+			elif level1contact:
+				actLiter = literLevel1
+			else:
+				actLiter = 0
 
-					if displayScreen == 1:
-						if actLiter < literLevel1:
-							print("Füllmenge gering")
-						else:
-							print("mind. "+str(actLiter)+" Liter im Tank")
+			if displayScreen == 1:
+				if actLiter < literLevel1:
+					print("Füllmenge gering")
+				else:
+					print("mind. "+str(actLiter)+" Liter im Tank")
 
-					if writeFile == 1:
-						write2file(actLiter)
-		
-			time.sleep(waitAfterPumpSeconds)
+			if writeFile == 1:
+				write2file(actLiter)
+
+			time.sleep(waitAfterReadingSeconds)
+
 	except KeyboardInterrupt:
 		GPIO.cleanup()
 	except:

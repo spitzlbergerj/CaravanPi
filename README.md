@@ -30,7 +30,6 @@ deutsch | english
 ----- | -----
 Nun ist auch das Platinen Design abgeschlossen. Die Platine wurde ausführlich getestet und funktioniert einwandfrei | For the CaravanPi, there is now a circuit board design that can be produced by appropriate service providers, also pre-assembled. 
 front | back
------ | -----
 ![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Vorderseite.png) | ![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Rückseite.png) 
 Alle zum Bestellen der Platine benötigten Angaben und Dateien befinden sich im Verzeichnis circuit-board | All information and files needed to order the board are located in the directory circuit-board
 Die Platine ist aus SMD Bauteilen aufgebaut. Als Klemmen werden WAGO Klemmen verwendet. | The board is built from SMD components. WAGO PCB terminal blocks are used as cable clamps.

@@ -1,7 +1,7 @@
 {
     "Header": {
         "Comment": "All values are metric (mm)",
-        "CreationDate": "2021-04-08T17:25:01Z",
+        "CreationDate": "2021-05-14T09:46:25Z",
         "GenerationSoftware": {
             "Application": "EAGLE",
             "Vendor": "Autodesk",
@@ -13,7 +13,7 @@
         "BoardThickness": 1.57,
         "LayerNumber": 2,
         "Name": {
-            "ProjectId": "CaravanPi_V2"
+            "ProjectId": "CaravanPi_V3"
         },
         "Owner": "Helmut Scholz <helmut.scholz@br.de>",
         "Size": {

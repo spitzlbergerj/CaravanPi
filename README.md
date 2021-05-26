@@ -2,9 +2,7 @@
 # CaravanPi
 
 - [Website](https://www.CaravanPi.de)
-- 
 - [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)
-
 - [Movitation](#motivation)
 - [Functionality](#functionality)
 - [Caravan or Motorhome?](#caravan-or-motorhome)

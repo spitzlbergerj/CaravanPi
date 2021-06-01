@@ -19,3 +19,14 @@ Damit kann die Hauptplatine mit einem doppelseitigen Klebeband in ein Kauf-Gehä
 ![CaravanPi Frischwassertank Schaltung Boden](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Hauptplatine-Boden.png) 
 
 https://www.thingiverse.com/thing:4866883
+
+
+# Halterungen für Reed Kontakte zur Ermittlung des Füllstands am Fäkalientank
+
+Diese Halterungen, die derzeit bei den Sockelvarianten nur exemplarisch hochgeleden wurden, können über Parameter an die benötigten Höhen angepasst werden. Aufgeklebt werden die Halterungen mit Tesa Strips mini
+
+![CaravanPi Fäkalientank Reed Kontakte Halterung - Aufnahme Reed Kontakt (Oberteil)](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/ReedKontakteHalterung-ReedKontaktAufnahme.jpg) 
+
+![CaravanPi Fäkalientank Reed Kontakte Halterung - Sockel senkrechte Montageplatte (Unterteil)](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/ReedKontakteHalterung-SockelSenkrechtKlebeplatte.jpg) 
+
+![CaravanPi Fäkalientank Reed Kontakte Halterung - Sockel waagrechte Montageplatte (Unterteil)](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/ReedKontakteHalterung-SockelWaagrechtKlebeplatte.jpg) 

@@ -31,20 +31,15 @@ Geben Sie auch hier die Anzahl der zu bestückenden Platinen ein. Sie können na
 Schließlich drücken Sie den "Confirm" Button.
 
 ## BOM und CPL File hochladen
-**ACHTUNG**
-
-**Bitte korrigieren Sie vor dem Hochladen des BOM Files ggf. die Widerstandswerte für die LED Widerstände, falls Sie andere LEDs verwenden als ich.**
-
-**Es handelt sich um die Widerstände R1 - R12, R15 - R23. Ermitteln Sie aus den Schaltplänen, welche Widerstände welche Werte haben müssen.**
-
-**R1,R4,R7,R10,R15,R18,R21 bedienen die Farbe x**
-
-**R2,R5,R8,R11,R16,R19,R22 bedienen die Farbe y**
-
-**R3,R6,R9,R12,R17,R20,R23 bedienen die Farbe z**
+**ACHTUNG**   
+**Bitte korrigieren Sie vor dem Hochladen des BOM Files ggf. die Widerstandswerte für die LED Widerstände, falls Sie andere LEDs verwenden als ich.**   
+**Es handelt sich um die Widerstände R1 - R12, R15 - R23. Ermitteln Sie aus den Schaltplänen, welche Widerstände welche Werte haben müssen.**   
+**R1,R4,R7,R10,R15,R18,R21 bedienen die Farbe x**   
+**R2,R5,R8,R11,R16,R19,R22 bedienen die Farbe y**   
+**R3,R6,R9,R12,R17,R20,R23 bedienen die Farbe z**   
 
 Laden Sie dann die beiden Files BOM und CPL hoch, indem Sie über die beiden Buttons das jeweilige File auswählen und dann den Button "Next" klicken.
-![CaravanPi Platine JLCPCB Schritt 1](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/jlcpcb.com/JLCPCB-Platinenbestellung-021.jpg)
+![CaravanPi Platine JLCPCB Schritt 1](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/jlcpcb.com/JLCPCB-Platinenbestellung-021.png)
 
 Nach der Verarbeitung der beiden Files werden Ihnen die gefundenen Bauteile angezeigt.
 ![CaravanPi Platine JLCPCB Schritt 1](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/jlcpcb.com/JLCPCB-Platinenbestellung-03.jpg)  
@@ -62,7 +57,7 @@ Nun sollte eine Vorschau angezeigt werden:
 ![CaravanPi Platine JLCPCB Schritt 1](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/jlcpcb.com/JLCPCB-Platinenbestellung-06.jpg)  
 
 ## weitere benötigte Bauteile
-JLC bestückt die Platine mit den vorrätgigen Teilen. Alle nicht vorrätigen Teile müssen Sie nach dem Empfang der Platine selbst auflöten.
+JLC bestückt die Platine mit den vorrätigen Teilen. Alle nicht vorrätigen Teile müssen Sie nach dem Empfang der Platine selbst auflöten.
 
 Zudem sind folgende weitere Bauteile pro Platine vonnöten:
 

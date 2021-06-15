@@ -62,13 +62,13 @@ JLC bestückt die Platine mit den vorrätigen Teilen. Alle nicht vorrätigen Tei
 
 Zudem sind folgende weitere Bauteile pro Platine vonnöten:
 
-- WAGO Platinen Klemmen (können zusammengesteckt werden 3x 4-Port = 1x 12-Port)
+- [WAGO Platinen Klemmen](https://www.reichelt.de/klemmleiste-rm-2-54-ffnungshebel-4-polig-wago-233-504-p31675.html?&nbc=1) (können zusammengesteckt werden 3x 4-Port = 1x 12-Port)
   -  2 x 3-Port-Klemmen
   - 11 x 4-Port-Klemmen
   -  2 x 8-Port-Klemmen
   -  1 x 16-Port-Klemme
 - Steckleisten 2-reihig oder Wannensteckerbuchsen
-  - 1 x 40-Port (Raspberry Pi)
-  - 1 x 10-Port (Deckel)
-- I2C Extender Baustein
-- HX711 Breakout Platine
+  - 1 x [40-Port](https://www.reichelt.de/wannenstecker-40-polig-gerade-wsl-40g-p22834.html?&trstct=pos_2&nbc=1) (Raspberry Pi)
+  - 1 x [10-Port](https://www.reichelt.de/wannenstecker-10-polig-gerade-wsl-10g-p22816.html?&trstct=pos_0&nbc=1) (Deckel)
+- I2C Extender Baustein P82B715, z.B. [hier](https://www.ebay.de/itm/114730136735)
+- HX711 Breakout Platine, z.B. [hier](https://smile.amazon.de/ARCELI-St%C3%BCck-W%C3%A4gesensor-24-Bit-Pr%C3%A4zisions-D-Modul-Drucksensor/dp/B07MY3DCCM/ref=sr_1_3?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=hx711&qid=1623732559&sr=8-3)

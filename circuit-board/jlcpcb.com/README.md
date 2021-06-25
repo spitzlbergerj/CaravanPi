@@ -1,4 +1,4 @@
-# Bestellung der Platine bei JLCPCP.com
+# Bestellung der Platine bei JLCPCB.com
 
 Hier finden Sie alle Files zur Bestellung der Platine sowie eine Schritt für Schritt Anleitung des Bestellvorgangs
 

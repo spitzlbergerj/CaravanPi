@@ -1,4 +1,4 @@
-# Platienen Fertigung
+# Platinen Fertigung
 In diesem Directory finden Sie alle Dateien, um eine Platine bei einem Dienstleister bestellen und fertigen lassen zu können.
 
 # Versionen

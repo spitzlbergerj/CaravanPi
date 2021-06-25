@@ -1,13 +1,22 @@
-In diesem Directory sind die Dateien enthalten, um eine Platine bei einem Dienstleister bestellen zu können
+# Platienen Fertigung
+In diesem Directory finden Sie alle Dateien, um eine Platine bei einem Dienstleister bestellen und fertigen lassen zu können.
 
-Platine Oberseite
-![CaravanPiPlatine](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/CaravanPi_V3_oben.png)  
+# Versionen
+Die CaravanPi Platine existiert inzwischen in mehreren Versionen
 
-Platine Unterseite
-![CaravanPiPlatine](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/CaravanPi_V3_unten.png)  
+Version 1 | allererste Versuche, nicht für eine Auftragsproduktion geeignet
+Version 2 | erste Version, die ich bei einem Dienstleister habe produzieren lassen; enthält jedoch einen Fehler. Die Verdrahtung des VCC des Radar-Sensors war fälschlicherweise 3,3 V anstatt von 5V
+Version 3 | korrigierte Version, die ich erstmals bei JLCPCB inkl. SMD Bestückung habe fertigen lassen
+Version 4 | Umstellung aller IC auf SMD
+
+# Fertigung bei JLCPCB
+
+
+
+# Abmessungen
 
 Platine Abmessungen
 ![CaravanPiPlatine](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/CaravanPi_V3_Maße.png)  
 
-Platine Löcher
-![CaravanPiPlatine](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/CaravanPi_V3_Löcher.png)  
+# 3D Druck Bauteile für die CaravanPi Platine
+

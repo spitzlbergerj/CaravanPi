@@ -1,6 +1,6 @@
 # Bestellung der Platine bei JLCPCB.com
 
-Hier finden Sie alle Files zur Bestellung der Platine sowie eine Schritt für Schritt Anleitung des Bestellvorgangs
+Hier finden Sie eine Schritt für Schritt Anleitung des Bestellvorgangs. Die benötigten Files holen Sie bitte aus dem jewieligen Versionsverzeichnis (derzeit V3 oder V4)
 
 ## Website JLCPCB.com
 Rufen Sie die Website https://jlcpcb.com/ auf. Erstellen Sie dort einen Account und klicken Sie anschließend auf "order now"
@@ -8,7 +8,7 @@ Rufen Sie die Website https://jlcpcb.com/ auf. Erstellen Sie dort einen Account 
 ![CaravanPi Platine JLCPCB Schritt 1](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/jlcpcb.com/JLCPCB-Platinenbestellung-00.png)  
 
 ## Gerber File hochladen
-Laden Sie anschließend das Gerber File als zip-File über den entsprechenden Button hoch. Das Gerber File wird daraufhin verarbeitet und sollte etwa so erkannt werden:
+Laden Sie anschließend das Gerber File aus dem Versionsverzeichnis als zip-File über den entsprechenden Button hoch. Das Gerber File wird daraufhin verarbeitet und sollte etwa so erkannt werden:
 
 ![CaravanPi Platine JLCPCB Schritt 1](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/jlcpcb.com/JLCPCB-Platinenbestellung-001.png)  
 

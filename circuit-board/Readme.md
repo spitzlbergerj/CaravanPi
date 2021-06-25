@@ -5,9 +5,9 @@ In diesem Directory finden Sie alle Dateien, um eine Platine bei einem Dienstlei
 Die CaravanPi Platine existiert inzwischen in mehreren Versionen
 
 Version | Beschreibung
-----|----
+-----------|----
 Version 1 | allererste Versuche, nicht für eine Auftragsproduktion geeignet
-Version 2 | erste Version, die ich bei einem Dienstleister habe produzieren lassen; enthält jedoch einen Fehler. Die Verdrahtung des VCC des Radar-Sensors war fälschlicherweise 3,3 V anstatt von 5V
+Version 2 | erste Version, die ich bei einem Dienstleister habe produzieren lassen <br/> enthält jedoch einen Fehler. Die Verdrahtung des VCC des Radar-Sensors war fälschlicherweise 3,3 V anstatt 5V
 Version 3 | korrigierte Version, die ich erstmals bei JLCPCB inkl. SMD Bestückung habe fertigen lassen
 Version 4 | Umstellung aller IC auf SMD
 

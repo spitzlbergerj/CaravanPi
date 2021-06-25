@@ -13,9 +13,9 @@ Version 4 | Umstellung aller IC auf SMD
 
 # Fertigung bei JLCPCB
 
-Bei JLCPCB.com können Platinen sehr günstig, in hoher Qualität und inkl. SMD Bestückung online bestellt werden. Den Bestellprozess habe ich ausführlich beschrieben. Alle benötigten Dateien sind in den jeweiligen Unterverzeichnissen der Versionen enthalten.
+Bei JLCPCB.com können Platinen sehr günstig, in hoher Qualität und inkl. SMD Bestückung online bestellt werden (siehe [Artikel in der Zeitschrift Make](https://www.heise.de/news/Ausprobiert-Platinen-mit-kostenloser-SMD-Bestueckung-5070776.html)). Den Bestellprozess habe ich [ausführlich beschrieben](jlcpcb.com/README.md). Alle benötigten Dateien sind in den jeweiligen Unterverzeichnissen der Versionen enthalten.
 
-Achtung, manchmal sind nicht alle Bauteile bei JLCPCB vorrätig. Dies betrifft insbesondere die ICs MCP23017 und P82B715P. Wer auch selbst SMD löten beherrscht kann dennoch bestellen. Ansonsten lohnt meist das warten von einer Woche. Dann sind die Teile meist wieder vorrätig.
+Achtung, manchmal sind nicht alle Bauteile bei JLCPCB in ausreichender Zahl vorrätig ([parts library](https://jlcpcb.com/parts)). Dies betrifft insbesondere die ICs [MCP23017](https://jlcpcb.com/parts/componentSearch?isSearch=true&searchTxt=MCP23017) und [P82B715P](https://jlcpcb.com/parts/componentSearch?isSearch=true&searchTxt=MCP23017). Diese beiden Bauteile müssen bei einer 5-Platinen-Bestellung jeweils mindestens in der Menge (stock) 10 vorrätig sein. Wer auch selbst SMD löten beherrscht, kann dennoch bestellen. Ansonsten lohnt meist das warten von einer Woche. Dann sind die Teile meist wieder vorrätig.
 
 Der Versand aus China dauert etwa 10 - 15 Tage.
 

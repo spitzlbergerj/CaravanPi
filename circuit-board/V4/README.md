@@ -13,7 +13,7 @@ Bestückungslayout
 ![CaravanPi Platine V4 Bestückungslayout](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/V4/CaravanPi-Platine-V4-Layout.png)  
 
 Bohrungen  
-![CaravanPi Platine V4 Bohrungen](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/V3/CaravanPi-Platine-V4-Bohrungen.png)  
+![CaravanPi Platine V4 Bohrungen](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/V4/CaravanPi-Platine-V4-Bohrungen.png)  
 
 
 ## JLCPCB Platine maschinell bestückt

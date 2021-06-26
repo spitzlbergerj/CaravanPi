@@ -24,6 +24,8 @@ Bohrungen
 
 ![CaravanPi Platine JLCPCB SMT bestückt](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPiPlatineJLCPCB1.png)  
 
+Alle für die Bestellung bei JLCPCB.com benötigten dateien finden Sie im Unterverzeichnis [JLCPCB](JLCPCB)
+
 ## Bauteile Liste
 In der Exceltabelle finden Sie alle benötigten Bauteile
 

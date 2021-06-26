@@ -57,6 +57,9 @@ Nun sollte eine Vorschau angezeigt werden:
 
 ![CaravanPi Platine JLCPCB Schritt 1](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/jlcpcb.com/JLCPCB-Platinenbestellung-06.jpg)  
 
+**Achtung**
+**Bitte achten Sie auf den Kondensator C1. Dieser muss den Pluspol auf der rechten Seite haben. Der rote Strich sollte also rechts sein**
+
 ## weitere benötigte Bauteile
 JLC bestückt die Platine mit den vorrätigen Teilen. Alle nicht vorrätigen Teile müssen Sie nach dem Empfang der Platine selbst auflöten.
 

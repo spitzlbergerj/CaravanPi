@@ -34,9 +34,9 @@ Schließlich drücken Sie den "Confirm" Button.
 **ACHTUNG**   
 **Bitte korrigieren Sie vor dem Hochladen des BOM Files ggf. die Widerstandswerte für die LED Widerstände, falls Sie andere LEDs verwenden als ich.**   
 **Es handelt sich um die Widerstände R1 - R12, R15 - R23. Ermitteln Sie aus den Schaltplänen, welche Widerstände welche Werte haben müssen.**   
-**R1,R4,R7,R10,R15,R18,R21 bedienen die Farbe x**   
-**R2,R5,R8,R11,R16,R19,R22 bedienen die Farbe y**   
-**R3,R6,R9,R12,R17,R20,R23 bedienen die Farbe z**   
+**R1,R4,R7,R10,R15,R18,R21 bedienen die Farbe GRÜN**   
+**R2,R5,R8,R11,R16,R19,R22 bedienen die Farbe BLAU**   
+**R3,R6,R9,R12,R17,R20,R23 bedienen die Farbe ROT**   
 Die Bauteile-Datenbank finden Sie [hier](https://jlcpcb.com/parts). Bitte achten Sie darauf, dass Sie bei den Widerständen ein Bauteil des Typs 1206 (Package) wählen, damit die Abmessungen zu den Lötpads passen.
 
 Laden Sie dann die beiden Files BOM und CPL hoch, indem Sie über die beiden Buttons das jeweilige File auswählen und dann den Button "Next" klicken.

@@ -179,53 +179,53 @@ def write2file(toFile, toScreen, x, y, z, adjustX, adjustY, adjustZ, lastX, seco
 # adjust Threats for LEDs
 # -------------------------
 
-def setupVL():
-	pinBlue=Led(mymcp1,"gpioa",0)
-	pinRed=Led(mymcp1,"gpioa",1)
-	pinGreen=Led(mymcp1,"gpioa",2)
+def setupVL(): # Platine LED5
+	pinGreen=Led(mymcp1,"gpioa",0)
+	pinBlue=Led(mymcp1,"gpioa",1)
+	pinRed=Led(mymcp1,"gpioa",2)
 	
 	return ([pinRed, pinGreen, pinBlue])
 
-def setupVR():
-	pinBlue=Led(mymcp1,"gpioa",3)
-	pinRed=Led(mymcp1,"gpioa",4)
-	pinGreen=Led(mymcp1,"gpioa",5)
+def setupVR(): # Platine LED6
+	pinGreen=Led(mymcp1,"gpioa",3)
+	pinBlue=Led(mymcp1,"gpioa",4)
+	pinRed=Led(mymcp1,"gpioa",5)
 	
 	return([pinRed, pinGreen, pinBlue])
 
-def setupVo():
-	pinBlue=Led(mymcp1,"gpioa",6)
-	pinRed=Led(mymcp1,"gpioa",7)
-	pinGreen=Led(mymcp1,"gpiob",7)
+def setupVo(): # Platine LED7
+	pinGreen=Led(mymcp1,"gpioa",6)
+	pinBlue=Led(mymcp1,"gpioa",7)
+	pinRed=Led(mymcp1,"gpiob",7)
 	
 	return([pinRed, pinGreen, pinBlue])
 
-def setupZL():
-	pinBlue=Led(mymcp2,"gpioa",0)
-	pinRed=Led(mymcp2,"gpioa",1)
-	pinGreen=Led(mymcp2,"gpioa",2)
+def setupZL(): # Platine LED2
+	pinGreen=Led(mymcp2,"gpioa",0)
+	pinBlue=Led(mymcp2,"gpioa",1)
+	pinRed=Led(mymcp2,"gpioa",2)
 	
 	return ([pinRed, pinGreen, pinBlue])
 
-def setupZR():
-	pinBlue=Led(mymcp2,"gpioa",3)
-	pinRed=Led(mymcp2,"gpioa",4)
-	pinGreen=Led(mymcp2,"gpioa",5)
+def setupZR(): # Platine LED3
+	pinGreen=Led(mymcp2,"gpioa",3)
+	pinBlue=Led(mymcp2,"gpioa",4)
+	pinRed=Led(mymcp2,"gpioa",5)
 	
 	return ([pinRed, pinGreen, pinBlue])
 
 
-def setupHL():
-	pinBlue=Led(mymcp2,"gpioa",6)
-	pinRed=Led(mymcp2,"gpioa",7)
-	pinGreen=Led(mymcp2,"gpiob",7)
+def setupHL(): # Platine LED4
+	pinGreen=Led(mymcp2,"gpioa",6)
+	pinBlue=Led(mymcp2,"gpioa",7)
+	pinRed=Led(mymcp2,"gpiob",7)
 	
 	return([pinRed, pinGreen, pinBlue])
 
-def setupHR():
-	pinBlue=Led(mymcp2,"gpiob",0)
-	pinRed=Led(mymcp2,"gpiob",1)
-	pinGreen=Led(mymcp2,"gpiob",2)
+def setupHR(): # Platine LED1
+	pinGreen=Led(mymcp2,"gpiob",0)
+	pinBlue=Led(mymcp2,"gpiob",1)
+	pinRed=Led(mymcp2,"gpiob",2)
 	
 	return([pinRed, pinGreen, pinBlue])
 

@@ -4,7 +4,7 @@ Diese Platinen Version nutzt SMD Bauteile für alle Widerstände, Kondensatoren,
 
 ## Platinen Layout
 Oberseite  
-![CaravanPi Platine V4 Oberseite](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/V4/CaravanPi-Platine-V43-Vorderseite.png)  
+![CaravanPi Platine V4 Oberseite](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/V4/CaravanPi-Platine-V4-Vorderseite.png)  
 
 Unterseite  
 ![CaravanPi Platine V4 Unterseite](https://github.com/spitzlbergerj/CaravanPi/raw/master/circuit-board/V4/CaravanPi-Platine-V4-Rueckseite.png)  

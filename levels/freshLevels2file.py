@@ -235,10 +235,10 @@ def main():
 					pumpOnTime = None
 
 					if displayScreen == 1:
-						print("Level 1 erreicht? {0}".format(level1contact))
-						print("Level 2 erreicht? {0}".format(level2contact))
-						print("Level 3 erreicht? {0}".format(level3contact))
-						print("Level 4 erreicht? {0}".format(level4contact))
+						print("Level 1 erreicht? {0}".format(level1contact), literLevel1, " Liter")
+						print("Level 2 erreicht? {0}".format(level2contact), literLevel2, " Liter")
+						print("Level 3 erreicht? {0}".format(level3contact), literLevel3, " Liter")
+						print("Level 4 erreicht? {0}".format(level4contact), literLevel4, " Liter")
 
 					if level4contact:
 						actLiter = literLevel4

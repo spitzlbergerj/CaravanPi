@@ -11,8 +11,8 @@ import atexit
 io.setmode(io.BCM)
 
 #Variablen deklarieren
-PIR_PIN = 27
-LED_PIN = 21
+PIR_PIN = 4
+LED_PIN = 27
 
 # Funktionen
 def signal_term_handler(signal, frame):
@@ -49,7 +49,7 @@ signal.signal(signal.SIGTERM, signal_term_handler)
 atexit.register(goodbye)
 
 # IO setzen für LED und PIR
-io.setup(PIR_PIN, io.IN)
+io.setup(PIR_PIN, io.IN, pull_up_down=io.PUD_DOWN)
 io.setup(LED_PIN, io.OUT)
 
 # und los gehts

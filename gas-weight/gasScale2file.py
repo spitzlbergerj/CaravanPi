@@ -63,7 +63,8 @@ def main():
 
 	try:
 		weight = hx.get_weight(5)
-		
+		print (weight)
+
 		nettoWeight = weight - tare - emptyWeight
 		nettoLevel = (nettoWeight/fullWeight) * 100
 		write2file(nettoWeight, nettoLevel)

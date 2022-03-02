@@ -44,60 +44,56 @@ LED_Vo = [None, None, None]
 # adjust Threats for LEDs
 # -------------------------
 
-def setupHR():
-	pinRed=Led(mymcp1,"gpiob",3)
-	pinGreen=Led(mymcp1,"gpiob",4)
-	pinBlue=Led(mymcp1,"gpiob",5)
-	
-	return([pinRed, pinGreen, pinBlue])
-
-
-def setupHL():
-	pinRed=Led(mymcp1,"gpioa",3)
-	pinGreen=Led(mymcp1,"gpioa",4)
-	pinBlue=Led(mymcp1,"gpioa",5)
-	
-	return([pinRed, pinGreen, pinBlue])
-
-
-def setupVR():
-	pinRed=Led(mymcp1,"gpiob",0)
-	pinGreen=Led(mymcp1,"gpiob",1)
-	pinBlue=Led(mymcp1,"gpiob",2)
-	
-	return([pinRed, pinGreen, pinBlue])
-
-
-def setupVL():
-	pinRed=Led(mymcp1,"gpioa",0)
-	pinGreen=Led(mymcp1,"gpioa",1)
-	pinBlue=Led(mymcp1,"gpioa",2)
+def setupVL(): # Platine LED5
+	pinGreen=Led(mymcp1,"gpioa",0)
+	pinBlue=Led(mymcp1,"gpioa",1)
+	pinRed=Led(mymcp1,"gpioa",2)
 	
 	return ([pinRed, pinGreen, pinBlue])
 
-
-def setupZR():
-	pinRed=Led(mymcp2,"gpioa",5)
-	pinGreen=Led(mymcp2,"gpioa",4)
-	pinBlue=Led(mymcp2,"gpioa",3)
+def setupVR(): # Platine LED6
+	pinGreen=Led(mymcp1,"gpioa",3)
+	pinBlue=Led(mymcp1,"gpioa",4)
+	pinRed=Led(mymcp1,"gpioa",5)
 	
-	return ([pinRed, pinGreen, pinBlue])
+	return([pinRed, pinGreen, pinBlue])
 
+def setupVo(): # Platine LED7
+	pinGreen=Led(mymcp1,"gpioa",6)
+	pinBlue=Led(mymcp1,"gpioa",7)
+	pinRed=Led(mymcp1,"gpiob",7)
+	
+	return([pinRed, pinGreen, pinBlue])
 
-def setupZL():
+def setupZL(): # Platine LED2
+	pinGreen=Led(mymcp2,"gpioa",0)
+	pinBlue=Led(mymcp2,"gpioa",1)
 	pinRed=Led(mymcp2,"gpioa",2)
-	pinGreen=Led(mymcp2,"gpioa",1)
-	pinBlue=Led(mymcp2,"gpioa",0)
+	
+	return ([pinRed, pinGreen, pinBlue])
+
+def setupZR(): # Platine LED3
+	pinGreen=Led(mymcp2,"gpioa",3)
+	pinBlue=Led(mymcp2,"gpioa",4)
+	pinRed=Led(mymcp2,"gpioa",5)
 	
 	return ([pinRed, pinGreen, pinBlue])
 
 
-def setupVo():
-	pinRed=Led(mymcp1,"gpioa",6)
-	pinGreen=Led(mymcp1,"gpioa",7)
-	pinBlue=Led(mymcp1,"gpiob",7)
+def setupHL(): # Platine LED4
+	pinGreen=Led(mymcp2,"gpioa",6)
+	pinBlue=Led(mymcp2,"gpioa",7)
+	pinRed=Led(mymcp2,"gpiob",7)
 	
 	return([pinRed, pinGreen, pinBlue])
+
+def setupHR(): # Platine LED1
+	pinGreen=Led(mymcp2,"gpiob",0)
+	pinBlue=Led(mymcp2,"gpiob",1)
+	pinRed=Led(mymcp2,"gpiob",2)
+	
+	return([pinRed, pinGreen, pinBlue])
+
 
 # -------------------------
 # LED management

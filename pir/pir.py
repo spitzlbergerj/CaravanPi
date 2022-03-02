@@ -137,6 +137,7 @@ if len(sys.argv) == 4:
 print("Loglevel: ", loglevel)
 
 # IO setzen für LED und PIR
+# io.setup(PIR_PIN, io.IN, pull_up_down=io.PUD_DOWN)
 io.setup(PIR_PIN, io.IN)
 io.setup(LED_PIN, io.OUT)
 

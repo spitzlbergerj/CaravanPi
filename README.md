@@ -1,8 +1,8 @@
 ![CaraavanPiLogo](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-Logo.png)  
 # CaravanPi
 
+- [Website](https://www.CaravanPi.de)
 - [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)
-
 - [Movitation](#motivation)
 - [Functionality](#functionality)
 - [Caravan or Motorhome?](#caravan-or-motorhome)
@@ -24,6 +24,16 @@ schematic drawing | MagicMirror display
 ----- | -----
 ![schema](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg) | ![MagicMirror](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg)
 [full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg) | [full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg) 
+
+## Circuit design
+deutsch | english
+----- | -----
+Nun ist auch das Platinen Design abgeschlossen. Die Platine wurde ausführlich getestet und funktioniert einwandfrei | For the CaravanPi, there is now a circuit board design that can be produced by appropriate service providers, also pre-assembled. 
+front | back
+![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Vorderseite.png) | ![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Rückseite.png) 
+Alle zum Bestellen der Platine benötigten Angaben und Dateien befinden sich im Verzeichnis circuit-board | All information and files needed to order the board are located in the directory circuit-board
+Die Platine ist aus SMD Bauteilen aufgebaut. Als Klemmen werden WAGO Klemmen verwendet. | The board is built from SMD components. WAGO PCB terminal blocks are used as cable clamps.
+
 
 ## Functionality
 The CaravanPi has actually the following functionalities:
@@ -84,8 +94,8 @@ All components, the software, the assembly, the installation, the configuration 
 
 ## To Do
 - ~~development of a circuit board,~~
-- circuit board, which can then be purchased, etched or ordered from a online circuid board shop
+- ~~circuit board, which can then be purchased, etched or ordered from a online circuid board shop~~
 - ~~python and MMM-Module for filling level in fresh water tank~~
 - python and MMM-Module for filling level in waste tank
 - adopt climate section for the BME 680 with air qualitiy value
-- do all the documentation
+- ~~do all the documentation~~

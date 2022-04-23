@@ -11,6 +11,9 @@
 - [Documentation (Wiki)](#wiki)
 - [To Do](#to-do)
 
+## Aktualisierungen / Change Log
+
+Details siehe / Please view [CHANGELOG.md](https://github.com/spitzlbergerj/CaravanPi/blob/master/CHANGELOG.md)
 
 ## Motivation
 

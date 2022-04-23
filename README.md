@@ -22,6 +22,7 @@ Details siehe / Please view [CHANGELOG.md](https://github.com/spitzlbergerj/Cara
 - Füllstandssensoren Einbau und Konfiguration nicht ausreichend dokumentiert
 - neue Funktion: Überwachung und Anzeige inkl. Warnung für die 230V Versorgung und die 12V Batterie
 - neue Funktion: Gassensor zur Überwachung einer möglichwerweise schädlichen Gas-Konzentration inkl. Warnung
+- neue Funktion: mehrere Gasflaschenwaagen ermöglichen
 
 ## Motivation
 

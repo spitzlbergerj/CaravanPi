@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # coding=utf-8
-# writeScaleCalibration.py
+# writePositionCalibration.py
 #
 # startet Kalibrierung
 #

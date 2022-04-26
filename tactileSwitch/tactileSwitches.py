@@ -16,6 +16,7 @@ import time, datetime
 import signal
 import sys
 from time import sleep
+from datetime import datetime
 import getopt
 import RPi.GPIO as GPIO
 import subprocess
@@ -26,6 +27,15 @@ import os
 pinSwitchPosition = 19
 # tactile switch calibration gasscale
 pinSwitchGasscale = 22
+
+# if gas scale button pressed for at least this long then Flasche 2. if less then Flasche 1.
+scaleSelectMinSeconds = 3
+
+# button debounce time in seconds
+debounceSeconds = 0.01
+
+buttonPressedTime = None
+
 
 # -------------------------
 # call options 
@@ -52,9 +62,33 @@ def switchInterruptGasscale(channel):
 	# switchInterruptGasscale 
 	# tactile switch was pressed start calibrating the gas scale
 	# -------------------------
-	print ("ACHTUNG: Kalibrierung Gaswaage wird gestartet!")
-	subprocess.run(["python3","/home/pi/CaravanPi/gas-weight/setupGasscaleDefaults.py"])
-	print ("ACHTUNG: Kalibrierung Gaswaage wurde beendet")
+	global buttonPressedTime
+
+	print ("Interrupt - buttonPressedTime: ", buttonPressedTime)
+
+	if (GPIO.input(channel)):
+		# button is down
+		print ("button down")
+		if buttonPressedTime is None:
+			print("set buttonPressedTime")
+			buttonPressedTime = datetime.now()
+	else:
+		# button is up
+		print ("button up")
+		if buttonPressedTime is not None:
+			print ("buttonPressedTime not None")
+			elapsed = (datetime.now() - buttonPressedTime).total_seconds()
+			buttonPressedTime = None
+			if elapsed >= scaleSelectMinSeconds:
+				# button pressed for more than specified time, Flasche 2
+				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 2 wird gestartet!")
+				subprocess.run(["python3","/home/pi/CaravanPi/gas-weight/gasScaleCalibration.py", "-s", "-e", "1", "-g", "2", "-w", "5"])
+				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 2 wurde beendet")
+			elif elapsed >= debounceSeconds:
+				# button pressed for a shorter time, Flasche 1
+				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 1 wird gestartet!")
+				subprocess.run(["python3","/home/pi/CaravanPi/gas-weight/gasScaleCalibration.py", "-s", "-e", "1", "-g", "1", "-w", "5"])
+				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 1 wurde beendet")
 
 
 
@@ -96,8 +130,9 @@ def main():
 	GPIO.setup(pinSwitchPosition, GPIO.IN)
 	GPIO.add_event_detect(pinSwitchPosition, GPIO.RISING, callback = switchInterruptPosition, bouncetime = 400)
 
+	# Gasflaschenkalibrierung - kurzer Druck = Flasche 1 - langer Druck = Flasche 2
 	GPIO.setup(pinSwitchGasscale, GPIO.IN)
-	GPIO.add_event_detect(pinSwitchGasscale, GPIO.RISING, callback = switchInterruptGasscale, bouncetime = 400)
+	GPIO.add_event_detect(pinSwitchGasscale, GPIO.BOTH, callback = switchInterruptGasscale)
 	
 	# -------------------------
 	# endless loop

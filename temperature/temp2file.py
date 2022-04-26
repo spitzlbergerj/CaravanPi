@@ -19,7 +19,7 @@ def ds1820einlesen():
     #Verzeichnisinhalt auslesen mit allen vorhandenen Sensorbezeichnungen 28-xxxx
     try:
         for x in os.listdir("/sys/bus/w1/devices"):
-            if (x.split("-")[0] == "28") or (x.split("-")[0] == "10"):
+            if (x.split("-")[0] == "28") or (x.split("-")[0] == "96"):
                 tempSensorBezeichnung.append(x)
                 tempSensorAnzahl = tempSensorAnzahl + 1
         return 0

@@ -23,6 +23,7 @@ class CaravanPiFiles:
 	fileGasScale = "/home/pi/CaravanPi/defaults/gasScaleDefaults"
 	# the tank number is appended to the file name specified here
 	fileTanks = "/home/pi/CaravanPi/defaults/tankDefaults"
+	fileVoltage = "/home/pi/CaravanPi/defaults/voltageDefaults"
 	fileTestColor = "/home/pi/CaravanPi/temp/testColor"
 
 	# ---------------------------------------------------------------------------------------------
@@ -45,16 +46,16 @@ class CaravanPiFiles:
 		try:
 			file = open(CaravanPiFiles.fileAdjustments)
 			
-			strAdjustX = file.readline()
-			strAdjustY = file.readline()
-			strAdjustZ = file.readline()
-			strtoleranceX = file.readline()
-			strtoleranceY = file.readline()
-			strApproximationX = file.readline()
-			strApproximationY = file.readline()
-			strDistRight = file.readline()
-			strDistFront = file.readline()
-			strDistAxis = file.readline()
+			strAdjustX = file.readline().strip()
+			strAdjustY = file.readline().strip()
+			strAdjustZ = file.readline().strip()
+			strtoleranceX = file.readline().strip()
+			strtoleranceY = file.readline().strip()
+			strApproximationX = file.readline().strip()
+			strApproximationY = file.readline().strip()
+			strDistRight = file.readline().strip()
+			strDistFront = file.readline().strip()
+			strDistAxis = file.readline().strip()
 			
 			file.close()
 			
@@ -138,9 +139,9 @@ class CaravanPiFiles:
 		try:
 			file = open(CaravanPiFiles.fileDimensions)
 			
-			strLengthOverAll = file.readline()
-			strWidth = file.readline()
-			strLengthBody = file.readline()
+			strLengthOverAll = file.readline().strip()
+			strWidth = file.readline().strip()
+			strLengthBody = file.readline().strip()
 			
 			file.close()
 			
@@ -187,9 +188,12 @@ class CaravanPiFiles:
 	# gas scale
 	#
 	# content of file
-	# 		tare			value from gas scale without a gas cylinder 
 	#		empty weight	weight of the empty gas cylinder
 	#		full weight		weight of the full gas cylinder
+	#       pin_dout		GPIO Pin HX711 DOUT / DT
+	# 		pin_sck			GPIO Pin HX711 SCK
+	# 		channel			Channel at HX711, only A or B
+	# 		refUnit			reference unit as divisor for HX711 values
 	# ----------------------------------------------------------------------------------------------
 
 	def readGasScale(gasCylinderNumber):
@@ -197,44 +201,64 @@ class CaravanPiFiles:
 			filename = CaravanPiFiles.fileGasScale + '{:.0f}'.format(gasCylinderNumber)
 			file = open(filename)
 			
-			strTare = file.readline()
-			strEmptyWeight = file.readline()
-			strFullWeight = file.readline()
+			strEmptyWeight = file.readline().strip()
+			strFullWeight = file.readline().strip()
+			strPinDout = file.readline().strip()
+			strPinSck = file.readline().strip()
+			strChannel = file.readline().strip()
+			strRefUnit = file.readline().strip()
 			
 			file.close()
-			
-			tare = float(strTare)
+
 			emptyWeight = float(strEmptyWeight)
 			fullWeight = float(strFullWeight)
-			
-			return(tare, emptyWeight, fullWeight)
+			pin_dout = int(strPinDout)
+			pin_sck = int(strPinSck)
+			refUnit = float(strRefUnit)
+
+			# print ("Leergewicht Flasche >>", strEmptyWeight, "<< >>", emptyWeight, "<<")
+			# print ("max Gasgewicht >>", strFullWeight, "<< >>", fullWeight, "<<")
+			# print ("Pin DOUT >>", strPinDout, "<< >>", pin_dout, "<<")
+			# print ("Pin SCK >>", strPinSck, "<< >>", pin_sck, "<<")
+			# print ("Channel >>", strChannel, "<<")
+			# print ("Ref Unit >>", strRefUnit, "<< >>", refUnit, "<<")
+
+			return(emptyWeight, fullWeight, pin_dout, pin_sck, strChannel, refUnit)
 		except:
 			# Lesefehler
 			print ("readGasScale: The file ", filename, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return(0,0,0)
+			return(0,0,0,0,"",0)
 
-	def writeGasScale(gasCylinderNumber, test, screen, tare, emptyWeight, fullWeight):
+	def writeGasScale(gasCylinderNumber, test, screen, emptyWeight, fullWeight, pin_dout, pin_sck, strChannel, refUnit ):
 		try:
-			strTare = '{:.0f}'.format(tare)
 			strEmptyWeight = '{:.0f}'.format(emptyWeight)
 			strFullWeight = '{:.0f}'.format(fullWeight)
-			
+			strPinDout = '{:.0f}'.format(pin_dout)
+			strPinSck = '{:.0f}'.format(pin_sck)
+			strRefUnit = '{:.9f}'.format(refUnit)
+
 			filename = CaravanPiFiles.fileGasScale + '{:.0f}'.format(gasCylinderNumber)
 			if test == 1:
 				file = open(filename+"_test", 'w')
 			else:
 				file = open(filename, 'w')
 				
-			file.write(strTare + "\n")
 			file.write(strEmptyWeight + "\n")
-			file.write(strFullWeight)
+			file.write(strFullWeight + "\n")
+			file.write(strPinDout + "\n")
+			file.write(strPinSck + "\n")
+			file.write(strChannel + "\n")
+			file.write(strRefUnit)
 			
 			file.close()
 			
 			if screen == 1:
-				print("tare: ",strTare)
 				print("emptyWeight: ",strEmptyWeight)
 				print("fullWeight: ",strFullWeight)
+				print("Pin dout: ",strPinDout)
+				print("Pin sck: ",strPinSck)
+				print("Channel: ",strChannel)
+				print("Reference Unit: ",strRefUnit)
 			
 			return 0
 		except:
@@ -260,10 +284,10 @@ class CaravanPiFiles:
 			filename = CaravanPiFiles.fileTanks + '{:.0f}'.format(tankNumber)
 			file = open(filename)
 			
-			strLevel1 = file.readline()
-			strLevel2 = file.readline()
-			strLevel3 = file.readline()
-			strLevel4 = file.readline()
+			strLevel1 = file.readline().strip()
+			strLevel2 = file.readline().strip()
+			strLevel3 = file.readline().strip()
+			strLevel4 = file.readline().strip()
 			
 			file.close()
 			
@@ -312,6 +336,68 @@ class CaravanPiFiles:
 
 
 	# ---------------------------------------------------------------------------------------------
+	# wide Voltage Level
+	#
+	# level 1 is the smallest amount of voltage, level 3 is the largest amount of voltage
+	#
+	# content of file
+	# 		voltage level 1		 battery 25% 
+	#		voltage level 2		 battery 50%
+	#		voltage level 3		 Battery 100%
+	# ----------------------------------------------------------------------------------------------
+
+	def readVoltageLevels():
+		try:
+			filename = CaravanPiFiles.fileVoltage
+			file = open(filename)
+			
+			strLevel1 = file.readline().strip()
+			strLevel2 = file.readline().strip()
+			strLevel3 = file.readline().strip()
+			
+			file.close()
+			
+			level1 = float(strLevel1)
+			level2 = float(strLevel2)
+			level3 = float(strLevel3)
+			
+			return(level1, level2, level3)
+		except:
+			# Lesefehler
+			print ("readVoltageLevels: The file ", filename, " could not be read. unprocessed Error:", sys.exc_info()[0])
+			return(0,0,0)
+
+	def writeVoltageLevels(test, screen, level1, level2, level3):
+		try:
+			strLevel1 = '{:.0f}'.format(level1)
+			strLevel2 = '{:.0f}'.format(level2)
+			strLevel3 = '{:.0f}'.format(level3)
+			
+			filename = CaravanPiFiles.fileVoltage
+			if test == 1:
+				file = open(filename+"_test", 'w')
+			else:
+				file = open(filename, 'w')
+				
+			file.write(strLevel1 + "\n")
+			file.write(strLevel2 + "\n")
+			file.write(strLevel3)
+			
+			file.close()
+			
+			if screen == 1:
+				print("Voltage Level 1 25% : ",strLevel1)
+				print("Voltage Level 2 50% : ",strLevel2)
+				print("Voltage Level 3 100% : ",strLevel3)
+			
+			return 0
+		except:
+			print("writeVoltageevels: The file ", filename, " could not be written - unprocessed Error:", sys.exc_info()[0])
+			raise
+			return -1
+
+
+	# ---------------------------------------------------------------------------------------------
 	# testColor
 	#
 	# content of file
@@ -321,7 +407,7 @@ class CaravanPiFiles:
 	def readTestColor():
 		try:
 			file = open(CaravanPiFiles.fileTestColor)
-			strColor = file.readline()
+			strColor = file.readline().strip()
 			file.close()
 			
 			return(strColor)

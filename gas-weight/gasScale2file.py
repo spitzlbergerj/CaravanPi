@@ -10,7 +10,7 @@ import time
 import sys
 import datetime
 import RPi.GPIO as GPIO
-
+import getopt
 
 # -----------------------------------------------
 # Sensoren libraries aus CaravanPi einbinden
@@ -18,6 +18,19 @@ import RPi.GPIO as GPIO
 sys.path.append('/home/pi/CaravanPi/.lib')
 from hx711 import HX711
 from CaravanPiFilesClass import CaravanPiFiles
+
+# -------------------------
+# call options 
+# -------------------------
+shortOptions = 'hg:'
+longOptions = ['gasscale=']
+
+def usage():
+	print ("---------------------------------------------------------------------")
+	print (sys.argv[0], "-h -g <nr>")
+	print ("  -h          show this guide")
+	print ("  -g nr       number of gas scale cylinder (default 1)\n")
+
 
 
 def cleanAndExit():
@@ -45,28 +58,93 @@ def main():
 	# -------------------------
 	# main 
 	# -------------------------
-	GPIO.setwarnings(False)
-	
-	gasCylinderNumber = 1
 
+	# -------------------------
+	# process call parameters
+	# -------------------------
+	opts = []
+	args = []
+	gasCylinderNumber = 1
 	tare = 0
 	emptyWeight = 0
 	fullWeight = 0
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
+	except getopt.GetoptError:
+		print("ERROR: options not correct")
+		usage()
+		sys.exit()
 	
-	hx = HX711(23, 24)
+	for o, a in opts:
+		if o == "--help" or o == "-h":
+			print("HELP")
+			usage()
+			sys.exit()
+		elif o == "--gasscale" or o == "-g":
+			gasCylinderNumber = int(a)
+
+	for a in args:
+		print("further argument: ", a)
+
+	# -------------------------
+	# gpio warnings off
+	# -------------------------
+	GPIO.setwarnings(False)
+
+	# -------------------------
+	# read defaults
+	# -------------------------
+	(emptyWeight, fullWeight, pin_dout, pin_sck, channel, refUnit) = CaravanPiFiles.readGasScale(gasCylinderNumber)
+	print ("bisherige Werte:")
+	print ("Leergewicht Flasche: ", emptyWeight)
+	print ("max. Gas-Gewicht: ", fullWeight)
+	print ("Pin DOUT: ", pin_dout)
+	print ("Pin SCK: ", pin_sck)
+	print ("Channel: >>", channel, "<<")
+	print ("Reference Unit: ", refUnit)
+
+	hx = HX711(pin_dout, pin_sck)
 	hx.set_reading_format("MSB", "MSB")
-	hx.set_reference_unit(205)
+
+	if channel == "A":
+		hx.set_reference_unit_A(refUnit)
+	elif channel == "B":
+		hx.set_reference_unit_B(refUnit)
+	else:
+		print("invalid HX711 channel: ", channel)		
+		print("set channel to A")
+		channel = "A"		
+		hx.set_reference_unit_A(refUnit)
 
 	hx.reset()
 
-	(tare, emptyWeight, fullWeight) = CaravanPiFiles.readGasScale(gasCylinderNumber)
-
 	try:
+<<<<<<< HEAD
+		# read sensor
+		if channel == "B":
+			weight = hx.get_weight_B(5)
+		else:
+			weight = hx.get_weight_A(5)
+
+		print ("aktuelle Messung Gaswaage: ", weight)
+
+		if (weight<0):
+			weight=weight*(-1)
+
+		print ("aktuelle Messung Gaswaage: ", weight)
+
+=======
 		weight = hx.get_weight(5)
 		print (weight)
+>>>>>>> a7f9a4675a265bd46f7baf1342b7f2dee8f187a2
 
 		nettoWeight = weight - tare - emptyWeight
 		nettoLevel = (nettoWeight/fullWeight) * 100
+
+		print ("Nettogewicht Gas: ", nettoWeight)
+		print ("Nettofüllgrad: ", nettoLevel)
+
 		write2file(nettoWeight, nettoLevel)
 
 	except (KeyboardInterrupt, SystemExit):

@@ -2,7 +2,7 @@
 # coding=utf-8
 # CaravanPiClass.py
 #
-# liest und schreibt Werte aus den und in die default files
+# prüft die Existenz eines Prozesses anhand dessen Namens
 #
 #Since this class is not initialized via __init__, the functions do not contain a fist parameter self
 #

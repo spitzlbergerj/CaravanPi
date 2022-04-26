@@ -120,7 +120,6 @@ def main():
 	hx.reset()
 
 	try:
-<<<<<<< HEAD
 		# read sensor
 		if channel == "B":
 			weight = hx.get_weight_B(5)
@@ -134,10 +133,6 @@ def main():
 
 		print ("aktuelle Messung Gaswaage: ", weight)
 
-=======
-		weight = hx.get_weight(5)
-		print (weight)
->>>>>>> a7f9a4675a265bd46f7baf1342b7f2dee8f187a2
 
 		nettoWeight = weight - tare - emptyWeight
 		nettoLevel = (nettoWeight/fullWeight) * 100

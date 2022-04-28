@@ -10,6 +10,7 @@ Version 1 | allererste Versuche, nicht für eine Auftragsproduktion geeignet
 Version 2 | erste Version, die ich bei einem Dienstleister habe produzieren lassen <br/> enthält jedoch einen Fehler. Die Verdrahtung des VCC des Radar-Sensors war fälschlicherweise 3,3 V anstatt 5V
 Version 3 | korrigierte Version, die ich erstmals bei JLCPCB inkl. SMD Bestückung habe fertigen lassen
 Version 4 | Umstellung aller IC auf SMD
+Version 5 | nur SMD Bauteile, Fehlerkorrektur R24 1-wire, Gaswaagen-Klemme 6 polig für A und B Kanal des HX711
 
 # Fertigung bei JLCPCB
 

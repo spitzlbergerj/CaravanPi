@@ -13,7 +13,7 @@
 * * * * * python3 -u /home/pi/CaravanPi/temperature/temp2file.py  >/home/pi/CaravanPi/.log/temp2file.log 2>&1
 
 # Gasflaschenwaage alle 60 Sekunden auslesen
-* * * * * python3 -u /home/pi/CaravanPi/gas-weight/gasScale2file.py  >/home/pi/CaravanPi/.log/gasScale2file.log 2>&1
+* * * * * python3 -u /home/pi/CaravanPi/gas-weight/gasScale2file.py -g 1 >/home/pi/CaravanPi/.log/gasScale2file.log 2>&1
 
 # Klimasensoren alle 60 Sekunden auslesen
 * * * * * python3 -u /home/pi/CaravanPi/climate/climate2file.py 76 1  >/home/pi/CaravanPi/.log/climate2file76.log 2>&1

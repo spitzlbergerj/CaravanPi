@@ -39,19 +39,20 @@ def cleanAndExit():
     print ("Bye!")
     sys.exit()
 
-def write2file(wert, relativ):
+def write2file(gasCylinderNumber, wert, relativ):
 	try:
-		dateiName = "/home/pi/CaravanPi/values/gasScale"
+		strGasScaleBez = "gasScale"+'{:.0f}'.format(gasCylinderNumber)
+		dateiName = "/home/pi/CaravanPi/values/"+strGasScaleBez
 		file = open(dateiName, 'a')
 		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 		strWert = '{:.0f}'.format(wert)
 		strRelativ = '{:.0f}'.format(relativ)
-		file.write("\n"+ "gasScale " + str_from_time_now + " " + strWert + " " + strRelativ)
+		file.write("\n"+ strGasScaleBez + " " + str_from_time_now + " " + strWert + " " + strRelativ)
 		file.close()
 		return 0
 	except:
 		# Schreibfehler
-		print ("Die Datei konnte nicht geschrieben werden.")
+		print ("Die Datei " + dateiName + " konnte nicht geschrieben werden.")
 		return -1
 
 def main():
@@ -140,7 +141,7 @@ def main():
 		print ("Nettogewicht Gas: ", nettoWeight)
 		print ("Nettofüllgrad: ", nettoLevel)
 
-		write2file(nettoWeight, nettoLevel)
+		write2file(gasCylinderNumber, nettoWeight, nettoLevel)
 
 	except (KeyboardInterrupt, SystemExit):
 		cleanAndExit()

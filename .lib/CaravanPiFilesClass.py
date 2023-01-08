@@ -17,6 +17,7 @@ class CaravanPiFiles:
 	# -----------------------------------------------
 
 	# files
+	fileCaravanPiDefaults = "/home/pi/CaravanPi/defaults/caravanpiDefaults"
 	fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
 	fileDimensions = "/home/pi/CaravanPi/defaults/dimensionsCaravan"
 	# the gas cylinder number is appended to the file name specified here
@@ -25,6 +26,73 @@ class CaravanPiFiles:
 	fileTanks = "/home/pi/CaravanPi/defaults/tankDefaults"
 	fileVoltage = "/home/pi/CaravanPi/defaults/voltageDefaults"
 	fileTestColor = "/home/pi/CaravanPi/temp/testColor"
+
+	# ---------------------------------------------------------------------------------------------
+	# CaravanPiDefaults
+	#
+	# content of file
+	# 		adjustment X		X value, if caravan is in horizontal position
+	#		adjustment Y		Y value, if caravan is in horizontal position
+	#		adjustment Z		Z value, if caravan is in horizontal position
+	#		tolerance X			deviation in X direction, which is still considered horizontal 
+	#		tolerance Y			deviation in Y direction, which is still considered horizontal
+	#		approximation X		at which deviation from the horizontal the LEDs should flash
+	#		approximation Y		at which deviation from the horizontal the LEDs should flash
+	#		distance right		distance of the sensor from the right side
+	#		distance front		distance of the sensor from the front side
+	# 		distance axis		Distance of the sensor from the axis in longitudinal direction
+	# ----------------------------------------------------------------------------------------------
+
+	def readCaravanPiDefaults():
+		try:
+			file = open(CaravanPiFiles.fileCaravanPiDefaults)
+			
+			# Überschrift Anzahl Waagen
+			file.readline().strip()
+			strAnzahlWaagen = file.readline().strip()
+			# Überschrift Anzahl Tanks
+			file.readline().strip()
+			strAnzahlTanks = file.readline().strip()
+			
+			file.close()
+			
+			anzWaagen = int(strAnzahlWaagen)
+			anzTanks = int(strAnzahlTanks)
+			
+			return(anzWaagen, anzTanks)
+		except:
+			# Lesefehler
+			print ("readAdjustment: The file ", CaravanPiFiles.fileCaravanPiDefaults, " could not be read. unprocessed Error:", sys.exc_info()[0])
+			return(0,0,0,0,0,0,0,0,0,0)
+
+	def writeCaravanPiDefaults(test, screen, anzWaagen, anzTanks):
+		try:
+			strAnzahlWaagen = '{:.0f}'.format(anzWaagen)
+			strAnzahlTanks = '{:.0f}'.format(anzTanks)
+			
+			if test == 1:
+				file = open(CaravanPiFiles.fileCaravanPiDefaults+"_test", 'w')
+			else:
+				file = open(CaravanPiFiles.fileCaravanPiDefaults, 'w')
+		
+			file.write("Anzahl Waagen\n")
+			file.write(strAnzahlWaagen + "\n")
+			file.write("Anzahl Tanks\n")
+			file.write(strAnzahlTanks + "\n")
+			
+			file.close()
+			
+			if screen == 1:
+				print("Anzahl Waagen: ",strAnzahlWaagen)
+				print("Anzahl Tanks: ",strAnzahlTanks)
+			
+			return 0
+		except:
+			print("writeAdjustments: The file ", CaravanPiFiles.fileCaravanPiDefaults, " could not be written - unprocessed Error:", sys.exc_info()[0])
+			raise
+			return -1
+
+
 
 	# ---------------------------------------------------------------------------------------------
 	# adjustmentPosition
@@ -437,5 +505,3 @@ class CaravanPiFiles:
 			print("writeTestColor: The file ", CaravanPiFiles.fileTestColor, " could not be written - unprocessed Error:", sys.exc_info()[0])
 			raise
 			return -1
-
-

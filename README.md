@@ -17,8 +17,6 @@ Details siehe / Please view [CHANGELOG.md](https://github.com/spitzlbergerj/Cara
 
 ## aktuelle ToDos
 
-- Unstabilität Temperatursensoren am 1-wire
-- Gaswaage nutzt flasche Bibliothek
 - Füllstandssensoren Einbau und Konfiguration nicht ausreichend dokumentiert
 - neue Funktion: Überwachung und Anzeige inkl. Warnung für die 230V Versorgung und die 12V Batterie
 - neue Funktion: Gassensor zur Überwachung einer möglichwerweise schädlichen Gas-Konzentration inkl. Warnung

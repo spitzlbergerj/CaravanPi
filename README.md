@@ -44,6 +44,7 @@ front | back
 Alle zum Bestellen der Platine benötigten Angaben und Dateien befinden sich im Verzeichnis circuit-board | All information and files needed to order the board are located in the directory circuit-board
 Die Platine ist aus SMD Bauteilen aufgebaut. Als Klemmen werden WAGO Klemmen verwendet. | The board is built from SMD components. WAGO PCB terminal blocks are used as cable clamps.
 
+![V5 back - front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-V5-Fraont-Back.jpg) 
 
 ## Functionality
 The CaravanPi has actually the following functionalities:

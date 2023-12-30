@@ -3,12 +3,22 @@
 # filesClass.py
 #
 # liest und schreibt Werte aus den und in die default files
+# 
+# 2023-12 	Umbau zur Nutzung eines xml Files anststt vieler Konfigurationsdateien
+#         	dabei soll die "Abwaertskompatibilitaet" erhalten bleiben. 
+#         	dieser Kompatibilitaetscode (mit COMPATIBILITY CODE markiert) kann spaeter entfernt werden
+#         	Coding wurde unterstuetzt von ChatGPT4
 #
-#Since this class is not initialized via __init__, the functions do not contain a fist parameter self
+#			Die Parameter test und screen in den Schreibfunktionen sind mit der Einfuehrung der xml Struktur 
+#			obsolet geworden und sind lediglich aus Kompatibilitaetsgruednen noch da.
 #
 #-------------------------------------------------------------------------------
 
-import sys
+# import sys
+import xml.etree.ElementTree as ET
+import os
+import shutil
+import xml.dom.minidom
 
 class CaravanPiFiles:
 
@@ -16,21 +26,91 @@ class CaravanPiFiles:
 	# global variables
 	# -----------------------------------------------
 
-	# files
-	fileCaravanPiDefaults = "/home/pi/CaravanPi/defaults/caravanpiDefaults"
-	fileAdjustments = "/home/pi/CaravanPi/defaults/adjustmentPosition"
-	fileDimensions = "/home/pi/CaravanPi/defaults/dimensionsCaravan"
-	# the gas cylinder number is appended to the file name specified here
-	fileGasScale = "/home/pi/CaravanPi/defaults/gasScaleDefaults"
-	# the tank number is appended to the file name specified here
-	fileTanks = "/home/pi/CaravanPi/defaults/tankDefaults"
-	fileVoltage = "/home/pi/CaravanPi/defaults/voltageDefaults"
-	fileTestColor = "/home/pi/CaravanPi/temp/testColor"
+	xml_file_path = "/home/pi/CaravanPi/defaults/caravanpiConfig.xml"
+
+	# -----------------------------------------------
+	# COMPATIBILITY CODE - Anfang
+	# -----------------------------------------------
+	# Mapping for caravanpiDefaults file
+	mappings = {
+		"caravanpiDefaults": [
+			"countGasScales", 
+			"countTanks", 
+			"write2MariaDB", 
+			"send2MQTT", 
+			"MQTTserver", 
+			"MQTTport", 
+			"MQTTuser", 
+			"MQTTpassword", 
+		],
+		"adjustmentPosition": [
+			"adjustX", 
+			"adjustY", 
+			"adjustZ", 
+			"toleranceX", 
+			"toleranceY", 
+			"approximationX", 
+			"approximationY", 
+			"distRight", 
+			"distFront", 
+			"distAxis"
+		],
+		"dimensionsCaravan": [
+			"lengthOverAll", 
+			"widthOverAll", 
+			"lengthBody"
+		],
+		"gasScaleDefaults": [
+			"emptyWeight", 
+			"fullWeight", 
+			"pin_dout", 
+			"pin_sck", 
+			"strChannel", 
+			"refUnit"
+		],
+		"tankDefaults": [
+			"level1", 
+			"level2", 
+			"level3", 
+			"level4"
+		],
+		"voltageDefaults": [
+			"level1", 
+			"level2", 
+			"level3"
+		],
+		"testColor": [
+			"color"
+		]
+	}
+	# -----------------------------------------------
+	# COMPATIBILITY CODE - Ende
+	# -----------------------------------------------
+
+	def __init__(self):
+		# COMPATIBILITY CODE - Pruefen, ob alte Dateien in das xml File migriert werden muessen
+		self.check_create_xml()
+		self.migrate_old_configs()
+
+	def format_xml(element, level=0):
+		indent = "\n" + level*"  "
+		if len(element):
+			if not element.text or not element.text.strip():
+				element.text = indent + "  "
+			if not element.tail or not element.tail.strip():
+				element.tail = indent
+			for elem in element:
+				format_xml(elem, level+1)
+			if not elem.tail or not elem.tail.strip():
+				elem.tail = indent
+		else:
+			if level and (not element.tail or not element.tail.strip()):
+				element.tail = indent
 
 	# ---------------------------------------------------------------------------------------------
 	# CaravanPiDefaults
 	#
-	# content of file
+	# meaning of data fields
 	# 		adjustment X		X value, if caravan is in horizontal position
 	#		adjustment Y		Y value, if caravan is in horizontal position
 	#		adjustment Z		Z value, if caravan is in horizontal position
@@ -43,56 +123,42 @@ class CaravanPiFiles:
 	# 		distance axis		Distance of the sensor from the axis in longitudinal direction
 	# ----------------------------------------------------------------------------------------------
 
-	def readCaravanPiDefaults():
-		try:
-			file = open(CaravanPiFiles.fileCaravanPiDefaults)
-			
-			# Überschrift Anzahl Waagen
-			file.readline().strip()
-			strAnzahlWaagen = file.readline().strip()
-			# Überschrift Anzahl Tanks
-			file.readline().strip()
-			strAnzahlTanks = file.readline().strip()
-			
-			file.close()
-			
-			anzWaagen = int(strAnzahlWaagen)
-			anzTanks = int(strAnzahlTanks)
-			
-			return(anzWaagen, anzTanks)
-		except:
-			# Lesefehler
-			print ("readAdjustment: The file ", CaravanPiFiles.fileCaravanPiDefaults, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return(0,0,0,0,0,0,0,0,0,0)
+	def readCaravanPiDefaults(self):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		defaults_element = root.find("caravanpiDefaults")
+		if defaults_element is not None:
+			return (
+				defaults_element.find("countGasScales").text if defaults_element.find("countGasScales") is not None else None,
+				defaults_element.find("countTanks").text if defaults_element.find("countTanks") is not None else None,
+				defaults_element.find("write2MariaDB").text if defaults_element.find("write2MariaDB") is not None else None,
+				defaults_element.find("send2MQTT").text if defaults_element.find("send2MQTT") is not None else None,
+				defaults_element.find("MQTTserver").text if defaults_element.find("MQTTserver") is not None else None,
+				defaults_element.find("MQTTport").text if defaults_element.find("MQTTport") is not None else None,
+				defaults_element.find("MQTTuser").text if defaults_element.find("MQTTuser") is not None else None,
+				defaults_element.find("MQTTpassword").text if defaults_element.find("MQTTpassword") is not None else None
+			)
+		else:
+			return None
 
-	def writeCaravanPiDefaults(test, screen, anzWaagen, anzTanks):
-		try:
-			strAnzahlWaagen = '{:.0f}'.format(anzWaagen)
-			strAnzahlTanks = '{:.0f}'.format(anzTanks)
-			
-			if test == 1:
-				file = open(CaravanPiFiles.fileCaravanPiDefaults+"_test", 'w')
-			else:
-				file = open(CaravanPiFiles.fileCaravanPiDefaults, 'w')
+	def writeCaravanPiDefaults(self, countGasScales, countTanks, write2MariaDB, send2MQTT, MQTTserver, MQTTport, MQTTUser, MQTTpassword):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		defaults_element = root.find("caravanpiDefaults")
+		if defaults_element is None:
+			defaults_element = ET.SubElement(root, "caravanpiDefaults")
 		
-			file.write("Anzahl Waagen\n")
-			file.write(strAnzahlWaagen + "\n")
-			file.write("Anzahl Tanks\n")
-			file.write(strAnzahlTanks + "\n")
-			
-			file.close()
-			
-			if screen == 1:
-				print("Anzahl Waagen: ",strAnzahlWaagen)
-				print("Anzahl Tanks: ",strAnzahlTanks)
-			
-			return 0
-		except:
-			print("writeAdjustments: The file ", CaravanPiFiles.fileCaravanPiDefaults, " could not be written - unprocessed Error:", sys.exc_info()[0])
-			raise
-			return -1
+		for key, value in [("countGasScales", countGasScales), ("countTanks", countTanks), ("write2MariaDB", write2MariaDB), ("send2MQTT", send2MQTT), ("MQTTserver", MQTTserver), ("MQTTport", MQTTport), ("MQTTUser", MQTTUser), ("MQTTpassword", MQTTpassword)]:
+			element = defaults_element.find(key)
+			if element is None:
+				element = ET.SubElement(defaults_element, key)
+			element.text = str(value)
+		
+		# Formatieren des XML-Baums vor dem Speichern
+		format_xml(root)
 
-
+		# Schreiben der formatierten XML-Daten in die Datei
+		tree.write(self.xml_file_path)
 
 	# ---------------------------------------------------------------------------------------------
 	# adjustmentPosition
@@ -110,89 +176,44 @@ class CaravanPiFiles:
 	# 		distance axis		Distance of the sensor from the axis in longitudinal direction
 	# ----------------------------------------------------------------------------------------------
 
-	def readAdjustment():
-		try:
-			file = open(CaravanPiFiles.fileAdjustments)
-			
-			strAdjustX = file.readline().strip()
-			strAdjustY = file.readline().strip()
-			strAdjustZ = file.readline().strip()
-			strtoleranceX = file.readline().strip()
-			strtoleranceY = file.readline().strip()
-			strApproximationX = file.readline().strip()
-			strApproximationY = file.readline().strip()
-			strDistRight = file.readline().strip()
-			strDistFront = file.readline().strip()
-			strDistAxis = file.readline().strip()
-			
-			file.close()
-			
-			adjustX = float(strAdjustX)
-			adjustY = float(strAdjustY)
-			adjustZ = float(strAdjustZ)
-			toleranceX = float(strtoleranceX)
-			toleranceY = float(strtoleranceY)
-			approximationX = float(strApproximationX)
-			approximationY = float(strApproximationY)
-			distRight = float(strDistRight)
-			distFront = float(strDistFront)
-			distAxis = float(strDistAxis)
-			
-			return(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis)
-		except:
-			# Lesefehler
-			print ("readAdjustment: The file ", CaravanPiFiles.fileAdjustments, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return(0,0,0,0,0,0,0,0,0,0)
+	def readAdjustment(self):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		adjustment_element = root.find("adjustmentPosition")
+		if adjustment_element is not None:
+			return (
+				adjustment_element.find("adjustX").text if adjustment_element.find("adjustX") is not None else None,
+				adjustment_element.find("adjustY").text if adjustment_element.find("adjustY") is not None else None,
+				adjustment_element.find("adjustZ").text if adjustment_element.find("adjustZ") is not None else None,
+				adjustment_element.find("toleranceX").text if adjustment_element.find("toleranceX") is not None else None,
+				adjustment_element.find("toleranceY").text if adjustment_element.find("toleranceY") is not None else None,
+				adjustment_element.find("approximationX").text if adjustment_element.find("approximationX") is not None else None,
+				adjustment_element.find("approximationY").text if adjustment_element.find("approximationY") is not None else None,
+				adjustment_element.find("distRight").text if adjustment_element.find("distRight") is not None else None,
+				adjustment_element.find("distFront").text if adjustment_element.find("distFront") is not None else None,
+				adjustment_element.find("distAxis").text if adjustment_element.find("distAxis") is not None else None
+			)
+		else:
+			return None
 
-	def writeAdjustment(test, screen, adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis):
-		try:
-			strAdjustX = '{:.6f}'.format(adjustX)
-			strAdjustY = '{:.6f}'.format(adjustY)
-			strAdjustZ = '{:.6f}'.format(adjustZ)
-			strtoleranceX = '{:.6f}'.format(toleranceX)
-			strtoleranceY = '{:.6f}'.format(toleranceY)
-			strApproximationX = '{:.6f}'.format(approximationX)
-			strApproximationY = '{:.6f}'.format(approximationY)
-			strDistRight = '{:.0f}'.format(distRight)
-			strDistFront = '{:.0f}'.format(distFront)
-			strDistAxis = '{:.0f}'.format(distAxis)
-			
-			if test == 1:
-				file = open(CaravanPiFiles.fileAdjustments+"_test", 'w')
-			else:
-				file = open(CaravanPiFiles.fileAdjustments, 'w')
+	def writeAdjustment(self, adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		adjustment_element = root.find("adjustmentPosition")
+		if adjustment_element is None:
+			adjustment_element = ET.SubElement(root, "adjustmentPosition")
 		
-			file.write(strAdjustX + "\n")
-			file.write(strAdjustY + "\n")
-			file.write(strAdjustZ + "\n")
-			file.write(strtoleranceX + "\n")
-			file.write(strtoleranceY + "\n")
-			file.write(strApproximationX + "\n")
-			file.write(strApproximationY + "\n")
-			file.write(strDistRight + "\n")
-			file.write(strDistFront + "\n")
-			file.write(strDistAxis)
-			
-			file.close()
-			
-			if screen == 1:
-				print("adjustX: ",strAdjustX)
-				print("AdjustY: ",strAdjustY)
-				print("AdjustZ: ",strAdjustZ)
-				print("toleranceX: ",strtoleranceX)
-				print("toleranceY: ",strtoleranceY)
-				print("ApproximationX: ",strApproximationX)
-				print("ApproximationY: ",strApproximationY)
-				print("DistRight: ",strDistRight)
-				print("DistFront: ",strDistFront)
-				print("DistAxis: ",strDistAxis)
+		for key, value in [("adjustX", adjustX), ("adjustY", adjustY), ("adjustZ", adjustZ), ("toleranceX", toleranceX), ("toleranceY", toleranceY), ("approximationX", approximationX), ("approximationY", approximationY), ("distRight", distRight), ("distFront", distFront), ("distAxis", distAxis)]:
+			element = adjustment_element.find(key)
+			if element is None:
+				element = ET.SubElement(adjustment_element, key)
+			element.text = str(value)
+		
+		# Formatieren des XML-Baums vor dem Speichern
+		format_xml(root)
 
-			
-			return 0
-		except:
-			print("writeAdjustments: The file ", CaravanPiFiles.fileAdjustments, " could not be written - unprocessed Error:", sys.exc_info()[0])
-			raise
-			return -1
+		# Schreiben der formatierten XML-Daten in die Datei
+		tree.write(self.xml_file_path)
 
 	# ---------------------------------------------------------------------------------------------
 	# dimensions
@@ -203,53 +224,37 @@ class CaravanPiFiles:
 	#		length body			legth of the body of the caravan without drawbar
 	# ----------------------------------------------------------------------------------------------
 
-	def readDimensions():
-		try:
-			file = open(CaravanPiFiles.fileDimensions)
-			
-			strLengthOverAll = file.readline().strip()
-			strWidth = file.readline().strip()
-			strLengthBody = file.readline().strip()
-			
-			file.close()
-			
-			lengthOverAll = float(strLengthOverAll)
-			lengthBody = float(strLengthBody)
-			width = float(strWidth)
-			
-			return(lengthOverAll, width, lengthBody)
-		except:
-			# Lesefehler
-			print ("readDimensions: The file ", CaravanPiFiles.fileDimensions, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return(0,0,0)
+	def readDimensions(self):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		dimensions_element = root.find("dimensionsCaravan")
+		if dimensions_element is not None:
+			return (
+				dimensions_element.find("lengthOverAll").text if dimensions_element.find("lengthOverAll") is not None else None,
+				dimensions_element.find("width").text if dimensions_element.find("width") is not None else None,
+				dimensions_element.find("lengthBody").text if dimensions_element.find("lengthBody") is not None else None
+			)
+		else:
+			return None
 
-	def writeDimensions(test, screen, lengthOverAll, width, lengthBody):
-		try:
-			strLengthOverAll = '{:.0f}'.format(lengthOverAll)
-			strWidth = '{:.0f}'.format(width)
-			strLengthBody = '{:.0f}'.format(lengthBody)
-			
-			if test == 1:
-				file = open(CaravanPiFiles.fileDimensions+"_test", 'w')
-			else:
-				file = open(CaravanPiFiles.fileDimensions, 'w')
-				
-			file.write(strLengthOverAll + "\n")
-			file.write(strWidth + "\n")
-			file.write(strLengthBody)
-			
-			file.close()
-			
-			if screen == 1:
-				print("lengthOverAll: ",strLengthOverAll)
-				print("width: ",strWidth)
-				print("lengthBody: ",strLengthBody)
-			
-			return 0
-		except:
-			print("writeDimensions: The file ", CaravanPiFiles.fileDimensions, " could not be written - unprocessed Error:", sys.exc_info()[0])
-			raise
-			return -1
+	def writeDimensions(self, lengthOverAll, width, lengthBody):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		dimensions_element = root.find("dimensionsCaravan")
+		if dimensions_element is None:
+			dimensions_element = ET.SubElement(root, "dimensionsCaravan")
+		
+		for key, value in [("lengthOverAll", lengthOverAll), ("width", width), ("lengthBody", lengthBody)]:
+			element = dimensions_element.find(key)
+			if element is None:
+				element = ET.SubElement(dimensions_element, key)
+			element.text = str(value)
+		
+		# Formatieren des XML-Baums vor dem Speichern
+		format_xml(root)
+
+		# Schreiben der formatierten XML-Daten in die Datei
+		tree.write(self.xml_file_path)
 
 
 	# ---------------------------------------------------------------------------------------------
@@ -262,77 +267,44 @@ class CaravanPiFiles:
 	# 		pin_sck			GPIO Pin HX711 SCK
 	# 		channel			Channel at HX711, only A or B
 	# 		refUnit			reference unit as divisor for HX711 values
+	#
 	# ----------------------------------------------------------------------------------------------
 
-	def readGasScale(gasCylinderNumber):
-		try:
-			filename = CaravanPiFiles.fileGasScale + '{:.0f}'.format(gasCylinderNumber)
-			file = open(filename)
-			
-			strEmptyWeight = file.readline().strip()
-			strFullWeight = file.readline().strip()
-			strPinDout = file.readline().strip()
-			strPinSck = file.readline().strip()
-			strChannel = file.readline().strip()
-			strRefUnit = file.readline().strip()
-			
-			file.close()
+	def readGasScale(self, gasCylinderNumber):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		gas_scale_element = root.find(f"gasScaleDefaults{gasCylinderNumber}")
+		if gas_scale_element is not None:
+			return (
+				gas_scale_element.find("emptyWeight").text if gas_scale_element.find("emptyWeight") is not None else None,
+				gas_scale_element.find("fullWeight").text if gas_scale_element.find("fullWeight") is not None else None,
+				gas_scale_element.find("pin_dout").text if gas_scale_element.find("pin_dout") is not None else None,
+				gas_scale_element.find("pin_sck").text if gas_scale_element.find("pin_sck") is not None else None,
+				gas_scale_element.find("strChannel").text if gas_scale_element.find("strChannel") is not None else None,
+				gas_scale_element.find("refUnit").text if gas_scale_element.find("refUnit") is not None else None
+			)
+		else:
+			return None
 
-			emptyWeight = float(strEmptyWeight)
-			fullWeight = float(strFullWeight)
-			pin_dout = int(strPinDout)
-			pin_sck = int(strPinSck)
-			refUnit = float(strRefUnit)
+	def writeGasScale(self, gasCylinderNumber, test, screen, emptyWeight, fullWeight, pin_dout, pin_sck, strChannel, refUnit):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		gas_scale_element = root.find(f"gasScaleDefaults{gasCylinderNumber}")
+		if gas_scale_element is None:
+			gas_scale_element = ET.SubElement(root, f"gasScaleDefaults{gasCylinderNumber}")
+		
+		# Create or update each configuration item
+		for key, value in [("emptyWeight", emptyWeight), ("fullWeight", fullWeight), ("pin_dout", pin_dout), ("pin_sck", pin_sck), ("strChannel", strChannel), ("refUnit", refUnit)]:
+			element = gas_scale_element.find(key)
+			if element is None:
+				element = ET.SubElement(gas_scale_element, key)
+			element.text = str(value)
+		
+		# Formatieren des XML-Baums vor dem Speichern
+		format_xml(root)
 
-			# print ("Leergewicht Flasche >>", strEmptyWeight, "<< >>", emptyWeight, "<<")
-			# print ("max Gasgewicht >>", strFullWeight, "<< >>", fullWeight, "<<")
-			# print ("Pin DOUT >>", strPinDout, "<< >>", pin_dout, "<<")
-			# print ("Pin SCK >>", strPinSck, "<< >>", pin_sck, "<<")
-			# print ("Channel >>", strChannel, "<<")
-			# print ("Ref Unit >>", strRefUnit, "<< >>", refUnit, "<<")
-
-			return(emptyWeight, fullWeight, pin_dout, pin_sck, strChannel, refUnit)
-		except:
-			# Lesefehler
-			print ("readGasScale: The file ", filename, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return(0,0,0,0,"",0)
-
-	def writeGasScale(gasCylinderNumber, test, screen, emptyWeight, fullWeight, pin_dout, pin_sck, strChannel, refUnit ):
-		try:
-			strEmptyWeight = '{:.0f}'.format(emptyWeight)
-			strFullWeight = '{:.0f}'.format(fullWeight)
-			strPinDout = '{:.0f}'.format(pin_dout)
-			strPinSck = '{:.0f}'.format(pin_sck)
-			strRefUnit = '{:.9f}'.format(refUnit)
-
-			filename = CaravanPiFiles.fileGasScale + '{:.0f}'.format(gasCylinderNumber)
-			if test == 1:
-				file = open(filename+"_test", 'w')
-			else:
-				file = open(filename, 'w')
-				
-			file.write(strEmptyWeight + "\n")
-			file.write(strFullWeight + "\n")
-			file.write(strPinDout + "\n")
-			file.write(strPinSck + "\n")
-			file.write(strChannel + "\n")
-			file.write(strRefUnit)
-			
-			file.close()
-			
-			if screen == 1:
-				print("emptyWeight: ",strEmptyWeight)
-				print("fullWeight: ",strFullWeight)
-				print("Pin dout: ",strPinDout)
-				print("Pin sck: ",strPinSck)
-				print("Channel: ",strChannel)
-				print("Reference Unit: ",strRefUnit)
-			
-			return 0
-		except:
-			print("writeGasScale: The file ", filename, " could not be written - unprocessed Error:", sys.exc_info()[0])
-			raise
-			return -1
+		# Schreiben der formatierten XML-Daten in die Datei
+		tree.write(self.xml_file_path)
 
 
 	# ---------------------------------------------------------------------------------------------
@@ -347,61 +319,39 @@ class CaravanPiFiles:
 	#		liter level 4		amount of water in the tank at level 4
 	# ----------------------------------------------------------------------------------------------
 
-	def readFillLevels(tankNumber):
-		try:
-			filename = CaravanPiFiles.fileTanks + '{:.0f}'.format(tankNumber)
-			file = open(filename)
-			
-			strLevel1 = file.readline().strip()
-			strLevel2 = file.readline().strip()
-			strLevel3 = file.readline().strip()
-			strLevel4 = file.readline().strip()
-			
-			file.close()
-			
-			level1 = float(strLevel1)
-			level2 = float(strLevel2)
-			level3 = float(strLevel3)
-			level4 = float(strLevel4)
-			
-			return(level1, level2, level3, level4)
-		except:
-			# Lesefehler
-			print ("readFillLevels: The file ", filename, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return(0,0,0)
+	def readFillLevels(self, tankNumber):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		tank_element = root.find(f"tankDefaults{tankNumber}")
+		if tank_element is not None:
+			return (
+				tank_element.find("level1").text if tank_element.find("level1") is not None else None,
+				tank_element.find("level2").text if tank_element.find("level2") is not None else None,
+				tank_element.find("level3").text if tank_element.find("level3") is not None else None,
+				tank_element.find("level4").text if tank_element.find("level4") is not None else None
+			)
+		else:
+			return None
 
-	def writeFillLevels(tankNumber, test, screen, level1, level2, level3, level4):
-		try:
-			strLevel1 = '{:.0f}'.format(level1)
-			strLevel2 = '{:.0f}'.format(level2)
-			strLevel3 = '{:.0f}'.format(level3)
-			strLevel4 = '{:.0f}'.format(level4)
-			
-			filename = CaravanPiFiles.fileTanks + '{:.0f}'.format(tankNumber)
-			if test == 1:
-				file = open(filename+"_test", 'w')
-			else:
-				file = open(filename, 'w')
-				
-			file.write(strLevel1 + "\n")
-			file.write(strLevel2 + "\n")
-			file.write(strLevel3 + "\n")
-			file.write(strLevel4)
-			
-			file.close()
-			
-			if screen == 1:
-				print("Fill Level 1 liter: ",strLevel1)
-				print("Fill Level 2 liter: ",strLevel2)
-				print("Fill Level 3 liter: ",strLevel3)
-				print("Fill Level 4 liter: ",strLevel4)
-			
-			return 0
-		except:
-			print("writeFillLevels: The file ", filename, " could not be written - unprocessed Error:", sys.exc_info()[0])
-			raise
-			return -1
+	def writeFillLevels(self, tankNumber, test, screen, level1, level2, level3, level4):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		tank_element = root.find(f"tankDefaults{tankNumber}")
+		if tank_element is None:
+			tank_element = ET.SubElement(root, f"tankDefaults{tankNumber}")
+		
+		# Create or update each configuration item
+		for key, value in [("level1", level1), ("level2", level2), ("level3", level3), ("level4", level4)]:
+			element = tank_element.find(key)
+			if element is None:
+				element = ET.SubElement(tank_element, key)
+			element.text = str(value)
+		
+		# Formatieren des XML-Baums vor dem Speichern
+		format_xml(root)
 
+		# Schreiben der formatierten XML-Daten in die Datei
+		tree.write(self.xml_file_path)
 
 	# ---------------------------------------------------------------------------------------------
 	# wide Voltage Level
@@ -414,55 +364,37 @@ class CaravanPiFiles:
 	#		voltage level 3		 Battery 100%
 	# ----------------------------------------------------------------------------------------------
 
-	def readVoltageLevels():
-		try:
-			filename = CaravanPiFiles.fileVoltage
-			file = open(filename)
-			
-			strLevel1 = file.readline().strip()
-			strLevel2 = file.readline().strip()
-			strLevel3 = file.readline().strip()
-			
-			file.close()
-			
-			level1 = float(strLevel1)
-			level2 = float(strLevel2)
-			level3 = float(strLevel3)
-			
-			return(level1, level2, level3)
-		except:
-			# Lesefehler
-			print ("readVoltageLevels: The file ", filename, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return(0,0,0)
+	def readVoltageLevels(self):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		voltage_element = root.find("voltageDefaults")
+		if voltage_element is not None:
+			return (
+				voltage_element.find("level1").text if voltage_element.find("level1") is not None else None,
+				voltage_element.find("level2").text if voltage_element.find("level2") is not None else None,
+				voltage_element.find("level3").text if voltage_element.find("level3") is not None else None
+			)
+		else:
+			return None
 
-	def writeVoltageLevels(test, screen, level1, level2, level3):
-		try:
-			strLevel1 = '{:.0f}'.format(level1)
-			strLevel2 = '{:.0f}'.format(level2)
-			strLevel3 = '{:.0f}'.format(level3)
-			
-			filename = CaravanPiFiles.fileVoltage
-			if test == 1:
-				file = open(filename+"_test", 'w')
-			else:
-				file = open(filename, 'w')
-				
-			file.write(strLevel1 + "\n")
-			file.write(strLevel2 + "\n")
-			file.write(strLevel3)
-			
-			file.close()
-			
-			if screen == 1:
-				print("Voltage Level 1 25% : ",strLevel1)
-				print("Voltage Level 2 50% : ",strLevel2)
-				print("Voltage Level 3 100% : ",strLevel3)
-			
-			return 0
-		except:
-			print("writeVoltageevels: The file ", filename, " could not be written - unprocessed Error:", sys.exc_info()[0])
-			raise
-			return -1
+	def writeVoltageLevels(self, level1, level2, level3):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		voltage_element = root.find("voltageDefaults")
+		if voltage_element is None:
+			voltage_element = ET.SubElement(root, "voltageDefaults")
+		
+		for key, value in [("level1", level1), ("level2", level2), ("level3", level3)]:
+			element = voltage_element.find(key)
+			if element is None:
+				element = ET.SubElement(voltage_element, key)
+			element.text = str(value)
+		
+		# Formatieren des XML-Baums vor dem Speichern
+		format_xml(root)
+
+		# Schreiben der formatierten XML-Daten in die Datei
+		tree.write(self.xml_file_path)
 
 
 	# ---------------------------------------------------------------------------------------------
@@ -472,36 +404,147 @@ class CaravanPiFiles:
 	# 		color			Color to show for testing LEDs 
 	# ----------------------------------------------------------------------------------------------
 
-	def readTestColor():
-		try:
-			file = open(CaravanPiFiles.fileTestColor)
-			strColor = file.readline().strip()
-			file.close()
-			
-			return(strColor)
-		except:
-			# Lesefehler
-			print ("readTestColor: The file ", CaravanPiFiles.fileTestColor, " could not be read. unprocessed Error:", sys.exc_info()[0])
-			return("")
+	def readTestColor(self):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		test_color_element = root.find("testColor")
+		if test_color_element is not None:
+			return test_color_element.find("color").text if test_color_element.find("color") is not None else None
+		else:
+			return None
 
-	def writeTestColor(test, screen, color):
-		try:
-			if color == "-2" or color == "-1" or color == "0" or color == "1" or color == "2": 
-				if test == 1:
-					file = open(CaravanPiFiles.fileTestColor+"_test", 'w')
-				else:
-					file = open(CaravanPiFiles.fileTestColor, 'w')
-					
-				file.write(color)
-				file.close()
-				
-				if screen == 1:
-					print("color: ",color)
-				
-				return 0
-			else:
-				return -2
-		except:
-			print("writeTestColor: The file ", CaravanPiFiles.fileTestColor, " could not be written - unprocessed Error:", sys.exc_info()[0])
-			raise
-			return -1
+	def writeTestColor(self, color):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		test_color_element = root.find("testColor")
+		if test_color_element is None:
+			test_color_element = ET.SubElement(root, "testColor")
+		
+		color_element = test_color_element.find("color")
+		if color_element is None:
+			color_element = ET.SubElement(test_color_element, "color")
+		color_element.text = str(color)
+		
+		# Formatieren des XML-Baums vor dem Speichern
+		format_xml(root)
+
+		# Schreiben der formatierten XML-Daten in die Datei
+		tree.write(self.xml_file_path)
+
+
+	# -----------------------------------------------
+	# COMPATIBILITY CODE - Anfang bis Dateiende
+	# -----------------------------------------------
+
+	# ---------------------------------------------------------------------------------------------
+	# check_create_xml
+	# Prüfen, ob es schon ein xml File gibt. Falls nein, dieses anlegen.
+	# ----------------------------------------------------------------------------------------------
+	def check_create_xml(self):
+		# Create XML file if it doesn't exist
+		if not os.path.exists(self.xml_file_path):
+			root = ET.Element("CaravanPiConfigurations")
+			tree = ET.ElementTree(root)
+			tree.write(self.xml_file_path)
+
+	# ---------------------------------------------------------------------------------------------
+	# migrate_old_configs
+	# Ueberfuehren der alten Konfigurationsdateien in das neue xml File.
+	# ----------------------------------------------------------------------------------------------
+	def migrate_old_configs(self):
+		# List of old configuration files
+		old_files = [
+			"/home/pi/CaravanPi/defaults/caravanpiDefaults",
+			"/home/pi/CaravanPi/defaults/adjustmentPosition",
+			"/home/pi/CaravanPi/defaults/dimensionsCaravan",
+			"/home/pi/CaravanPi/defaults/gasScaleDefaults1",
+			"/home/pi/CaravanPi/defaults/gasScaleDefaults2",
+			"/home/pi/CaravanPi/defaults/gasScaleDefaults3",
+			"/home/pi/CaravanPi/defaults/gasScaleDefaults4",
+			"/home/pi/CaravanPi/defaults/tankDefaults1",
+			"/home/pi/CaravanPi/defaults/tankDefaults2",
+			"/home/pi/CaravanPi/defaults/tankDefaults3",
+			"/home/pi/CaravanPi/defaults/tankDefaults4",
+			"/home/pi/CaravanPi/defaults/voltageDefaults",
+			"/home/pi/CaravanPi/defaults/testColor",
+		]
+		for file in old_files:
+			if os.path.exists(file):
+				self.migrate_file(file)
+
+	# ---------------------------------------------------------------------------------------------
+	# migrate_file
+	# Ueberfuehren einer alten Konfigurationsdatei
+	# ----------------------------------------------------------------------------------------------
+
+	def migrate_file(self, file_path):
+		# Check if the file exists, if not, exit the function
+		if not os.path.exists(file_path):
+			print(f"File not found: {file_path}")
+			return
+
+		# Extract the base name and number (if any) from the file name
+		file_name = os.path.basename(file_path)
+		# Assuming the number is at the end of the file name and is one digit
+		if file_name[-1].isdigit():
+			base_name = file_name[:-1]
+			number = file_name[-1]
+		else:
+			base_name = file_name
+			number = ""
+
+		# Create "_alt" directory if it does not exist
+		alt_dir = os.path.join(os.path.dirname(file_path), "_alt")
+		if not os.path.exists(alt_dir):
+			os.makedirs(alt_dir)
+
+		# Spezialfall fuer caravanpiDefaults, da diese Ueberschriften enthaelt
+		if base_name == "caravanpiDefaults":
+			self.migrate_caravanpi_defaults(file_path)
+			return
+
+		# Choose the mapping based on the base name
+		mapping = self.mappings.get(base_name, [])
+
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		# Adjust the XML element name to include the number for gasScaleDefaults and tankDefaults
+		config_element_name = f"{base_name}{number}" if number else base_name
+		config_element = ET.SubElement(root, config_element_name)
+
+		with open(file_path, 'r') as file:
+			for index, line in enumerate(file):
+				value = line.strip()
+				key = mapping[index] if index < len(mapping) else f"unknown{index}"
+				ET.SubElement(config_element, key).text = value
+
+		tree.write(self.xml_file_path)
+
+		# Move the original file to the "_alt" directory
+		shutil.move(file_path, os.path.join("/home/pi/CaravanPi/defaults/_alt", os.path.basename(file_path)))
+
+
+	def migrate_caravanpi_defaults(self, file_path):
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		defaults_element = ET.SubElement(root, "caravanpiDefaults")
+
+		with open(file_path, 'r') as file:
+			for line in file:
+				line = line.strip()
+				if "Anzahl Waagen" in line:
+					key = "countGasScales"
+					continue  # Skip to the next iteration to read the value
+				elif "Anzahl Tanks" in line:
+					key = "countTanks"
+					continue  # Skip to the next iteration to read the value
+				elif line:  # Check if line is not empty
+					ET.SubElement(defaults_element, key).text = line
+
+		# Setting additional fields to empty
+		for additional_key in ["write2MariaDB", "send2MQTT", "MQTTserver", "MQTTport", "MQTTuser", "MQTTpassword"]:
+			ET.SubElement(defaults_element, additional_key).text = ""
+
+		tree.write(self.xml_file_path)
+		shutil.move(file_path, os.path.join(os.path.dirname(file_path), "/home/pi/CaravanPi/defaults/_alt", os.path.basename(file_path)))
+		

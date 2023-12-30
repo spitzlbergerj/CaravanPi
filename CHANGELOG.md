@@ -6,7 +6,29 @@ In dieser Datei werde ich alle relevanten Änderungen am CaravanPi dokumentieren
 
 ---
 
-## V 1.1 - Fehlerkorrekturen und Erweiterungen (noch in Arbeit)
+## v2.0 Einführung MariaDB, Grafana, neues Backup, Configs per xml (noch in Arbeit)
+
+- **Konfiguration per xml Datei**
+  Bisher wurden für die Konfiguration der CaravnaPi Skripte Testdateien verwendet. Diese enthielten nur die Werte, nicht aber die Felderklärungen. Das machte das Lesen der Konfigurationsdateien praktisch unmöglich. Nun wurden diese Textdateien durch eine xml Datei ersetzt, in der alle Konfigurationen enthalten sind. Die xml Datei ist besser lesbar (Optimierung noch ausstehend, dass die xml datei mit Zeilenumbrüchen geschrieben wird).
+  Die Lese und Schreibskripte sind abwärtskompatibel. Werden alte Konfigurationsdateien gefunden, so werden diese in die xml Datei umgewandelt und in einem _alt Verzeichnis gesichert.
+
+- **Backup Skript ersetzt**
+  CaravanPi hatte bisher ein eigenes backup Skript. Dieses habe ich durch ein eigenes Repository ersetzt. 
+  Fortan wird https://github.com/spitzlbergerj/Raspberry-Pi-Backup-Cloud genutzt.
+  Noch offen: Dokumentation der Sicherung der MariaDB
+
+- **Einführung einer Datenbank zur Speicherung der Sensorwerte**
+
+- **Einführung von Grafana zur Darstellung der Sensorwerte als Verlauf**
+
+- **Überwachung der Landstrom-Versorgung und der Bordbatterie-Versorgung**
+
+- **Integration der Überwachung einer Liontron Litium Batterie**
+
+- **Dokumentation der Internet-Verbindung über eine Starlink-Antenne**
+
+
+## V 1.1 - Fehlerkorrekturen und Erweiterungen
 
 ### Hinzugefügt (Added)
 

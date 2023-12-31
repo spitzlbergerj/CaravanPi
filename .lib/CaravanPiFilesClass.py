@@ -18,7 +18,10 @@
 import xml.etree.ElementTree as ET
 import os
 import shutil
-import xml.dom.minidom
+import mysql.connector
+from mysql.connector import Error
+import paho.mqtt.client as mqtt
+import datetime
 
 class CaravanPiFiles:
 
@@ -28,6 +31,22 @@ class CaravanPiFiles:
 
 	xml_file_path = "/home/pi/CaravanPi/defaults/caravanpiConfig.xml"
 
+	values_file_path = "/home/pi/CaravanPi/values/"
+
+	write2file = None
+
+	write2MariaDB = None
+	MariaDBhost = None
+	MariaDBuser = None
+	MariaDBpasswd = None
+	MariaDBdatabase = None
+
+	send2MQTT = None
+	MQTTbroker = None
+	MQTTport = None
+	MQTTuser = None
+	MQTTpassword = None
+
 	# -----------------------------------------------
 	# COMPATIBILITY CODE - Anfang
 	# -----------------------------------------------
@@ -36,9 +55,14 @@ class CaravanPiFiles:
 		"caravanpiDefaults": [
 			"countGasScales", 
 			"countTanks", 
+			"write2file", 
 			"write2MariaDB", 
+			"MariaDBhost",
+			"MariaDBuser",
+			"MariaDBpasswd",
+			"MariaDBdatabase",
 			"send2MQTT", 
-			"MQTTserver", 
+			"MQTTbroker", 
 			"MQTTport", 
 			"MQTTuser", 
 			"MQTTpassword", 
@@ -87,40 +111,66 @@ class CaravanPiFiles:
 	# COMPATIBILITY CODE - Ende
 	# -----------------------------------------------
 
+	# ---------------------------------------------------------------------------------------------
+	# __init__
+	#
+	# wird jedesmal aufgerufen, wenn die Class erzeugt wird
+	# prüft, ob die Umstellung auf XML Datei noch zu machen ist
+	# setzt die globalen Variablen zur MariaDB und zum XML Versand
+	# ----------------------------------------------------------------------------------------------
+
 	def __init__(self):
 		# COMPATIBILITY CODE - Pruefen, ob alte Dateien in das xml File migriert werden muessen
 		self.check_create_xml()
 		self.migrate_old_configs()
+		# COMPATIBILITY CODE Ende
 
-	def format_xml(element, level=0):
-		indent = "\n" + level*"  "
-		if len(element):
+		# lesen der CaravanPiDefaults und setzen der Class globalen Parameter 
+		self.update_settings()
+
+	# ---------------------------------------------------------------------------------------------
+	# update_settings
+	#
+	# setzt die globalen Variable
+	# Funktion sollte in jeder  Schreibfunktion für Sensorwerte aufgerufen werden, damit das
+	# Schreiben der MariaDB und das Senden der MQTT Telegramme veranlasst wird, falls neu gesetzt
+	# ----------------------------------------------------------------------------------------------
+	def update_settings(self):
+		# Aktualisiert die Klassenattribute basierend auf der XML-Datei
+		defaults = self.readCaravanPiDefaults()
+		if defaults:
+			_, _, self.write2file, self.write2MariaDB, self.MariaDBhost, self.MariaDBuser, self.MariaDBpasswd, self.MariaDBdatabase, self.send2MQTT, self.MQTTbroker, self.MQTTport, self.MQTTuser, self.MQTTpassword = defaults
+
+	# ---------------------------------------------------------------------------------------------
+	# format_xml
+	#
+	# formatiert die XML, so dass diese besser lesbar wird
+	# ----------------------------------------------------------------------------------------------
+	def format_xml(self, element, level=0):
+		indent = "\n" + level * "  "
+		if len(element):  # Wenn das Element Kinder hat
 			if not element.text or not element.text.strip():
 				element.text = indent + "  "
 			if not element.tail or not element.tail.strip():
 				element.tail = indent
-			for elem in element:
-				format_xml(elem, level+1)
-			if not elem.tail or not elem.tail.strip():
-				elem.tail = indent
-		else:
+			for sub_element in element:
+				self.format_xml(sub_element, level + 1)
+			if not element.tail or not element.tail.strip():
+				element.tail = indent
+		else:  # Wenn das Element keine Kinder hat
 			if level and (not element.tail or not element.tail.strip()):
 				element.tail = indent
+
+	# =========================================================================================================================================================
+	# 
+	# Schreiben und Lesen der Default Werte
+	# 
+	# =========================================================================================================================================================
+
 
 	# ---------------------------------------------------------------------------------------------
 	# CaravanPiDefaults
 	#
-	# meaning of data fields
-	# 		adjustment X		X value, if caravan is in horizontal position
-	#		adjustment Y		Y value, if caravan is in horizontal position
-	#		adjustment Z		Z value, if caravan is in horizontal position
-	#		tolerance X			deviation in X direction, which is still considered horizontal 
-	#		tolerance Y			deviation in Y direction, which is still considered horizontal
-	#		approximation X		at which deviation from the horizontal the LEDs should flash
-	#		approximation Y		at which deviation from the horizontal the LEDs should flash
-	#		distance right		distance of the sensor from the right side
-	#		distance front		distance of the sensor from the front side
-	# 		distance axis		Distance of the sensor from the axis in longitudinal direction
 	# ----------------------------------------------------------------------------------------------
 
 	def readCaravanPiDefaults(self):
@@ -128,38 +178,60 @@ class CaravanPiFiles:
 		root = tree.getroot()
 		defaults_element = root.find("caravanpiDefaults")
 		if defaults_element is not None:
+			write2file = defaults_element.find("write2file").text == '1' if defaults_element.find("write2file") is not None else False
+			write2MariaDB = defaults_element.find("write2MariaDB").text == '1' if defaults_element.find("write2MariaDB") is not None else False
+			send2MQTT = defaults_element.find("send2MQTT").text == '1' if defaults_element.find("send2MQTT") is not None else False
+			mqtt_port = defaults_element.find("MQTTport").text if defaults_element.find("MQTTport") is not None else None
+
+			# Konvertierung von MQTTport in int, wenn vorhanden
+			try:
+				mqtt_port = int(mqtt_port) if mqtt_port is not None else None
+			except ValueError:
+				print("MQTTport konnte nicht in eine Ganzzahl umgewandelt werden.")
+				mqtt_port = None
+
 			return (
 				defaults_element.find("countGasScales").text if defaults_element.find("countGasScales") is not None else None,
 				defaults_element.find("countTanks").text if defaults_element.find("countTanks") is not None else None,
-				defaults_element.find("write2MariaDB").text if defaults_element.find("write2MariaDB") is not None else None,
-				defaults_element.find("send2MQTT").text if defaults_element.find("send2MQTT") is not None else None,
-				defaults_element.find("MQTTserver").text if defaults_element.find("MQTTserver") is not None else None,
-				defaults_element.find("MQTTport").text if defaults_element.find("MQTTport") is not None else None,
+				write2file,
+				write2MariaDB,
+				defaults_element.find("MariaDBhost").text if defaults_element.find("MariaDBhost") is not None else None,
+				defaults_element.find("MariaDBuser").text if defaults_element.find("MariaDBuser") is not None else None,
+				defaults_element.find("MariaDBpasswd").text if defaults_element.find("MariaDBpasswd") is not None else None,
+				defaults_element.find("MariaDBdatabase").text if defaults_element.find("MariaDBdatabase") is not None else None,
+				send2MQTT,
+				defaults_element.find("MQTTbroker").text if defaults_element.find("MQTTbroker") is not None else None,
+				mqtt_port,
 				defaults_element.find("MQTTuser").text if defaults_element.find("MQTTuser") is not None else None,
 				defaults_element.find("MQTTpassword").text if defaults_element.find("MQTTpassword") is not None else None
 			)
 		else:
 			return None
 
-	def writeCaravanPiDefaults(self, countGasScales, countTanks, write2MariaDB, send2MQTT, MQTTserver, MQTTport, MQTTUser, MQTTpassword):
+	def writeCaravanPiDefaults(self, countGasScales, countTanks, write2file, write2MariaDB, MariaDBhost, MariaDBuser, MariaDBpasswd, MariaDBdatabase, send2MQTT, MQTTbroker, MQTTport, MQTTuser, MQTTpassword):
 		tree = ET.parse(self.xml_file_path)
 		root = tree.getroot()
 		defaults_element = root.find("caravanpiDefaults")
 		if defaults_element is None:
 			defaults_element = ET.SubElement(root, "caravanpiDefaults")
 		
-		for key, value in [("countGasScales", countGasScales), ("countTanks", countTanks), ("write2MariaDB", write2MariaDB), ("send2MQTT", send2MQTT), ("MQTTserver", MQTTserver), ("MQTTport", MQTTport), ("MQTTUser", MQTTUser), ("MQTTpassword", MQTTpassword)]:
+		# Konvertierung der booleschen Werte in "0" oder "1"
+		write2file = '1' if write2file else '0'
+		write2MariaDB = '1' if write2MariaDB else '0'
+		send2MQTT = '1' if send2MQTT else '0'
+
+		for key, value in [("countGasScales", countGasScales), ("countTanks", countTanks), ("write2file", write2file), ("write2MariaDB", write2MariaDB), ("MariaDBhost", MariaDBhost), ("MariaDBuser", MariaDBuser), ("MariaDBpasswd", MariaDBpasswd), ("MariaDBdatabase", MariaDBdatabase), ("send2MQTT", send2MQTT), ("MQTTbroker", MQTTbroker), ("MQTTport", MQTTport), ("MQTTuser", MQTTuser), ("MQTTpassword", MQTTpassword)]:
 			element = defaults_element.find(key)
 			if element is None:
 				element = ET.SubElement(defaults_element, key)
 			element.text = str(value)
 		
 		# Formatieren des XML-Baums vor dem Speichern
-		format_xml(root)
+		self.format_xml(root)
 
 		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path)
-
+		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
+			
 	# ---------------------------------------------------------------------------------------------
 	# adjustmentPosition
 	#
@@ -210,10 +282,10 @@ class CaravanPiFiles:
 			element.text = str(value)
 		
 		# Formatieren des XML-Baums vor dem Speichern
-		format_xml(root)
+		self.format_xml(root)
 
 		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path)
+		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
 
 	# ---------------------------------------------------------------------------------------------
 	# dimensions
@@ -251,10 +323,10 @@ class CaravanPiFiles:
 			element.text = str(value)
 		
 		# Formatieren des XML-Baums vor dem Speichern
-		format_xml(root)
+		self.format_xml(root)
 
 		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path)
+		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
 
 
 	# ---------------------------------------------------------------------------------------------
@@ -301,10 +373,10 @@ class CaravanPiFiles:
 			element.text = str(value)
 		
 		# Formatieren des XML-Baums vor dem Speichern
-		format_xml(root)
+		self.format_xml(root)
 
 		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path)
+		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
 
 
 	# ---------------------------------------------------------------------------------------------
@@ -348,10 +420,10 @@ class CaravanPiFiles:
 			element.text = str(value)
 		
 		# Formatieren des XML-Baums vor dem Speichern
-		format_xml(root)
+		self.format_xml(root)
 
 		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path)
+		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
 
 	# ---------------------------------------------------------------------------------------------
 	# wide Voltage Level
@@ -391,10 +463,11 @@ class CaravanPiFiles:
 			element.text = str(value)
 		
 		# Formatieren des XML-Baums vor dem Speichern
-		format_xml(root)
+		self.format_xml(root)
 
 		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path)
+		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
+
 
 
 	# ---------------------------------------------------------------------------------------------
@@ -426,15 +499,193 @@ class CaravanPiFiles:
 		color_element.text = str(color)
 		
 		# Formatieren des XML-Baums vor dem Speichern
-		format_xml(root)
+		self.format_xml(root)
 
 		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path)
+		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
 
 
-	# -----------------------------------------------
+	# =========================================================================================================================================================
+	# 
+	# Schreiben und Lesen der jeweils aktuellen Sensor Werte
+	# 
+	# =========================================================================================================================================================
+
+	def climateWrite(self, chip_id, device, temperature, pressure, humidity):
+		try:
+			sensorId = "BME280-" + str(chip_id) + "-" + str(device)
+
+			if self.write2file:
+				print("Datei schreiben")
+				dateiName = self.values_file_path + sensorId
+				file = open(dateiName, 'a')
+				str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+				strTemperature = '{:.1f}'.format(temperature)
+				strPressure = '{:.1f}'.format(pressure)
+				strHumidity = '{:.1f}'.format(humidity)
+				file.write("\n"+ sensorId + " " + str_from_time_now + " " + strTemperature + " " + strPressure + " " + strHumidity)
+				file.close()
+
+			if self.write2MariaDB:
+				print("Datenbank schreiben")
+
+				# Datenbank öffnen
+				connection = self.create_db_connection()
+
+				# Daten in die Tabelle schreiben
+				table_columns = ['sensor_id', 'zeitstempel', 'temperatur', 'luftdruck', 'luftfeuchtigkeit']
+				table_values = (sensorId, "", temperature, pressure, humidity)
+				self.insert_into_table(connection, 'klimasensor', table_columns, table_values)
+				
+				# Datenbank schließen
+				connection.close()
+
+			if self.send2MQTT:
+				print("senden an MQTT")
+
+				# MQTT Connection öffnen
+				client = self.create_mqtt_connection()
+
+				# Daten versenden
+				subtopics = ['temperatur', 'luftdruck', 'luftfeuchtigkeit']
+				values = (temperature, pressure, humidity)
+				self.send_mqtt_messages(client, 'klimasensor', sensorId, subtopics, values)
+				
+				# Datenbank schließen
+				client.disconnect()
+			
+			return 0
+		except Error as e:
+			# Fehler
+			print ("Die Sensordaten konnten nicht geschrieben/gesendet werden: Fehler: '{e}'")
+			return -1
+
+
+
+	# =========================================================================================================================================================
+	# 
+	# Datenbank Funktionen MariaDB
+	# 
+	# =========================================================================================================================================================
+
+	# ---------------------------------------------------------------------------------------------
+	# create_db_connection
+	# Datenbank Verbindung aufbauen
+	# ----------------------------------------------------------------------------------------------
+
+	def create_db_connection(self):
+		# zunächst die Defaultwerte in der Default xml lesen
+		self.update_settings()
+
+		connection = None
+		try:
+			connection = mysql.connector.connect(
+				host=self.MariaDBhost,
+				user=self.MariaDBuser,
+				passwd=self.MariaDBpasswd,
+				database=self.MariaDBdatabase
+			)
+			print("MariaDB connection successful")
+		except Error as e:
+			print(f"MariaDB - The error '{e}' occurred")
+
+		return connection
+
+	# ---------------------------------------------------------------------------------------------
+	# execute_query
+	# beliebige SQL Querys ausführen
+	# ----------------------------------------------------------------------------------------------
+
+	def execute_query(self, connection, query, data):
+		cursor = connection.cursor()
+		try:
+			cursor.execute(query, data)
+			connection.commit()
+			print("Query successful")
+		except Error as e:
+			print(f"The error '{e}' occurred")
+
+	# ---------------------------------------------------------------------------------------------
+	# insert_into_table
+	# Einfügen von Daten in eine beliebige Tabelle
+	# Struktur und Werte werden als Tupel übergeben
+	# Achtung: Falls eine Spalte zeitstempel in columns vorkommt, wird automatisch CURRENT_TIMESTAMP eingefügt.
+	#          in diesem Fall muss schon beim Aufruf an der richtigen Stelle in values ein Wert, z.B. none, vorhanden sein
+	# ----------------------------------------------------------------------------------------------
+
+	def insert_into_table(self, connection, table_name, columns, values):
+		# Stellen Sie sicher, dass Subtopics und Values die gleiche Länge haben
+		if len(columns) != len(values):
+			raise ValueError("Spalten und Values müssen die gleiche Anzahl von Elementen haben.")
+
+		# Überprüfen, ob 'zeitstempel' in den Spalten ist und CURRENT_TIMESTAMP einsetzen
+		timestamp_index = None
+		if "zeitstempel" in columns:
+			timestamp_index = columns.index("zeitstempel")
+			columns = [col for col in columns if col != "zeitstempel"]  # 'zeitstempel' aus den Spalten entfernen
+			values = tuple(value for i, value in enumerate(values) if i != timestamp_index)  # entsprechenden Wert entfernen
+
+		# Erstellen der SQL-Abfrage
+		columns_string = ', '.join(columns + (["zeitstempel"] if timestamp_index is not None else []))
+		values_string = ', '.join(['%s'] * len(values) + (["CURRENT_TIMESTAMP"] if timestamp_index is not None else []))
+		query = f"INSERT INTO {table_name} ({columns_string}) VALUES ({values_string})"
+
+		# Ausführen der Abfrage
+		self.execute_query(connection, query, values)
+
+
+	# =========================================================================================================================================================
+	# 
+	# MQTT Funktionen
+	# 
+	# =========================================================================================================================================================
+
+	# ---------------------------------------------------------------------------------------------
+	# create_mqtt_connection
+	# MQTT Verbindung aufbauen
+	# ----------------------------------------------------------------------------------------------
+
+	def create_mqtt_connection(self):
+		# zunächst die Defaultwerte in der Default xml lesen
+		self.update_settings()
+
+		client = None
+		try:
+			client = mqtt.Client()
+			client.tls_set()  # Aktiviere TLS ohne spezifische Zertifikate
+			client.username_pw_set(self.MQTTuser,self.MQTTpassword)
+			client.connect(self.MQTTbroker, self.MQTTport, 60)
+
+			print("MQTT connection successful")
+
+		except Error as e:
+			print(f"MQTT - The error '{e}' occurred")
+
+		return client
+
+	# ---------------------------------------------------------------------------------------------
+	# send_mqtt_messages
+	# Senden von Daten an einen MQTT Broker
+	# Struktur und Werte werden als Tupel übergeben
+	# ----------------------------------------------------------------------------------------------
+
+	def send_mqtt_messages(self, mqtt_client, typtopic, sensortopic, subtopics, values):
+		base_topic = "CaravanPi"
+
+		# Stellen Sie sicher, dass Subtopics und Values die gleiche Länge haben
+		if len(subtopics) != len(values):
+			raise ValueError("Subtopics und Values müssen die gleiche Anzahl von Elementen haben.")
+
+		# Senden jeder Nachricht
+		for subtopic, value in zip(subtopics, values):
+			topic = f"{base_topic}/{typtopic}/{sensortopic}/{subtopic}"
+			mqtt_client.publish(topic, value)
+			print("MQTT send successful", topic, value)
+
+
+	# =========================================================================================================================================================
 	# COMPATIBILITY CODE - Anfang bis Dateiende
-	# -----------------------------------------------
+	# =========================================================================================================================================================
 
 	# ---------------------------------------------------------------------------------------------
 	# check_create_xml
@@ -541,8 +792,14 @@ class CaravanPiFiles:
 				elif line:  # Check if line is not empty
 					ET.SubElement(defaults_element, key).text = line
 
-		# Setting additional fields to empty
-		for additional_key in ["write2MariaDB", "send2MQTT", "MQTTserver", "MQTTport", "MQTTuser", "MQTTpassword"]:
+		# Setting additional fields to empty or false
+		for additional_key in ["write2file"]:
+			ET.SubElement(defaults_element, additional_key).text = "1"
+
+		for additional_key in ["write2MariaDB", "send2MQTT"]:
+			ET.SubElement(defaults_element, additional_key).text = "0"
+
+		for additional_key in ["MariaDBhost", "MariaDBuser", "MariaDBpasswd", "MariaDBdatabase", "MQTTbroker", "MQTTport", "MQTTuser", "MQTTpassword"]:
 			ET.SubElement(defaults_element, additional_key).text = ""
 
 		tree.write(self.xml_file_path)

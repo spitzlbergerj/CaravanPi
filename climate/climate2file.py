@@ -35,6 +35,13 @@ from ctypes import c_short
 from ctypes import c_byte
 from ctypes import c_ubyte
 
+# -----------------------------------------------
+# CaravanPi File/MARIADB/MQTT library einbinden
+# -----------------------------------------------
+sys.path.append('/home/pi/CaravanPi/.lib')
+from CaravanPiFilesClass import CaravanPiFiles
+
+
 DEVICE1 = 0x76      # Default device I2C address
 DEVICE2 = 0x77      # Second device I2C address
 DEVICE = DEVICE1    # for compatibility reasons
@@ -169,23 +176,6 @@ def readBME280All(addr=DEVICE):
 
   return temperature/100.0,pressure/100.0,humidity
 
-def write2file(chip_id, device, temperature, pressure, humidity):
-	try:
-		sensorId = "BME280-" + str(chip_id) + "-" + str(device)
-		dateiName = "/home/pi/CaravanPi/values/" + sensorId
-		file = open(dateiName, 'a')
-		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-		strTemperature = '{:.1f}'.format(temperature)
-		strPressure = '{:.1f}'.format(pressure)
-		strHumidity = '{:.1f}'.format(humidity)
-		file.write("\n"+ sensorId + " " + str_from_time_now + " " + strTemperature + " " + strPressure + " " + strHumidity)
-		file.close()
-		return 0
-	except:
-		# Schreibfehler
-		print ("Die Datei konnte nicht geschrieben werden.")
-		return -1
-
 
 def main():
   global DEVICE, DEVICE1, DEVICE2
@@ -208,7 +198,9 @@ def main():
       print ("Pressure : ", pressure, "hPa")
       print ("Humidity : ", humidity, "%")
     else:
-      write2file(chip_id, DEVICE, temperature, pressure, humidity)
+      # Erstellen einer Instanz der CaravanPi Library
+      cplib = CaravanPiFiles()
+      cplib.climateWrite(chip_id, DEVICE, temperature, pressure, humidity)
   else:
     print('Invalid arguments. Script will be terminated.')
 

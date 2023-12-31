@@ -12,6 +12,9 @@ logrotate.status
 .lib/hx711pySJJSJJSJJSJJ/*
 .lib/*pyc
 
+# ignoriere defaults/_allt, das durch abwaerttskompatibilitaet entsteht
+defaults/_alt/
+
 # Verzeichnis log (Loggig Daten)
 # Verzeichnis anlegen
 !.log/

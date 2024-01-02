@@ -81,7 +81,7 @@ def readBME280ID(addr=DEVICE):
 		(chip_id, chip_version) = bus.read_i2c_block_data(addr, REG_ID, 2)
 		return (chip_id, chip_version)
 	except Exception as e:
-		print(f"Fehler beim Lesen von BME280 ID an Adresse {addr}: {e}")
+		print(f"ERROR - Fehler beim Lesen von BME280 ID an Adresse {addr}: {e}")
 		return (None, None)
 
 def readBME280All(addr=DEVICE):
@@ -185,7 +185,7 @@ def readBME280All(addr=DEVICE):
 
 		return temperature/100.0,pressure/100.0,humidity
 	except Exception as e:
-		print(f"Fehler beim Lesen von BME280 all: {e}")
+		print(f"ERROR - Fehler beim Lesen von BME280 all: {e}")
 		return None, None, None
 
 def main():

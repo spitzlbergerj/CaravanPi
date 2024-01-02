@@ -187,7 +187,7 @@ class CaravanPiFiles:
 			try:
 				mqtt_port = int(mqtt_port) if mqtt_port is not None else None
 			except ValueError:
-				print("MQTTport konnte nicht in eine Ganzzahl umgewandelt werden.")
+				print("ERROR - MQTTport konnte nicht in eine Ganzzahl umgewandelt werden.")
 				mqtt_port = None
 
 			return (
@@ -568,7 +568,7 @@ class CaravanPiFiles:
 			return 0
 		except Error as e:
 			# Fehler
-			print ("Die Sensordaten konnten nicht geschrieben/gesendet werden: Fehler: '{e}'")
+			print ("ERROR - Die Sensordaten konnten nicht geschrieben/gesendet werden: Fehler: '{e}'")
 			return -1
 			
 
@@ -624,7 +624,7 @@ class CaravanPiFiles:
 			)
 			print("MariaDB connection successful")
 		except Error as e:
-			print(f"MariaDB - The error '{e}' occurred")
+			print(f"ERROR - MariaDB - Fehler aufgetreten: '{e}'")
 
 		return connection
 
@@ -640,7 +640,7 @@ class CaravanPiFiles:
 			connection.commit()
 			print("Query successful")
 		except Error as e:
-			print(f"The error '{e}' occurred")
+			print(f"ERROR - MariaDB - Fehler aufgetreten: '{e}'")
 
 	# ---------------------------------------------------------------------------------------------
 	# insert_into_table
@@ -696,7 +696,7 @@ class CaravanPiFiles:
 			print("MQTT connection successful")
 
 		except Error as e:
-			print(f"MQTT - The error '{e}' occurred")
+			print(f"ERROR - MQTT - Fehler aufgetreten: '{e}'")
 
 		return client
 

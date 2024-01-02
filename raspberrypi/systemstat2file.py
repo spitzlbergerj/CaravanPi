@@ -37,7 +37,7 @@ def get_cpu_temperature():
 		temp = psutil.sensors_temperatures().get('cpu_thermal', [])[0].current
 		return temp
 	except Exception as e:
-		print(f"Fehler beim Auslesen der CPU-Temperatur: {e}")
+		print(f"Error - Fehler beim Auslesen der CPU-Temperatur: {e}")
 		return None
 
 def get_gpu_temperature():
@@ -46,28 +46,28 @@ def get_gpu_temperature():
 		gpu_temp = float(gpu_temp_output.split('=')[1].split("'")[0])
 		return gpu_temp
 	except Exception as e:
-		print(f"Fehler beim Auslesen der GPU-Temperatur: {e}")
+		print(f"Error - Fehler beim Auslesen der GPU-Temperatur: {e}")
 		return None
 
 def get_cpu_usage():
 	try:
 		return psutil.cpu_percent(interval=1)
 	except Exception as e:
-		print(f"Fehler beim Auslesen der CPU-Auslastung: {e}")
+		print(f"Error - Fehler beim Auslesen der CPU-Auslastung: {e}")
 		return None
 
 def get_ram_usage():
 	try:
 		return psutil.virtual_memory().percent
 	except Exception as e:
-		print(f"Fehler beim Auslesen der RAM-Auslastung: {e}")
+		print(f"Error - Fehler beim Auslesen der RAM-Auslastung: {e}")
 		return None
 
 def get_disk_usage():
 	try:
 		return psutil.disk_usage('/').percent
 	except Exception as e:
-		print(f"Fehler beim Auslesen der Festplatten-Auslastung: {e}")
+		print(f"Error - Fehler beim Auslesen der Festplatten-Auslastung: {e}")
 		return None
 	
 def get_network_traffic(interface='eth0'):
@@ -79,21 +79,21 @@ def get_network_traffic(interface='eth0'):
 		else:
 			return 0
 	except Exception as e:
-		print(f"Fehler beim Auslesen des Netzwerkverkehrs: {e}")
+		print(f"Error - Fehler beim Auslesen des Netzwerkverkehrs: {e}")
 		return None
 	
 def get_process_count():
 	try:
 		return len(psutil.pids())
 	except Exception as e:
-		print(f"Fehler beim Auslesen der Prozessanzahl: {e}")
+		print(f"Error - Fehler beim Auslesen der Prozessanzahl: {e}")
 		return None
 	
 def get_system_uptime():
 	try:
 		return time.time() - psutil.boot_time()
 	except Exception as e:
-		print(f"Fehler beim Auslesen der System-Uptime: {e}")
+		print(f"Error - Fehler beim Auslesen der System-Uptime: {e}")
 		return None
 		
 def main():
@@ -141,7 +141,7 @@ def main():
 			time.sleep(interval)
 	except KeyboardInterrupt:
 		if args.screen:
-			print("\nProgramm wurde durch Benutzer unterbrochen. Beende...")
+			print("\nWARNING - Programm wurde durch Benutzer unterbrochen. Beende...")
 		sys.exit(0)
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ In dieser Datei werde ich alle relevanten Änderungen am CaravanPi dokumentieren
 
 ---
 
-## v2.0 Einführung MariaDB, Grafana, neues Backup, Configs per xml (noch in Arbeit)
+## v2.0 Einführung MariaDB, Grafana, neues Backup, Configs per xml (noch in Arbeit - development branch)
 
 - **Konfiguration per xml Datei**
   Bisher wurden für die Konfiguration der CaravnaPi Skripte Testdateien verwendet. Diese enthielten nur die Werte, nicht aber die Felderklärungen. Das machte das Lesen der Konfigurationsdateien praktisch unmöglich. Nun wurden diese Textdateien durch eine xml Datei ersetzt, in der alle Konfigurationen enthalten sind. Die xml Datei ist besser lesbar (Optimierung noch ausstehend, dass die xml datei mit Zeilenumbrüchen geschrieben wird).
@@ -18,8 +18,16 @@ In dieser Datei werde ich alle relevanten Änderungen am CaravanPi dokumentieren
   Noch offen: Dokumentation der Sicherung der MariaDB
 
 - **Einführung einer Datenbank zur Speicherung der Sensorwerte**
+  Die Sensorwerte können nun nicht nur in Files abgelegt werden, sondern auch in einer MariaDB. Die Zugangsdaten zur MariaDB werden in der XML abgelgt. Der Connect und die Schreibvorgänge in die Datenbank übernehmen  zentrale Funktionen in der CaravanPiFiles Class.
+
+- **Einführung des Sendes der Sensorwerte per MQTT**
+  Die Sensorwerte können nun per MQTT Messages versandt werden. Im Moment ist die Ansteuerung eines Cloud MQTT Servers vorgesehen, der für den Login User und passwort benötigt und ein Login mit TLS ohne Clientzertifikate erlaubt. Dies sind z.B. die Cloud MQTT Broker von EMQX und HiveMQ, die beide kostenfreie Accounts anbieten. Den Connect und die Sendevorgänge an den Broker übernehmen zentrale Funktionen in der CaravanPiFiles Class.
+
+- **allgemeine Bereinigung und Härtung der vorhandenen Funktionen**
+  Alle vorhandenen Skripte zur Ermittlung der Sensorwerte wurden überprüft, optimiert und insbesondere gehärtet, so dass Fehlersituationen in den Skripten abgefangen und behandelt werden, ohne die Funktionen zum Absturz zu bekommen. Das regelmäßige überprüfen der Log-Daten auf Fehlerzustände ist daher wichtiger geworden. Alle Fehlerzustände werden mit einem einleitenden ERROR kenntlicher gemacht.
 
 - **Einführung von Grafana zur Darstellung der Sensorwerte als Verlauf**
+   Neben der Datenbank MariaDB und der Datenbank-Managementsoftware phpmyadmin kommt nun Grafana zur grafischen Darstellung der Sensorwerte und deren Verlauf zum Einsatz.
 
 - **Überwachung der Landstrom-Versorgung und der Bordbatterie-Versorgung**
 

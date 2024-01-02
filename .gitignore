@@ -3,6 +3,9 @@
 # ignoriere logrotate Steuerung
 logrotate.status
 
+# ignoriere .git-sensible-backup
+.git-sensible-backup
+
 # ignoriere fremde libraries
 .lib/__pycache__
 .lib/__pycache__/*

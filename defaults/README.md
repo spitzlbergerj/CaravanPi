@@ -1,34 +1,42 @@
 # CaravanPi
-System for measuring and displaying various values in caravans and motor homes, including climate values, filling levels and levelling data. Magic Mirror is used for presentation.
+System zur Messung und Anzeige verschiedener Werte in Wohnwagen und Reisemobilen, u.a. Klimawerte, Füllstände und Niveaudaten. Magic Mirror wird für die Präsentation verwendet.
 
-# defaults
+# Konfigurationswerte
 
-A whole series of sensors must be adjusted before use. It is therefore almost impossible to mount the 3-axis position sensor absolutely horizontally. The compensation values are stored in files in this directory. In addition, values such as the empty weight of the gas cylinder are stored in this directory.
+Eine ganze Reihe von Sensoren muss vor dem Einsatz justiert werden. Es ist zum Beispiel fast unmöglich, den 3-Achsen-Positionssensor im Bezug zum Caravan absolut waagerecht zu montieren. Die Kompensationswerte werden in einer xml Datei in diesem Verzeichnis gespeichert. Außerdem werden in dieser xml Werte wie das Leergewicht der Gasflasche gespeichert, die Abmessungen des Wohnwagens und eine ganze Reihe von Konfigurationswerten für den CaravanPi an sich.
 
-## Correction values position sensor (adjustmentPosition)
 
-- adjustment X
-  - X value, if caravan is in horizontal position
-- adjustment Y
-  - Y value, if caravan is in horizontal position
-- adjustment Z
-  - Z value, if caravan is in horizontal position
-- tolerance X
-  - deviation in X direction, which is still considered horizontal 
-- tolerance Y
-  - deviation in Y direction, which is still considered horizontal
-- approximation X
-  - at which deviation from the horizontal the LEDs should flash
-- approximation Y
-  - at which deviation from the horizontal the LEDs should flash
-- distance right
-  - distance of the sensor from the right side
-- distance front
-  - distance of the sensor from the front side
-- distance axis
-  - distance of the sensor from the axis in longitudinal direction
+## allgemeine Konfiguration - caravanpiDefaults
 
-## dimensions of the carvan or motor home (dimensions)
+countGasScales
+  Anzahl Gasflaschenwaagen
+
+countTanks
+  Anzahl Tanks
+
+write2file
+  sind die Wertze Dateien im Verzeichnis values zu schreiben? 0 = nein, 1 = ja
+
+write2MariaDB
+  sollen die Werte in die Datenbank geschriebenwerden? 0 = nein, 1 = ja
+
+send2MQTT
+  sollen die Werte per MQTT versandt werden? 0 = nein, 1 = ja
+
+MariaDBhost
+MariaDBuser
+MariaDBpasswd
+MariaDBdatabase
+  Anmeldeinformationen für die Datenbank
+
+MQTTbroker
+MQTTport
+MQTTuser
+MQTTpassword
+  Anmeldeinformationenfür den MQTT Broker
+
+
+## Abmessungen des Wohnwagens oder Wohnmobils 
 
 - length over all
   - length of the caravan over all 
@@ -37,7 +45,7 @@ A whole series of sensors must be adjusted before use. It is therefore almost im
 - lenght body
   - legth of the body of the caravan without drawbar
   
-## gas scale and gas cylinder (gasScaleDefaults1)
+## Gaswaage und Gasflasche (gasScaleDefaults1)
 
 - tare
   - value from gas scale without a gas cylinder 
@@ -45,3 +53,28 @@ A whole series of sensors must be adjusted before use. It is therefore almost im
   - weight of the empty gas cylinder
 - full weight
   - weight of the full gas cylinder
+
+## Bedeutung einger Konfigurationswerte
+
+- adjustX
+  - X-Wert, wenn der Wohnwagen in horizontaler Position steht
+- adjustY
+  - Y-Wert, wenn der Wohnwagen in horizontaler Position steht
+- adjustZ
+  - Z-Wert, wenn der Wohnwagen in horizontaler Position steht
+- toleranceX
+  - Abweichung in X-Richtung, die noch als horizontal angesehen wird 
+- toleranceY
+  - Abweichung in Y-Richtung, die noch als horizontal gilt
+- approximationX
+  - bei welcher Abweichung von der Horizontalen sollen die LEDs blinken
+- approximation Y
+  - bei welcher Abweichung von der Horizontalen die LEDs blinken sollen
+- distRight
+  - Abstand des Sensors von der rechten Seite
+- distFront
+  - Abstand des Sensors von der Frontseite
+- distAxis
+  - Abstand des Sensors von der Achse in Längsrichtung
+
+

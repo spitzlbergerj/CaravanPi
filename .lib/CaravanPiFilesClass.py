@@ -511,55 +511,92 @@ class CaravanPiFiles:
 	# 
 	# =========================================================================================================================================================
 
-	def climateWrite(self, chip_id, device, temperature, pressure, humidity):
-		try:
-			sensorId = "BME280-" + str(chip_id) + "-" + str(device)
 
+	def handle_sensor_values(self, toScreen, sensor_name, sensor_id, value_identifiers, sensor_values):
+		# Funktion zum Verarbeiten der ermittelten Sensorwerte
+		# Die Werte werden per print ausgegeben, falls toScreen auf true steht
+		# Falls die zentrale Konfig das Schreiben in die MariaDB vorsieht, so wird das angestossen
+		# Falls MQTT Messages versandt werden sollen, so wird dies angestossen
+		#
+		# sensor_values: ein Tupel mit den konkreten Sensorwerten
+		# value_identifiers: eine Liste mit den Feldbezeichnern fuer die Sensorwerte.
+		
+
+		try:
+			# sind beide Listen/Tupel gleich lang?
+			if len(sensor_values) != len(value_identifiers):
+				raise ValueError("Die Tupel fuer Werte und Bezeichner sind unterschiedlich lang")
+
+			# Bildschirmausgabe
+			if toScreen:
+				print(f"{datetime.datetime.now():%Y%m%d%H%M%S} - {sensor_name} - {sensor_id}")
+				for identifier, value in zip(value_identifiers, sensor_values):
+					print(f"{identifier}: {value}")
+
+			# Schreiben in die Datei
 			if self.write2file:
 				print("Datei schreiben")
-				dateiName = self.values_file_path + sensorId
-				file = open(dateiName, 'a')
-				str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-				strTemperature = '{:.1f}'.format(temperature)
-				strPressure = '{:.1f}'.format(pressure)
-				strHumidity = '{:.1f}'.format(humidity)
-				file.write("\n"+ sensorId + " " + str_from_time_now + " " + strTemperature + " " + strPressure + " " + strHumidity)
-				file.close()
+				self.write_to_file(sensor_id, sensor_values)
 
+			# Schreiben in die MariaDB
 			if self.write2MariaDB:
 				print("Datenbank schreiben")
 
-				# Datenbank öffnen
+				# Datenbank oeffnen
 				connection = self.create_db_connection()
 
 				# Daten in die Tabelle schreiben
-				table_columns = ['sensor_id', 'zeitstempel', 'temperatur', 'luftdruck', 'luftfeuchtigkeit']
-				table_values = (sensorId, "", temperature, pressure, humidity)
-				self.insert_into_table(connection, 'klimasensor', table_columns, table_values)
+				table_columns = ['sensor_id', 'zeitstempel']
+				table_values = (sensor_id, None)
+				self.insert_into_table(connection, sensor_name, table_columns + value_identifiers, table_values + sensor_values)
 				
-				# Datenbank schließen
+				# Datenbank schliessen
 				connection.close()
 
 			if self.send2MQTT:
 				print("senden an MQTT")
 
-				# MQTT Connection öffnen
+				# MQTT Connection oeffnen
 				client = self.create_mqtt_connection()
 
 				# Daten versenden
-				subtopics = ['temperatur', 'luftdruck', 'luftfeuchtigkeit']
-				values = (temperature, pressure, humidity)
-				self.send_mqtt_messages(client, 'klimasensor', sensorId, subtopics, values)
+				self.send_mqtt_messages(client, sensor_name, sensor_id, value_identifiers, sensor_values)
 				
-				# Datenbank schließen
+				# Datenbank schliessen
 				client.disconnect()
-			
+
 			return 0
 		except Error as e:
 			# Fehler
 			print ("Die Sensordaten konnten nicht geschrieben/gesendet werden: Fehler: '{e}'")
 			return -1
+			
 
+
+
+	# =========================================================================================================================================================
+	# 
+	# Ausgabe in die Werte Datei
+	# 
+	# =========================================================================================================================================================
+
+	# ---------------------------------------------------------------------------------------------
+	# write_to_file
+	# Schreiben der Sensorwerte in eine Datei
+	# ----------------------------------------------------------------------------------------------
+	def write_to_file(self, filename, sensor_values):
+		# Vollstaendiger Dateipfad
+		file_path = os.path.join(self.values_file_path, filename)
+
+		# Erstellen des Zeitstempels
+		timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+		# Erstellen der Zeile fuer die Ausgabe
+		output_line = f"{filename} {timestamp} " + " ".join(map(str, sensor_values)) + "\n"
+
+		# Schreiben in die Datei
+		with open(file_path, 'a') as file:
+			file.write(output_line)
 
 
 	# =========================================================================================================================================================
@@ -678,7 +715,7 @@ class CaravanPiFiles:
 
 		# Senden jeder Nachricht
 		for subtopic, value in zip(subtopics, values):
-			topic = f"{base_topic}/{typtopic}/{sensortopic}/{subtopic}"
+			topic = f"{base_topic}/{typtopic}" + (f"/{sensortopic}" if sensortopic else "") + f"/{subtopic}"
 			mqtt_client.publish(topic, value)
 			print("MQTT send successful", topic, value)
 

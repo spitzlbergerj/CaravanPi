@@ -4,7 +4,7 @@
 logrotate.status
 
 # ignoriere .git-sensible-backup
-.git-sensible-backup
+.git_sensible_backup
 
 # ignoriere fremde libraries
 .lib/__pycache__

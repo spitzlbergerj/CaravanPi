@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CaravanPi Websites</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2; /* Grauer Hintergrund */
+        }
+        .container {
+            flex-grow: 1; /* Lässt den Container den verfügbaren Platz einnehmen */
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column; /* Ordnet die Inhalte vertikal an */
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* Für das Positionieren des Hamburger-Menüs */
+        }
+        .logo {
+            text-align: center; /* Zentriert den Inhalt, inklusive des Logos */
+        }
+        .content {
+            flex-grow: 1; /* Lässt den Inhalt den verfügbaren Platz einnehmen */
+        }
+        .hamburger-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .hamburger-menu div {
+            width: 30px;
+            height: 3px;
+            background-color: black;
+            margin: 5px 0;
+        }
+        .hamburger-menu-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px; /* Position unter dem Hamburger-Icon */
+            background: white;
+            padding: 10px;
+            box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+        img.logo {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+        hr {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .footer {
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .menu a, .hamburger-menu-content a {
+            display: block;
+            margin: 10px 0;
+            text-decoration: none;
+            color: #000;
+            font-size: 16px;
+            text-align: left; /* Linksbündige Ausrichtung */
+            padding: 5px 10px; /* Etwas Padding für bessere Klickbarkeit */
+        }
+        .menu a {
+            text-decoration: underline;
+            color: -webkit-link;
+            cursor: pointer;
+        }
+        @media screen and (max-width: 600px) {
+            /* CSS für kleine Bildschirme (Smartphones) */
+            .container {
+                width: 100%;
+                max-width: none; /* Entfernt die maximale Breite */
+                margin: 0; /* Entfernt den Rand, um die volle Breite zu nutzen */
+                box-shadow: none; /* Entfernt den Schatten */
+            }
+            body {
+                background-color: white; /* Setzt den Hintergrund auf Weiß */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div id="hamburgerMenu" class="hamburger-menu-content">
+            <!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+        </div>
+
+        <div class="content">
+            <div class="logo">
+                <img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+            </div>
+            <hr>
+
+            <p>&nbsp;</p>
+            <p>Hier finden Sie alle Websites zur Konfiguration und Bedienung des CaravanPi.</p>
+            <p></p>
+
+            <div class="menu" id="mainMenu">
+                <!-- Hauptmenü-Links werden per JavaScript hinzugefügt -->
+            </div>
+
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
+        </div>
+    </div>
+
+    <script>
+        function populateLinks(menu, includeHome) {
+            var host = window.location.hostname;
+            var port = window.location.port;
+
+            var links = [
+                { text: "Startseite", url: 'http://' + host + ':5000/', isExternal: false },
+                { text: "Konfigurationswebsite", url: 'http://' + host + ':5000/konfiguration', isExternal: false },
+                { text: "Status-Überprüfungswebsite", url: 'http://' + host + ':5000/status', isExternal: false },
+                { text: "MagicMirror Konfiguration", url: 'http://' + host + ':8080/remote.html#main-menu', isExternal: true },
+                { text: "MagicMirror Remote-Anzeige", url: 'http://' + host + ':8080', isExternal: true },
+                { text: "Grafana Website", url: 'http://' + host + ':3000', isExternal: true },
+                { text: "phpMyAdmin", url: 'http://' + host + '/phpmyadmin/', isExternal: true }
+            ];
+
+            if (!includeHome) {
+                links.shift(); // Entfernt die Startseite, wenn includeHome false ist
+            }
+
+            links.forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url;
+                a.textContent = link.text;
+                if (link.isExternal) {
+                    a.target = "_blank"; // Öffnet den Link in einem neuen Fenster/Tab
+                }
+                menu.appendChild(a);
+            });
+        }
+
+        function toggleHamburgerMenu() {
+            var menu = document.getElementById("hamburgerMenu");
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+            } else {
+                menu.style.display = "block";
+            }
+        }
+
+        window.onload = function() {
+            var mainMenu = document.getElementById("mainMenu");
+            var hamburgerMenu = document.getElementById("hamburgerMenu");
+
+            populateLinks(mainMenu, false); // Hauptmenü ohne Startseite
+            populateLinks(hamburgerMenu, true); // Hamburger-Menü mit Startseite
+        };
+    </script>
+</body>
+</html>
+

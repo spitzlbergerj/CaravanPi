@@ -190,6 +190,7 @@ def readBME280All(addr=DEVICE):
 
 def main():
 	global DEVICE
+	DEVICE = DEVICE1
 
 	# ArgumentParser-Objekt erstellen
 	parser = argparse.ArgumentParser(description='Lesen des Klimasensors und Verarbeiten der Sensorwerte')
@@ -199,6 +200,8 @@ def main():
 						help='schreiben in ein File - obsoloet durch globale xml Konfiguration')
 	parser.add_argument('-s', '--screen', action='store_true',
 						help='ausgeben am Bildschirm')
+	parser.add_argument('-c', '--check', action='store_true', 
+						help='Führt den Funktionstest des Sensors aus')
 
 	# Argumente parsen
 	args = parser.parse_args()
@@ -209,8 +212,17 @@ def main():
 	elif args.i2c == '77':
 		DEVICE = DEVICE2
 
-	# Sensordaten lesen
+	# Sensorgrunddaten lesen
 	chip_id, chip_version = readBME280ID(DEVICE)
+
+	if args.check:
+		if (chip_id, chip_version) == (None, None):
+			return "Fehler"
+		else:
+			return f"OK - SensorID = {chip_id} - Sensorversion = {chip_version}"
+
+
+	# konkrete Werte lesen
 	temperature, pressure, humidity = readBME280All(DEVICE)
 
 	# Sensorwerte verarbeiten
@@ -225,4 +237,5 @@ def main():
 	)              
 
 if __name__=="__main__":
-	main()
+	result = main()
+	print(result)

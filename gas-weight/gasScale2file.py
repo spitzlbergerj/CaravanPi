@@ -11,6 +11,7 @@ import sys
 import datetime
 import RPi.GPIO as GPIO
 import getopt
+import argparse
 
 # -----------------------------------------------
 # Sensoren libraries aus CaravanPi einbinden
@@ -18,19 +19,6 @@ import getopt
 sys.path.append('/home/pi/CaravanPi/.lib')
 from hx711 import HX711
 from CaravanPiFilesClass import CaravanPiFiles
-
-# -------------------------
-# call options 
-# -------------------------
-shortOptions = 'hg:'
-longOptions = ['gasscale=']
-
-def usage():
-	print ("---------------------------------------------------------------------")
-	print (sys.argv[0], "-h -g <nr>")
-	print ("  -h          show this guide")
-	print ("  -g nr       number of gas scale cylinder (default 1)\n")
-
 
 
 def cleanAndExit():
@@ -70,62 +58,64 @@ def main():
 	emptyWeight = 0
 	fullWeight = 0
 
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
-	except getopt.GetoptError:
-		print("ERROR: options not correct")
-		usage()
-		sys.exit()
-	
-	for o, a in opts:
-		if o == "--help" or o == "-h":
-			print("HELP")
-			usage()
-			sys.exit()
-		elif o == "--gasscale" or o == "-g":
-			gasCylinderNumber = int(a)
+	# ArgumentParser-Objekt erstellen
+	parser = argparse.ArgumentParser(description='Lesen der Gasflaschenwaage und Verarbeiten der Sensorwerte')
+	parser.add_argument('-g', '--gasscale', type=str, choices=['1', '2'], default='1',
+						help='Nr der Gasflaschenwaage (1 (default) oder 2)')
+	parser.add_argument('-s', '--screen', action='store_true',
+						help='ausgeben am Bildschirm')
+	parser.add_argument('-c', '--check', action='store_true', 
+						help='Führt den Funktionstest der Gasflaschenwaage aus')
 
-	for a in args:
-		print("further argument: ", a)
+	# Argumente parsen
+	args = parser.parse_args()
+	
+	gasCylinderNumber = int(args.gasscale)
 
 	# -------------------------
 	# gpio warnings off
 	# -------------------------
 	GPIO.setwarnings(False)
 
+	# Erstellen der Instanzen der Librarys
+	cplib = CaravanPiFiles()
+
 	# -------------------------
 	# read defaults
 	# -------------------------
-	(emptyWeight, fullWeight, pin_dout, pin_sck, channel, refUnit) = CaravanPiFiles.readGasScale(gasCylinderNumber)
-	print ("bisherige Werte:")
-	print ("Leergewicht Flasche: ", emptyWeight)
-	print ("max. Gas-Gewicht: ", fullWeight)
-	print ("Pin DOUT: ", pin_dout)
-	print ("Pin SCK: ", pin_sck)
-	print ("Channel: >>", channel, "<<")
-	print ("Reference Unit: ", refUnit)
+	(emptyWeight, fullWeight, pin_dout, pin_sck, channel, refUnit) = cplib.readGasScale(gasCylinderNumber)
 
-	hx = HX711(pin_dout, pin_sck)
-	hx.set_reading_format("MSB", "MSB")
+	if args.screen:
+		print ("bisherige Werte:")
+		print ("Leergewicht Flasche: ", emptyWeight)
+		print ("max. Gas-Gewicht: ", fullWeight)
+		print ("Pin DOUT: ", pin_dout)
+		print ("Pin SCK: ", pin_sck)
+		print ("Channel: >>", channel, "<<")
+		print ("Reference Unit: ", refUnit)
+
+	# Erstellen der Instanzen der Librarys
+	hxlib = HX711(pin_dout, pin_sck)
+	hxlib.set_reading_format("MSB", "MSB")
 
 	if channel == "A":
-		hx.set_reference_unit_A(refUnit)
+		hxlib.set_reference_unit_A(refUnit)
 	elif channel == "B":
-		hx.set_reference_unit_B(refUnit)
+		hxlib.set_reference_unit_B(refUnit)
 	else:
 		print("invalid HX711 channel: ", channel)		
 		print("set channel to A")
 		channel = "A"		
-		hx.set_reference_unit_A(refUnit)
+		hxlib.set_reference_unit_A(refUnit)
 
-	hx.reset()
+	hxlib.reset()
 
 	try:
 		# read sensor
 		if channel == "B":
-			weight = hx.get_weight_B(5)
+			weight = hxlib.get_weight_B(5)
 		else:
-			weight = hx.get_weight_A(5)
+			weight = hxlib.get_weight_A(5)
 
 		print ("aktuelle Messung Gaswaage: ", weight)
 

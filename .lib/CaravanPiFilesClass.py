@@ -346,14 +346,22 @@ class CaravanPiFiles:
 		tree = ET.parse(self.xml_file_path)
 		root = tree.getroot()
 		gas_scale_element = root.find(f"gasScaleDefaults{gasCylinderNumber}")
+		
 		if gas_scale_element is not None:
+			empty_weight = gas_scale_element.find("emptyWeight")
+			full_weight = gas_scale_element.find("fullWeight")
+			pin_dout = gas_scale_element.find("pin_dout")
+			pin_sck = gas_scale_element.find("pin_sck")
+			str_channel = gas_scale_element.find("strChannel")
+			ref_unit = gas_scale_element.find("refUnit")
+
 			return (
-				gas_scale_element.find("emptyWeight").text if gas_scale_element.find("emptyWeight") is not None else None,
-				gas_scale_element.find("fullWeight").text if gas_scale_element.find("fullWeight") is not None else None,
-				gas_scale_element.find("pin_dout").text if gas_scale_element.find("pin_dout") is not None else None,
-				gas_scale_element.find("pin_sck").text if gas_scale_element.find("pin_sck") is not None else None,
-				gas_scale_element.find("strChannel").text if gas_scale_element.find("strChannel") is not None else None,
-				gas_scale_element.find("refUnit").text if gas_scale_element.find("refUnit") is not None else None
+				float(empty_weight.text) if empty_weight is not None and empty_weight.text.isdigit() else None,
+				float(full_weight.text) if full_weight is not None and full_weight.text.isdigit() else None,
+				int(pin_dout.text) if pin_dout is not None and pin_dout.text.isdigit() else None,
+				int(pin_sck.text) if pin_sck is not None and pin_sck.text.isdigit() else None,
+				int(str_channel.text) if str_channel is not None and str_channel.text.isdigit() else None,
+				int(ref_unit.text) if ref_unit is not None and ref_unit.text.isdigit() else None
 			)
 		else:
 			return None

@@ -21,11 +21,9 @@ from hx711 import HX711
 from CaravanPiFilesClass import CaravanPiFiles
 
 
-def cleanAndExit():
+def clean():
     print ("Cleaning...")
     GPIO.cleanup()
-    print ("Bye!")
-    sys.exit()
 
 def write2file(gasCylinderNumber, wert, relativ):
 	try:
@@ -91,26 +89,35 @@ def main():
 		print ("max. Gas-Gewicht: ", fullWeight)
 		print ("Pin DOUT: ", pin_dout)
 		print ("Pin SCK: ", pin_sck)
-		print ("Channel: >>", channel, "<<")
+		print ("Channel: ", channel)
 		print ("Reference Unit: ", refUnit)
 
 	# Erstellen der Instanzen der Librarys
 	hxlib = HX711(pin_dout, pin_sck)
-	hxlib.set_reading_format("MSB", "MSB")
-
-	if channel == "A":
-		hxlib.set_reference_unit_A(refUnit)
-	elif channel == "B":
-		hxlib.set_reference_unit_B(refUnit)
-	else:
-		print("invalid HX711 channel: ", channel)		
-		print("set channel to A")
-		channel = "A"		
-		hxlib.set_reference_unit_A(refUnit)
-
-	hxlib.reset()
 
 	try:
+		if hxlib.error_status:
+			raise RuntimeError("Fehler bei der Initialisierung des HX711")
+
+		if args.check:
+			# kein Fehler
+			clean()
+			return 0
+
+		hxlib.set_reading_format("MSB", "MSB")
+
+		if channel == "A":
+			hxlib.set_reference_unit_A(refUnit)
+		elif channel == "B":
+			hxlib.set_reference_unit_B(refUnit)
+		else:
+			print("invalid HX711 channel: ", channel)		
+			print("set channel to A")
+			channel = "A"		
+			hxlib.set_reference_unit_A(refUnit)
+
+		hxlib.reset()
+
 		# read sensor
 		if channel == "B":
 			weight = hxlib.get_weight_B(5)
@@ -124,7 +131,6 @@ def main():
 
 		print ("aktuelle Messung Gaswaage: ", weight)
 
-
 		nettoWeight = weight - tare - emptyWeight
 		nettoLevel = (nettoWeight/fullWeight) * 100
 
@@ -133,11 +139,20 @@ def main():
 
 		write2file(gasCylinderNumber, nettoWeight, nettoLevel)
 
-	except (KeyboardInterrupt, SystemExit):
-		cleanAndExit()
+	except RuntimeError as e:
+		print(f"ERROR - HX711 - Initialisierungsfehler: {e}")
+		clean()
+		return 1
 	
-	cleanAndExit()
+	except Error as e:
+		print(f"ERROR - HX711 - anderer Fehler: {e}")
+		clean()
+		return 1
+	
+	clean()
+	return 0
 
 
-if __name__ == "__main__":
-	main()
+if __name__=="__main__":
+	result = main()
+	sys.exit(result)

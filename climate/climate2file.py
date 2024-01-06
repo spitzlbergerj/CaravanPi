@@ -217,9 +217,9 @@ def main():
 
 	if args.check:
 		if (chip_id, chip_version) == (None, None):
-			return "Fehler"
+			return 1
 		else:
-			return f"OK - SensorID = {chip_id} - Sensorversion = {chip_version}"
+			return 0
 
 
 	# konkrete Werte lesen
@@ -234,8 +234,10 @@ def main():
 		"BME280-" + str(chip_id) + str(DEVICE),				# sensor_id = Filename und Spalte in der Datenbank
 		["temperatur", "luftdruck", "luftfeuchtigkeit"],	# Liste Spaltennamen
 		(temperature, pressure, humidity)					# Tupel Sensorwerte
-	)              
+	)    
+
+	return 0          
 
 if __name__=="__main__":
 	result = main()
-	print(result)
+	sys.exit(result)

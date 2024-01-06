@@ -6,9 +6,10 @@ logrotate.status
 # ignoriere .git-sensible-backup
 .git_sensible_backup
 
+# ignoriere alle python caches
+__pycache__/
+
 # ignoriere fremde libraries
-.lib/__pycache__
-.lib/__pycache__/*
 .lib/hx711py
 .lib/hx711py/*
 .lib/hx711pySJJSJJSJJSJJ

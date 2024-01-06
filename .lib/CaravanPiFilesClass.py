@@ -161,6 +161,19 @@ class CaravanPiFiles:
 			if level and (not element.tail or not element.tail.strip()):
 				element.tail = indent
 
+	# ---------------------------------------------------------------------------------------------
+	# is_float
+	#
+	# prüft einen Stroing-Wert auf den Typ float
+	# ----------------------------------------------------------------------------------------------
+
+	def is_float(self, value):
+		try:
+			float(value)
+			return True
+		except ValueError:
+			return False
+
 	# =========================================================================================================================================================
 	# 
 	# Schreiben und Lesen der Default Werte
@@ -177,22 +190,16 @@ class CaravanPiFiles:
 		tree = ET.parse(self.xml_file_path)
 		root = tree.getroot()
 		defaults_element = root.find("caravanpiDefaults")
+
 		if defaults_element is not None:
 			write2file = defaults_element.find("write2file").text == '1' if defaults_element.find("write2file") is not None else False
 			write2MariaDB = defaults_element.find("write2MariaDB").text == '1' if defaults_element.find("write2MariaDB") is not None else False
 			send2MQTT = defaults_element.find("send2MQTT").text == '1' if defaults_element.find("send2MQTT") is not None else False
 			mqtt_port = defaults_element.find("MQTTport").text if defaults_element.find("MQTTport") is not None else None
 
-			# Konvertierung von MQTTport in int, wenn vorhanden
-			try:
-				mqtt_port = int(mqtt_port) if mqtt_port is not None else None
-			except ValueError:
-				print("ERROR - MQTTport konnte nicht in eine Ganzzahl umgewandelt werden.")
-				mqtt_port = None
-
 			return (
-				defaults_element.find("countGasScales").text if defaults_element.find("countGasScales") is not None else None,
-				defaults_element.find("countTanks").text if defaults_element.find("countTanks") is not None else None,
+				int(defaults_element.find("countGasScales").text) if defaults_element.find("countGasScales") is not None and defaults_element.find("countGasScales").text.isdigit() else None,
+				int(defaults_element.find("countTanks").text) if defaults_element.find("countTanks") is not None and defaults_element.find("countTanks").text.isdigit() else None,
 				write2file,
 				write2MariaDB,
 				defaults_element.find("MariaDBhost").text if defaults_element.find("MariaDBhost") is not None else None,
@@ -201,7 +208,7 @@ class CaravanPiFiles:
 				defaults_element.find("MariaDBdatabase").text if defaults_element.find("MariaDBdatabase") is not None else None,
 				send2MQTT,
 				defaults_element.find("MQTTbroker").text if defaults_element.find("MQTTbroker") is not None else None,
-				mqtt_port,
+				int(defaults_element.find("MQTTport").text) if defaults_element.find("MQTTport") is not None and defaults_element.find("MQTTport").text.isdigit() else None,
 				defaults_element.find("MQTTuser").text if defaults_element.find("MQTTuser") is not None else None,
 				defaults_element.find("MQTTpassword").text if defaults_element.find("MQTTpassword") is not None else None
 			)
@@ -254,16 +261,16 @@ class CaravanPiFiles:
 		adjustment_element = root.find("adjustmentPosition")
 		if adjustment_element is not None:
 			return (
-				adjustment_element.find("adjustX").text if adjustment_element.find("adjustX") is not None else None,
-				adjustment_element.find("adjustY").text if adjustment_element.find("adjustY") is not None else None,
-				adjustment_element.find("adjustZ").text if adjustment_element.find("adjustZ") is not None else None,
-				adjustment_element.find("toleranceX").text if adjustment_element.find("toleranceX") is not None else None,
-				adjustment_element.find("toleranceY").text if adjustment_element.find("toleranceY") is not None else None,
-				adjustment_element.find("approximationX").text if adjustment_element.find("approximationX") is not None else None,
-				adjustment_element.find("approximationY").text if adjustment_element.find("approximationY") is not None else None,
-				adjustment_element.find("distRight").text if adjustment_element.find("distRight") is not None else None,
-				adjustment_element.find("distFront").text if adjustment_element.find("distFront") is not None else None,
-				adjustment_element.find("distAxis").text if adjustment_element.find("distAxis") is not None else None
+				float(adjustment_element.find("adjustX").text) if adjustment_element.find("adjustX") is not None and self.is_float(adjustment_element.find("adjustX").text) else None,
+				float(adjustment_element.find("adjustY").text) if adjustment_element.find("adjustY") is not None and self.is_float(adjustment_element.find("adjustY").text) else None,
+				float(adjustment_element.find("adjustZ").text) if adjustment_element.find("adjustZ") is not None and self.is_float(adjustment_element.find("adjustZ").text) else None,
+				float(adjustment_element.find("toleranceX").text) if adjustment_element.find("toleranceX") is not None and self.is_float(adjustment_element.find("toleranceX").text) else None,
+				float(adjustment_element.find("toleranceY").text) if adjustment_element.find("toleranceY") is not None and self.is_float(adjustment_element.find("toleranceY").text) else None,
+				float(adjustment_element.find("approximationX").text) if adjustment_element.find("approximationX") is not None and self.is_float(adjustment_element.find("approximationX").text) else None,
+				float(adjustment_element.find("approximationY").text) if adjustment_element.find("approximationY") is not None and self.is_float(adjustment_element.find("approximationY").text) else None,
+				float(adjustment_element.find("distRight").text) if adjustment_element.find("distRight") is not None and self.is_float(adjustment_element.find("distRight").text) else None,
+				float(adjustment_element.find("distFront").text) if adjustment_element.find("distFront") is not None and self.is_float(adjustment_element.find("distFront").text) else None,
+				float(adjustment_element.find("distAxis").text) if adjustment_element.find("distAxis") is not None and self.is_float(adjustment_element.find("distAxis").text) else None
 			)
 		else:
 			return None
@@ -292,7 +299,7 @@ class CaravanPiFiles:
 	#
 	# content of file
 	# 		length over all		length of the caravan over all 
-	#		width				width of the caravan over all
+	#		width over all		width of the caravan over all
 	#		length body			legth of the body of the caravan without drawbar
 	# ----------------------------------------------------------------------------------------------
 
@@ -302,21 +309,21 @@ class CaravanPiFiles:
 		dimensions_element = root.find("dimensionsCaravan")
 		if dimensions_element is not None:
 			return (
-				dimensions_element.find("lengthOverAll").text if dimensions_element.find("lengthOverAll") is not None else None,
-				dimensions_element.find("width").text if dimensions_element.find("width") is not None else None,
-				dimensions_element.find("lengthBody").text if dimensions_element.find("lengthBody") is not None else None
+				float(dimensions_element.find("lengthOverAll").text) if dimensions_element.find("lengthOverAll") is not None and self.is_float(dimensions_element.find("lengthOverAll").text) else None,
+				float(dimensions_element.find("widthOverAll").text) if dimensions_element.find("widthOverAll") is not None and self.is_float(dimensions_element.find("widthOverAll").text) else None,
+				float(dimensions_element.find("lengthBody").text) if dimensions_element.find("lengthBody") is not None and self.is_float(dimensions_element.find("lengthBody").text) else None
 			)
 		else:
 			return None
 
-	def writeDimensions(self, lengthOverAll, width, lengthBody):
+	def writeDimensions(self, lengthOverAll, widthOverAll, lengthBody):
 		tree = ET.parse(self.xml_file_path)
 		root = tree.getroot()
 		dimensions_element = root.find("dimensionsCaravan")
 		if dimensions_element is None:
 			dimensions_element = ET.SubElement(root, "dimensionsCaravan")
 		
-		for key, value in [("lengthOverAll", lengthOverAll), ("width", width), ("lengthBody", lengthBody)]:
+		for key, value in [("lengthOverAll", lengthOverAll), ("widthOverAll", widthOverAll), ("lengthBody", lengthBody)]:
 			element = dimensions_element.find(key)
 			if element is None:
 				element = ET.SubElement(dimensions_element, key)
@@ -348,20 +355,13 @@ class CaravanPiFiles:
 		gas_scale_element = root.find(f"gasScaleDefaults{gasCylinderNumber}")
 		
 		if gas_scale_element is not None:
-			empty_weight = gas_scale_element.find("emptyWeight")
-			full_weight = gas_scale_element.find("fullWeight")
-			pin_dout = gas_scale_element.find("pin_dout")
-			pin_sck = gas_scale_element.find("pin_sck")
-			str_channel = gas_scale_element.find("strChannel")
-			ref_unit = gas_scale_element.find("refUnit")
-
 			return (
-				float(empty_weight.text) if empty_weight is not None and empty_weight.text.isdigit() else None,
-				float(full_weight.text) if full_weight is not None and full_weight.text.isdigit() else None,
-				int(pin_dout.text) if pin_dout is not None and pin_dout.text.isdigit() else None,
-				int(pin_sck.text) if pin_sck is not None and pin_sck.text.isdigit() else None,
-				int(str_channel.text) if str_channel is not None and str_channel.text.isdigit() else None,
-				int(ref_unit.text) if ref_unit is not None and ref_unit.text.isdigit() else None
+				float(gas_scale_element.find("emptyWeight").text) if gas_scale_element.find("emptyWeight") is not None and self.is_float(gas_scale_element.find("emptyWeight").text) else None,
+				float(gas_scale_element.find("fullWeight").text) if gas_scale_element.find("fullWeight") is not None and self.is_float(gas_scale_element.find("fullWeight").text) else None,
+				int(gas_scale_element.find("pin_dout").text) if gas_scale_element.find("pin_dout") is not None and gas_scale_element.find("pin_dout").text.isdigit() else None,
+				int(gas_scale_element.find("pin_sck").text) if gas_scale_element.find("pin_sck") is not None and gas_scale_element.find("pin_sck").text.isdigit() else None,
+				gas_scale_element.find("strChannel").text if gas_scale_element.find("strChannel") is not None else None,
+				float(gas_scale_element.find("refUnit").text) if gas_scale_element.find("refUnit") is not None and self.is_float(gas_scale_element.find("refUnit").text) else None
 			)
 		else:
 			return None
@@ -405,10 +405,10 @@ class CaravanPiFiles:
 		tank_element = root.find(f"tankDefaults{tankNumber}")
 		if tank_element is not None:
 			return (
-				tank_element.find("level1").text if tank_element.find("level1") is not None else None,
-				tank_element.find("level2").text if tank_element.find("level2") is not None else None,
-				tank_element.find("level3").text if tank_element.find("level3") is not None else None,
-				tank_element.find("level4").text if tank_element.find("level4") is not None else None
+				float(tank_element.find("level1").text) if tank_element.find("level1") is not None and is_float(tank_element.find("level1").text) else None,
+				float(tank_element.find("level2").text) if tank_element.find("level2") is not None and is_float(tank_element.find("level2").text) else None,
+				float(tank_element.find("level3").text) if tank_element.find("level3") is not None and is_float(tank_element.find("level3").text) else None,
+				float(tank_element.find("level4").text) if tank_element.find("level4") is not None and is_float(tank_element.find("level4").text) else None
 			)
 		else:
 			return None
@@ -450,9 +450,9 @@ class CaravanPiFiles:
 		voltage_element = root.find("voltageDefaults")
 		if voltage_element is not None:
 			return (
-				voltage_element.find("level1").text if voltage_element.find("level1") is not None else None,
-				voltage_element.find("level2").text if voltage_element.find("level2") is not None else None,
-				voltage_element.find("level3").text if voltage_element.find("level3") is not None else None
+				float(voltage_element.find("level1").text) if voltage_element.find("level1") is not None and self.is_float(voltage_element.find("level1").text) else None,
+				float(voltage_element.find("level2").text) if voltage_element.find("level2") is not None and self.is_float(voltage_element.find("level2").text) else None,
+				float(voltage_element.find("level3").text) if voltage_element.find("level3") is not None and self.is_float(voltage_element.find("level3").text) else None
 			)
 		else:
 			return None
@@ -630,7 +630,6 @@ class CaravanPiFiles:
 				passwd=self.MariaDBpasswd,
 				database=self.MariaDBdatabase
 			)
-			print("MariaDB connection successful")
 		except Error as e:
 			print(f"ERROR - MariaDB - Fehler aufgetreten: '{e}'")
 

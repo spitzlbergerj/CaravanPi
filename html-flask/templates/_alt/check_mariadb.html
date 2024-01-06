@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CaravanPi Websites</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+    <title>CaravanPi - Check aller Komponenten</title>
+    <meta http-equiv="refresh" content="1; url={{ url_for('route_check_grafana') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/checks.css') }}">
 </head>
 <body>
     <div class="container">
@@ -23,12 +24,67 @@
             <hr>
 
             <p>&nbsp;</p>
-            <p>Hier finden Sie alle Websites zur Konfiguration und Bedienung des CaravanPi.</p>
+            <p>Mit dem Aufruf dieser Website werden eine Reihe von Check-Routinen gestartet, die alle Komponenten des CaravanPi der Reihe nach durchtesten. Die Checks benötigen insgesamt ca. 15 Minuten. Haben Sie also etwas Geduld.</p>
             <p></p>
 
-            <div class="menu" id="mainMenu">
-                <!-- Hauptmenü-Links werden per JavaScript hinzugefügt -->
-            </div>
+            <h1>Basis Systeme</h1>
+
+            <table>
+                <tr>
+                    <td>MagicMirror</td>
+                    <td><b><span style="color: {{ check_results['check_magicmirror']['color'] }} ">{{ check_results['check_magicmirror']['result'] }}</span></b></td>
+                </tr>
+                <tr>
+                    <td>MariaDB</td>
+                    <td><b><span style="color: {{ check_results['check_mariadb']['color'] }}">{{ check_results['check_mariadb']['result'] }}</span></b></td>
+                </tr>
+                <tr>
+                    <td>Grafana</td>
+                    <td>... Prüfung läuft ...</td>
+                </tr>
+                <tr>
+                    <td>Apache Webserver</td>
+                    <td></td>
+                </tr>
+            </table>
+        
+            <h1>Sensoren</h1>
+
+            <table>
+                <tr>
+                    <td>1-Wire Bus</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>I2C Bus ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Wägezelle HX711</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Klimasensor 76 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Klimasensor 77 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Thermometer 1 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Thermometer 2 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Thermometer 3 ok?</td>
+                    <td></td>
+                </tr>
+            </table>
+
 
             <p>&nbsp;</p>
             <p>&nbsp;</p>
@@ -39,6 +95,8 @@
             <p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
         </div>
     </div>
+
+
 
     <script>
         function populateLinks(menu, includeHome) {
@@ -83,7 +141,6 @@
             var mainMenu = document.getElementById("mainMenu");
             var hamburgerMenu = document.getElementById("hamburgerMenu");
 
-            populateLinks(mainMenu, false); // Hauptmenü ohne Startseite
             populateLinks(hamburgerMenu, true); // Hamburger-Menü mit Startseite
         };
     </script>

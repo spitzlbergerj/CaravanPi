@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CaravanPi Websites</title>
+    <title>CaravanPi - {{ title }}</title>
+    {% if next_check_route %}
+        <meta http-equiv="refresh" content="1; url={{ url_for(next_check_route) }}">
+    {% endif %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
 </head>
 <body>
@@ -23,23 +26,48 @@
             <hr>
 
             <p>&nbsp;</p>
-            <p>Hier finden Sie alle Websites zur Konfiguration und Bedienung des CaravanPi.</p>
+            <p>Mit dem Aufruf dieser Website werden eine Reihe von Check-Routinen gestartet, die alle Komponenten des CaravanPi der Reihe nach durchtesten.</p>
+            <p>Manche Tests benötigen <b>10 Sekunden und mehr</b>. Bitte haben Sie Geduld.</p>
             <p></p>
 
-            <div class="menu" id="mainMenu">
-                <!-- Hauptmenü-Links werden per JavaScript hinzugefügt -->
-            </div>
+            <h1>Prüfung der Komponenten</h1>
 
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-            <p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
+                <table>
+                    {% for check in check_list %}
+                        <tr>
+                            <td>{{ check.name }}</td>
+                            <td>
+                                {% if check.key == current_check %}
+                                    ... Prüfung läuft ...
+                                {% elif check_results[check.key]['result'] is not none %}
+                                    <b><span style="color: {{ check_results[check.key]['color'] }}">{{ check_results[check.key]['result'] }}</span></b>
+                                {% else %}
+                                    <!-- Leer lassen für Checks, die noch nicht gestartet wurden -->
+                                {% endif %}
+                            </td>
+                                </tr>
+                    {% endfor %}
+                </table>
+
+                <p>&nbsp;</p>
+                {% if not next_check_route %}
+                <!-- Button, der zur Startseite umleitet -->
+                <div class="logo">
+                    <form action="{{ url_for('home') }}" class="logo">
+                        <button type="submit" class="finish-button">Abschließen</button>
+                    </form>
+                </div>
+                {% endif %}
+    
+                <p>&nbsp;</p>
+                <p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
         </div>
 
         <div class="footer">
             <p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
         </div>
     </div>
-
+    
     <script>
         function populateLinks(menu, includeHome) {
             var host = window.location.hostname;
@@ -83,10 +111,9 @@
             var mainMenu = document.getElementById("mainMenu");
             var hamburgerMenu = document.getElementById("hamburgerMenu");
 
-            populateLinks(mainMenu, false); // Hauptmenü ohne Startseite
             populateLinks(hamburgerMenu, true); // Hamburger-Menü mit Startseite
         };
     </script>
+
 </body>
 </html>
-

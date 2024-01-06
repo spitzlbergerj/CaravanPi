@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CaravanPi Websites</title>
+    <title>CaravanPi Konfiguration</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
 </head>
 <body>
@@ -22,11 +22,11 @@
             </div>
             <hr>
 
-            <p>&nbsp;</p>
-            <p>Hier finden Sie alle Websites zur Konfiguration und Bedienung des CaravanPi.</p>
+            <h1>Konfiguration des CaravanPi</h1>
+            <p>Bitte führen Sie nacheinander die einzelnen Konfigurationsschritte durch.</p>
             <p></p>
 
-            <div class="menu" id="mainMenu">
+            <div class="menu" id="configMenu">
                 <!-- Hauptmenü-Links werden per JavaScript hinzugefügt -->
             </div>
 
@@ -70,7 +70,31 @@
             });
         }
 
-        function toggleHamburgerMenu() {
+        function populateConfigLinks(menu) {
+            var host = window.location.hostname;
+            var port = window.location.port;
+
+            var links = [
+                { text: "Dimensionen Caravan bzw. Wohnmobil", url: 'http://' + host + ':5000/config_dimension_caravan', isExternal: false },
+                { text: "Einstellungen Gas-Waage", url: 'http://' + host + ':5000/config_gaswaage', isExternal: false },
+                { text: "Einstellungen Lagesensor", url: 'http://' + host + ':5000/config_lagesensor', isExternal: false },
+                { text: "Einstellungen Füllsensoren Tanks", url: 'http://' + host + ':5000/config_tanks', isExternal: false },
+                { text: "Testen der LEDs", url: 'http://' + host + ':5000/config_LED_test', isExternal: false },
+                { text: "Startseite", url: 'http://' + host + ':5000', isExternal: false },
+            ];
+
+            links.forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url;
+                a.textContent = link.text;
+                if (link.isExternal) {
+                    a.target = "_blank"; // Öffnet den Link in einem neuen Fenster/Tab
+                }
+                menu.appendChild(a);
+            });
+        }
+
+       function toggleHamburgerMenu() {
             var menu = document.getElementById("hamburgerMenu");
             if (menu.style.display === "block") {
                 menu.style.display = "none";
@@ -80,10 +104,10 @@
         }
 
         window.onload = function() {
-            var mainMenu = document.getElementById("mainMenu");
+            var configMenu = document.getElementById("configMenu");
             var hamburgerMenu = document.getElementById("hamburgerMenu");
 
-            populateLinks(mainMenu, false); // Hauptmenü ohne Startseite
+            populateConfigLinks(configMenu); // Hauptmenü der Konfiguration
             populateLinks(hamburgerMenu, true); // Hamburger-Menü mit Startseite
         };
     </script>

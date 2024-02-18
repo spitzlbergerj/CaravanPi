@@ -54,7 +54,7 @@ def main():
 	gasCylinderNumber = 1
 	tare = 0
 	emptyWeight = 0
-	fullWeight = 0
+	gasWeightMax = 0
 
 	# ArgumentParser-Objekt erstellen
 	parser = argparse.ArgumentParser(description='Lesen der Gasflaschenwaage und Verarbeiten der Sensorwerte')
@@ -81,12 +81,12 @@ def main():
 	# -------------------------
 	# read defaults
 	# -------------------------
-	(emptyWeight, fullWeight, pin_dout, pin_sck, channel, refUnit) = cplib.readGasScale(gasCylinderNumber)
+	(emptyWeight, gasWeightMax, pin_dout, pin_sck, channel, refUnit) = cplib.readGasScale(gasCylinderNumber)
 
 	if args.screen:
 		print ("bisherige Werte:")
 		print ("Leergewicht Flasche: ", emptyWeight)
-		print ("max. Gas-Gewicht: ", fullWeight)
+		print ("max. Gas-Gewicht: ", gasWeightMax)
 		print ("Pin DOUT: ", pin_dout)
 		print ("Pin SCK: ", pin_sck)
 		print ("Channel: ", channel)
@@ -132,7 +132,7 @@ def main():
 		print ("aktuelle Messung Gaswaage: ", weight)
 
 		nettoWeight = weight - tare - emptyWeight
-		nettoLevel = (nettoWeight/fullWeight) * 100
+		nettoLevel = (nettoWeight/gasWeightMax) * 100
 
 		print ("Nettogewicht Gas: ", nettoWeight)
 		print ("Nettofüllgrad: ", nettoLevel)

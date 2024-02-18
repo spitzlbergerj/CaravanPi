@@ -46,11 +46,6 @@ sys.path.append('/home/pi/CaravanPi/.lib')
 from CaravanPiFilesClass import CaravanPiFiles
 
 
-DEVICE1 = 0x76      # Default device I2C address
-DEVICE2 = 0x77      # Second device I2C address
-DEVICE = DEVICE1    # for compatibility reasons
-
-
 bus = smbus.SMBus(1)	# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 						# Rev 1 Pi uses bus 0
 
@@ -74,7 +69,7 @@ def getUChar(data,index):
 	result =  data[index] & 0xFF
 	return result
 
-def readBME280ID(addr=DEVICE):
+def readBME280ID(addr):
 	# Chip ID Register Address
 	REG_ID     = 0xD0
 	try:
@@ -84,7 +79,7 @@ def readBME280ID(addr=DEVICE):
 		print(f"ERROR - Fehler beim Lesen von BME280 ID an Adresse {addr}: {e}")
 		return (None, None)
 
-def readBME280All(addr=DEVICE):
+def readBME280All(addr):
 	# Register Addresses
 	REG_DATA = 0xF7
 	REG_CONTROL = 0xF4
@@ -189,41 +184,32 @@ def readBME280All(addr=DEVICE):
 		return None, None, None
 
 def main():
-	global DEVICE
-	DEVICE = DEVICE1
 
 	# ArgumentParser-Objekt erstellen
 	parser = argparse.ArgumentParser(description='Lesen des Klimasensors und Verarbeiten der Sensorwerte')
 	parser.add_argument('-i', '--i2c', type=str, choices=['76', '77'], default='76',
 						help='I2C Bus Adresse (76 or 77)')
-	parser.add_argument('-f', '--file', action='store_true',
-						help='schreiben in ein File - obsoloet durch globale xml Konfiguration')
 	parser.add_argument('-s', '--screen', action='store_true',
-						help='ausgeben am Bildschirm')
+						help='Ausgabe auf dem Bildschirm')
 	parser.add_argument('-c', '--check', action='store_true', 
 						help='Führt den Funktionstest des Sensors aus')
 
 	# Argumente parsen
 	args = parser.parse_args()
 
-	# DEVICE entsprechend des Arguments setzen
-	if args.i2c == '76':
-		DEVICE = DEVICE1
-	elif args.i2c == '77':
-		DEVICE = DEVICE2
-
 	# Sensorgrunddaten lesen
-	chip_id, chip_version = readBME280ID(DEVICE)
+	chip_id, chip_version = readBME280ID(int(args.i2c, 16))
 
+	if (chip_id, chip_version) == (None, None):
+		# Fehler beim lesen des Sensors
+		return 1
+	
 	if args.check:
-		if (chip_id, chip_version) == (None, None):
-			return 1
-		else:
-			return 0
-
+		# nur Check, daher Abschluss hier
+		return 0
 
 	# konkrete Werte lesen
-	temperature, pressure, humidity = readBME280All(DEVICE)
+	temperature, pressure, humidity = readBME280All(int(args.i2c, 16))
 
 	# Sensorwerte verarbeiten
 	# Erstellen einer Instanz der CaravanPi Library
@@ -231,7 +217,7 @@ def main():
 	cplib.handle_sensor_values(
 		args.screen,										# Anzeige am Bildschirm?
 		"klimasensor",										# sensor_name = Datenbankname
-		"BME280-" + str(chip_id) + str(DEVICE),				# sensor_id = Filename und Spalte in der Datenbank
+		f"BME280-{chip_id}{int(args.i2c, 16)}",						# sensor_id = Filename und Spalte in der Datenbank
 		["temperatur", "luftdruck", "luftfeuchtigkeit"],	# Liste Spaltennamen
 		(temperature, pressure, humidity)					# Tupel Sensorwerte
 	)    

@@ -11,6 +11,7 @@
     flex-direction: column;
     font-family: Arial, sans-serif;
     background-color: #f2f2f2; /* Grauer Hintergrund */
+    word-wrap: break-word; /* Umbrechen im responsiven Layout */
 }
 .container {
     flex-grow: 1; /* Lässt den Container den verfügbaren Platz einnehmen */
@@ -32,9 +33,26 @@
 }
 
 /* ---------------------------------------------------------
+ * Images
+  * ---------------------------------------------------------
+ */
+ img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+img.logo {
+    max-width: 200px;
+}
+
+
+ /* ---------------------------------------------------------
  * Hamburger Menü
  * ---------------------------------------------------------
  */
+
 
 .hamburger-menu {
     position: absolute;
@@ -57,12 +75,6 @@
     background: white;
     padding: 10px;
     box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.2);
-}
-img.logo {
-    max-width: 200px;
-    width: 100%;
-    height: auto;
-    margin: 0 auto;
 }
 hr {
     width: 80%;
@@ -93,6 +105,11 @@ hr {
     text-decoration: underline;
     color: -webkit-link;
     cursor: pointer;
+}
+
+.menu h3 {
+    text-decoration: underline;
+    font-weight: bold;
 }
 
 /* ---------------------------------------------------------
@@ -190,6 +207,20 @@ label {
     justify-content: space-between; /* oder 'flex-start' */
 }
 
+.col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+}
+  
+.col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 6px;
+}
+  
+  
+
 /* ---------------------------------------------------------
  * Flask flash Nachrichten
  * ---------------------------------------------------------
@@ -205,6 +236,33 @@ label {
     border-color: #d6e9c6; /* dunkleres Grün */
     text-align: center;
     font-size: 16px;
+}
+
+/* ---------------------------------------------------------
+ * im Formular CaravanPi Defaults sollen die MariaDB und MQTT Datenfelder nur angezeigt werden, wenn diese auch aktiviert wurden
+ * im Formular wird die Sichtbarkeit über ein Script gesteuert
+ * ---------------------------------------------------------
+ */
+ .db-settings, .mqtt-settings {
+    display: none;
+}
+
+/* ---------------------------------------------------------
+ * im Formular Gasflaschenwaagen sollen Werte für eine zweite Waage nur abgefragt werden, wenn zwei Waagen konfiguriert wurden
+ * im Formular wird die Sichtbarkeit über ein Script gesteuert
+ * ---------------------------------------------------------
+ */
+ .gasscale_1, .gasscale_2 {
+    display: none;
+}
+
+/* ---------------------------------------------------------
+ * im Formular Tanks sollen Werte für einen zweiten oder dritten Tank nur abgefragt werden, wenn mehrere Tanks konfiguriert wurden
+ * im Formular wird die Sichtbarkeit über ein Script gesteuert
+ * ---------------------------------------------------------
+ */
+ .tank_1, .tank_2, .tank_3 {
+    display: none;
 }
 
 

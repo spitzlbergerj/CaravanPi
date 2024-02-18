@@ -37,6 +37,9 @@ sys.path.append('/home/pi/CaravanPi/.lib')
 from CaravanPiFilesClass import CaravanPiFiles
 from CaravanPiFunctionsClass import CaravanPiFunctions
 
+cpfileslib = CaravanPiFiles()
+cpfunclib = CaravanPiFunctions()
+
 # -----------------------------------------------
 # global variables
 # -----------------------------------------------
@@ -68,15 +71,13 @@ BUZZER_PIN = 26
 # -------------------------
 # call options 
 # -------------------------
-shortOptions = 'htsw:'
-longOptions = ['help', 'test', 'screen', 'wait=']
+shortOptions = 'hw:'
+longOptions = ['help', 'wait=']
 
 def usage():
 	print ("---------------------------------------------------------------------")
 	print (sys.argv[0], "-h -f")
 	print ("  -h          show this guide")
-	print ("  -t          write values not to origin file but to a testfile")
-	print ("  -s          display values on this screen")
 	print ("  -w seconds  waiting time until the values are read out from the sensor (default 120 seconds)\n")
 
 
@@ -90,8 +91,6 @@ def main():
 	# -------------------------
 	opts = []
 	args = []
-	writeTestFile = 0
-	displayScreen = 0
 	calibrationWait = 120 # seconds
 	
 	try:
@@ -106,18 +105,13 @@ def main():
 			print("HELP")
 			usage()
 			sys.exit()
-		elif o == "--test" or o == "-t":
-			print("output not to origin file but to test file")
-			writeTestFile = 1
-		elif o == "--screen" or o == "-s":
-			print("output also to this screen")
-			displayScreen = 1
 		elif o == "--wait" or o == "-w":
 			calibrationWait = int(a)
 
 	for a in args:
 		print("further argument: ", a)
 		
+
 	
 
 	# buzzer
@@ -130,14 +124,14 @@ def main():
 	# --> adjustX, adjustY, adjustZ
 	# In addition, the LEDs should already indicate "horizontal" as soon as the deviation from the horizontal is within a tolerance.
 	# --> approximationX, approximationY
-	(adjustX_orig, adjustY_orig, adjustZ_orig, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
+	(adjustX_orig, adjustY_orig, adjustZ_orig, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, distRight, distFront, distAxis) = cpfileslib.readAdjustment()
 	
 	# read sensor
 	i=0
 	arrayX = []
 	arrayY = []
 	arrayZ = []
-	
+
 	# Wait 2 minutes so that any vibrations of the caravan can subside
 	# during this waiting time slow beeping of the buzzer
 	while i < calibrationWait:
@@ -146,7 +140,7 @@ def main():
 		io.output(BUZZER_PIN, io.LOW)
 		sleep(.9)
 		i+=1
-		
+	
 	# buzzer beeps rapidly to signal imminent measurement
 	i=0
 	while i < 5:
@@ -156,7 +150,9 @@ def main():
 		sleep(.1)
 		i+=1
 
-	
+	# Berteinigen GPIO
+	io.cleanup()
+
 	# read sensor 200 times and put values in a list
 	i=0
 	while i < 200:
@@ -183,18 +179,15 @@ def main():
 		# Then set the other median values as well
 		y = statistics.median(arrayY)
 		z = statistics.median(arrayZ)
-	
-	CaravanPiFiles.writeAdjustment(writeTestFile, displayScreen, x, y, z, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, distRight, distFront, distAxis)
+
+	cpfileslib.writeAdjustment(x, y, z, toleranceX_orig, toleranceY_orig, approximationX_orig, approximationY_orig, distRight, distFront, distAxis)
 
 	# signal the program position2file.py that default values have changed
-	pid = CaravanPiFunctions.process_running("position2file.py")
-	os.kill(pid, signal.SIGUSR1)
+	pid = cpfunclib.process_running("position2file.py")
+	if pid != 0:
+		os.kill(pid, signal.SIGUSR1)
 
-	# long beep of the buzzer to signal completion
-	io.output(BUZZER_PIN, io.HIGH)
-	sleep(1)
-	io.output(BUZZER_PIN, io.LOW)
-	io.cleanup()
+	cpfunclib.play_melody(io, BUZZER_PIN, 'success')
 
 
 if __name__ == "__main__":

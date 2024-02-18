@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Konfiguration Gasflaschen-Waage</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Konfiguration der Gasflaschen-Waage</h1>
+			<p></p>
+
+		
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="flash-message">{{ message }}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+
+
+			<form class="caravanpi-form" method="post">
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+						Zur Ermittlung des Füllgrads der Gasflaschen sind Gewichtswerte der zu vermessenden Flaschen notwendig. 
+						Zudem sind zum Auslesen der Wägezellen Angaben zur Verdrahtung der Wägezellen mit dem HX711 notwendig.<br/><br/>
+						Das Leergewicht einer Gasflasche ist als "Tara" entweder auf dem Flaschegriff eingeprägt oder als Aufdruck angegeben. 
+						Das maximales Gasgewicht wird als "Füllgewicht" auf den Gasflaschen angegeben und ist das Gewicht des Gases einer vollen Flasche.<br/><br/>
+						Bitte geben Sie die entsprechenden Werte für die Anzahl der Waagen an, die in der CaravanPi Konfiguration angegeben wurden.
+						</p>
+					</div>
+				</div>
+
+				{% for gaswaage in gaswaagen %}
+		  			<div class="gasscale_{{ loop.index }}">
+
+						{% if loop.index > 1 %}
+							<br/>
+							<hr style="border: 2px solid black;">
+							<br/>
+						{% endif %}
+						<h3>Gasflaschen-Waage {{ loop.index }}</h3>
+
+						<!-- Leergewicht -->
+						<div class="row">
+							<div class="col-75">
+								<label for="leergewicht_{{ loop.index }}">Leergewicht der Gasflasche (in gr)</label>  
+							</div>
+							<div class="col-25">
+								<input name="leergewicht_{{ loop.index }}" type="number" step="10" min="3000" value="{{ gaswaage.get('leergewicht', '')}}" >
+							</div>
+						</div>
+
+						<!-- Max. Gewicht des Flüssiggases -->
+						<div class="row">
+							<div class="col-75">
+								<label for="gasgewicht_{{ loop.index }}">max. Gasgewicht in der Gasflasche (in gr)</label>  
+							</div>
+							<div class="col-25">
+								<input name="gasgewicht_{{ loop.index }}" type="number" step="10" min="3000" value="{{ gaswaage.get('gasgewicht', '')}}" >
+							</div>
+						</div>
+
+						<div style="color:red">
+							<div class="logo">
+								<hr>
+							</div>
+							<p>
+								Die nachfolgenden Werte beziehen sich auf Ihre konkrete Verdrahtung des HX711 und der Wägezelle. Bitte mit Bedacht ändern.<br/><br/>
+							</p>
+						</div>
+
+
+						<p>Die original CaravanPi Platine steuert den HX711 über die GPIO Pins DOUT 23 und SCK 24 auf Channel A an.</p>
+
+						<!-- GPIO Pin HX711 DOUT -->
+						<div class="row">
+							<div class="col-75">
+								<label for="gpioHX711Dout_{{ loop.index }}">GPIO Pin HX711 DOUT</label>  
+							</div>
+							<div class="col-25">
+								<input name="gpioHX711Dout_{{ loop.index }}" type="number" step="1" min="1" value="{{ gaswaage.get('gpioHX711Dout', '')}}" >
+							</div>
+						</div>
+
+						<!-- GPIO Pin HX711 SCK -->
+						<div class="row">
+							<div class="col-75">
+								<label for="gpioHX711Sck_{{ loop.index }}">GPIO Pin HX711 SCK</label>  
+							</div>
+							<div class="col-25">
+								<input name="gpioHX711Sck_{{ loop.index }}" type="number" step="1" min="1" value="{{ gaswaage.get('gpioHX711Sck', '')}}" >
+							</div>
+						</div>
+
+						<!-- Channel HX711 -->
+						<div class="row">
+							<div class="col-75">
+								<label for="channelHX711_{{ loop.index }}">Channel HX711</label>  
+							</div>
+							<div class="col-25">
+								<input name="channelHX711_{{ loop.index }}" type="char" value="{{ gaswaage.get('channelHX711', '')}}" >
+							</div>
+						</div>
+
+						<div style="color:red">
+							<div class="logo">
+								<hr>
+							</div>
+							<p>
+								Der nachfolgende Wert wird über die Kalibrierung der Gasflaschenwaage automatisch gesetzt. Eine manuelle Korrektur ist in der Regel nicht notwendig. Bitte nur ändern, wenn Sie wissen, was Sie tun.<br/><br/>
+							</p>
+						</div>
+
+						<!-- Reference Unit HX711 (Wert aus Kalibrierung) -->
+						<div class="row">
+							<div class="col-75">
+								<label for="refUnitHX711_{{ loop.index }}">Reference Unit HX711 (Wert aus Kalibrierung)</label>  
+							</div>
+							<div class="col-25">
+								<input name="refUnitHX711_{{ loop.index }}" type="float"  value="{{ gaswaage.get('refUnitHX711', '')}}" >
+							</div>
+						</div>
+
+						<p>
+						</p>
+					</div>
+				{% endfor %}
+
+				<!-- Button -->
+				<div class="row">
+					<div class="button-container">
+						<input type="submit" name="submit" value="Speichern" class="finish-button" onclick="hideAndShowMessage()">
+						<input type="submit" name="cancel" value="Zurück" class="finish-button">
+					</div>
+				</div>
+			</form>
+
+			<p>&nbsp;</p>
+			<p>&nbsp;</p>
+			<p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
+		</div>
+
+		<div class="footer">
+			<p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
+		</div>
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+
+	<!-- Steuerung der Sichtbarkeit der Felder für Waage 2 -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var anzWaagen = {{ anzWaagen }}; // Von Flask übergeben
+
+			// Funktion zum Ein-/Ausblenden der Einstellungen
+			function toggleSettings(settingsClass, shouldDisplay = true, shouldClearValues = false) {
+				var settings = document.querySelector(settingsClass);
+				settings.style.display = shouldDisplay ? 'block' : 'none';
+				if (shouldClearValues) {
+					settings.querySelectorAll('input').forEach(function(input) {
+						input.value = ''; // Setzt den Wert jedes Eingabefeldes zurück
+					});
+				}
+			}
+		
+			// Immer anzeigen für gasscale_1
+			toggleSettings('.gasscale_1', true);
+
+			// Bedingtes Anzeigen für gasscale_2 basierend auf anzWaagen
+			if (anzWaagen >= 2) {
+				toggleSettings('.gasscale_2', true, false);
+			} else {
+				toggleSettings('.gasscale_2', false, true);
+			}
+		});
+	</script>
+	
+</body>
+</html>
+

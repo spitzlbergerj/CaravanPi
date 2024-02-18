@@ -2,9 +2,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CaravanPi Konfiguration</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+    <title>CaravanPi - Reboot und Shutdown</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <div class="container">
@@ -24,15 +24,10 @@
             </div>
             <hr>
 
-            <h1>Einstellungen</h1>
-            <p>Bitte tragen Sie über die verschiedenen Einstellungen die Defaultwerte für Abmessungen und Sensoren ein. </p>
-            <p><br></p>
-
-            <div class="menu" id="configMenu">
-                <!-- Hauptmenü-Links werden per JavaScript hinzugefügt -->
-            </div>
-
             <p>&nbsp;</p>
+            <p style="color: red; font-weight: bold; text-align: center;">Der Raspberry Pi wird nun neu gestartet bzw. heruntergefahren</p>
+            <p></p>
+
             <p>&nbsp;</p>
             <p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
         </div>
@@ -41,10 +36,9 @@
             <p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
         </div>
     </div>
-
+    
 	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
 	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
 
 </body>
 </html>
-

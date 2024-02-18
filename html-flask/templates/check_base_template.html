@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CaravanPi - {{ title }}</title>
     {% if next_check_route %}
         <meta http-equiv="refresh" content="1; url={{ url_for(next_check_route) }}">
@@ -34,18 +36,20 @@
 
                 <table>
                     {% for check in check_list %}
-                        <tr>
-                            <td>{{ check.name }}</td>
-                            <td>
-                                {% if check.key == current_check %}
-                                    ... Prüfung läuft ...
-                                {% elif check_results[check.key]['result'] is not none %}
-                                    <b><span style="color: {{ check_results[check.key]['color'] }}">{{ check_results[check.key]['result'] }}</span></b>
-                                {% else %}
-                                    <!-- Leer lassen für Checks, die noch nicht gestartet wurden -->
-                                {% endif %}
-                            </td>
-                                </tr>
+                        {% if check.run_check %}
+                            <tr>
+                                <td>{{ check.name }}</td>
+                                <td>
+                                    {% if check.key == current_check %}
+                                        ... Prüfung läuft ...
+                                    {% elif check_results[check.key]['result'] is not none %}
+                                        <b><span style="color: {{ check_results[check.key]['color'] }}">{{ check_results[check.key]['result']|safe }}</span></b>
+                                    {% else %}
+                                        <!-- Leer lassen für Checks, die noch nicht gestartet wurden -->
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 </table>
 
@@ -68,52 +72,8 @@
         </div>
     </div>
     
-    <script>
-        function populateLinks(menu, includeHome) {
-            var host = window.location.hostname;
-            var port = window.location.port;
-
-            var links = [
-                { text: "Startseite", url: 'http://' + host + ':5000/', isExternal: false },
-                { text: "Konfigurationswebsite", url: 'http://' + host + ':5000/configs', isExternal: false },
-                { text: "Status-Überprüfungswebsite", url: 'http://' + host + ':5000/checks', isExternal: false },
-                { text: "MagicMirror Konfiguration", url: 'http://' + host + ':8080/remote.html#main-menu', isExternal: true },
-                { text: "MagicMirror Remote-Anzeige", url: 'http://' + host + ':8080', isExternal: true },
-                { text: "Grafana Website", url: 'http://' + host + ':3000', isExternal: true },
-                { text: "phpMyAdmin", url: 'http://' + host + '/phpmyadmin/', isExternal: true }
-            ];
-
-            if (!includeHome) {
-                links.shift(); // Entfernt die Startseite, wenn includeHome false ist
-            }
-
-            links.forEach(function(link) {
-                var a = document.createElement('a');
-                a.href = link.url;
-                a.textContent = link.text;
-                if (link.isExternal) {
-                    a.target = "_blank"; // Öffnet den Link in einem neuen Fenster/Tab
-                }
-                menu.appendChild(a);
-            });
-        }
-
-        function toggleHamburgerMenu() {
-            var menu = document.getElementById("hamburgerMenu");
-            if (menu.style.display === "block") {
-                menu.style.display = "none";
-            } else {
-                menu.style.display = "block";
-            }
-        }
-
-        window.onload = function() {
-            var mainMenu = document.getElementById("mainMenu");
-            var hamburgerMenu = document.getElementById("hamburgerMenu");
-
-            populateLinks(hamburgerMenu, true); // Hamburger-Menü mit Startseite
-        };
-    </script>
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
 
 </body>
 </html>

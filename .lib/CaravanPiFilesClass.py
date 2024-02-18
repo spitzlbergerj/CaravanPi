@@ -66,6 +66,7 @@ class CaravanPiFiles:
 			"MQTTport", 
 			"MQTTuser", 
 			"MQTTpassword", 
+			"countClimateSensors",
 		],
 		"adjustmentPosition": [
 			"adjustX", 
@@ -86,7 +87,7 @@ class CaravanPiFiles:
 		],
 		"gasScaleDefaults": [
 			"emptyWeight", 
-			"fullWeight", 
+			"gasWeightMax", 
 			"pin_dout", 
 			"pin_sck", 
 			"strChannel", 
@@ -139,7 +140,7 @@ class CaravanPiFiles:
 		# Aktualisiert die Klassenattribute basierend auf der XML-Datei
 		defaults = self.readCaravanPiDefaults()
 		if defaults:
-			_, _, self.write2file, self.write2MariaDB, self.MariaDBhost, self.MariaDBuser, self.MariaDBpasswd, self.MariaDBdatabase, self.send2MQTT, self.MQTTbroker, self.MQTTport, self.MQTTuser, self.MQTTpassword = defaults
+			_, _, self.write2file, self.write2MariaDB, self.MariaDBhost, self.MariaDBuser, self.MariaDBpasswd, self.MariaDBdatabase, self.send2MQTT, self.MQTTbroker, self.MQTTport, self.MQTTuser, self.MQTTpassword, _ = defaults
 
 	# ---------------------------------------------------------------------------------------------
 	# format_xml
@@ -195,7 +196,6 @@ class CaravanPiFiles:
 			write2file = defaults_element.find("write2file").text == '1' if defaults_element.find("write2file") is not None else False
 			write2MariaDB = defaults_element.find("write2MariaDB").text == '1' if defaults_element.find("write2MariaDB") is not None else False
 			send2MQTT = defaults_element.find("send2MQTT").text == '1' if defaults_element.find("send2MQTT") is not None else False
-			mqtt_port = defaults_element.find("MQTTport").text if defaults_element.find("MQTTport") is not None else None
 
 			return (
 				int(defaults_element.find("countGasScales").text) if defaults_element.find("countGasScales") is not None and defaults_element.find("countGasScales").text.isdigit() else None,
@@ -210,12 +210,13 @@ class CaravanPiFiles:
 				defaults_element.find("MQTTbroker").text if defaults_element.find("MQTTbroker") is not None else None,
 				int(defaults_element.find("MQTTport").text) if defaults_element.find("MQTTport") is not None and defaults_element.find("MQTTport").text.isdigit() else None,
 				defaults_element.find("MQTTuser").text if defaults_element.find("MQTTuser") is not None else None,
-				defaults_element.find("MQTTpassword").text if defaults_element.find("MQTTpassword") is not None else None
+				defaults_element.find("MQTTpassword").text if defaults_element.find("MQTTpassword") is not None else None,
+				int(defaults_element.find("countClimateSensors").text) if defaults_element.find("countClimateSensors") is not None and defaults_element.find("countClimateSensors").text.isdigit() else None,
 			)
 		else:
 			return None
 
-	def writeCaravanPiDefaults(self, countGasScales, countTanks, write2file, write2MariaDB, MariaDBhost, MariaDBuser, MariaDBpasswd, MariaDBdatabase, send2MQTT, MQTTbroker, MQTTport, MQTTuser, MQTTpassword):
+	def writeCaravanPiDefaults(self, countGasScales, countTanks, write2file, write2MariaDB, MariaDBhost, MariaDBuser, MariaDBpasswd, MariaDBdatabase, send2MQTT, MQTTbroker, MQTTport, MQTTuser, MQTTpassword, countClimateSensors):
 		tree = ET.parse(self.xml_file_path)
 		root = tree.getroot()
 		defaults_element = root.find("caravanpiDefaults")
@@ -227,7 +228,7 @@ class CaravanPiFiles:
 		write2MariaDB = '1' if write2MariaDB else '0'
 		send2MQTT = '1' if send2MQTT else '0'
 
-		for key, value in [("countGasScales", countGasScales), ("countTanks", countTanks), ("write2file", write2file), ("write2MariaDB", write2MariaDB), ("MariaDBhost", MariaDBhost), ("MariaDBuser", MariaDBuser), ("MariaDBpasswd", MariaDBpasswd), ("MariaDBdatabase", MariaDBdatabase), ("send2MQTT", send2MQTT), ("MQTTbroker", MQTTbroker), ("MQTTport", MQTTport), ("MQTTuser", MQTTuser), ("MQTTpassword", MQTTpassword)]:
+		for key, value in [("countGasScales", countGasScales), ("countTanks", countTanks), ("write2file", write2file), ("write2MariaDB", write2MariaDB), ("MariaDBhost", MariaDBhost), ("MariaDBuser", MariaDBuser), ("MariaDBpasswd", MariaDBpasswd), ("MariaDBdatabase", MariaDBdatabase), ("send2MQTT", send2MQTT), ("MQTTbroker", MQTTbroker), ("MQTTport", MQTTport), ("MQTTuser", MQTTuser), ("MQTTpassword", MQTTpassword), ("countClimateSensors", countClimateSensors)]:
 			element = defaults_element.find(key)
 			if element is None:
 				element = ET.SubElement(defaults_element, key)
@@ -268,9 +269,9 @@ class CaravanPiFiles:
 				float(adjustment_element.find("toleranceY").text) if adjustment_element.find("toleranceY") is not None and self.is_float(adjustment_element.find("toleranceY").text) else None,
 				float(adjustment_element.find("approximationX").text) if adjustment_element.find("approximationX") is not None and self.is_float(adjustment_element.find("approximationX").text) else None,
 				float(adjustment_element.find("approximationY").text) if adjustment_element.find("approximationY") is not None and self.is_float(adjustment_element.find("approximationY").text) else None,
-				float(adjustment_element.find("distRight").text) if adjustment_element.find("distRight") is not None and self.is_float(adjustment_element.find("distRight").text) else None,
-				float(adjustment_element.find("distFront").text) if adjustment_element.find("distFront") is not None and self.is_float(adjustment_element.find("distFront").text) else None,
-				float(adjustment_element.find("distAxis").text) if adjustment_element.find("distAxis") is not None and self.is_float(adjustment_element.find("distAxis").text) else None
+				int(adjustment_element.find("distRight").text) if adjustment_element.find("distRight") is not None and adjustment_element.find("distRight").text.isdigit() else None,
+				int(adjustment_element.find("distFront").text) if adjustment_element.find("distFront") is not None and adjustment_element.find("distFront").text.isdigit() else None,
+				int(adjustment_element.find("distAxis").text) if adjustment_element.find("distAxis") is not None and adjustment_element.find("distAxis").text.isdigit() else None
 			)
 		else:
 			return None
@@ -309,9 +310,9 @@ class CaravanPiFiles:
 		dimensions_element = root.find("dimensionsCaravan")
 		if dimensions_element is not None:
 			return (
-				float(dimensions_element.find("lengthOverAll").text) if dimensions_element.find("lengthOverAll") is not None and self.is_float(dimensions_element.find("lengthOverAll").text) else None,
-				float(dimensions_element.find("widthOverAll").text) if dimensions_element.find("widthOverAll") is not None and self.is_float(dimensions_element.find("widthOverAll").text) else None,
-				float(dimensions_element.find("lengthBody").text) if dimensions_element.find("lengthBody") is not None and self.is_float(dimensions_element.find("lengthBody").text) else None
+				int(dimensions_element.find("lengthOverAll").text) if dimensions_element.find("lengthOverAll") is not None and dimensions_element.find("lengthOverAll").text.isdigit() else None,
+				int(dimensions_element.find("widthOverAll").text) if dimensions_element.find("widthOverAll") is not None and dimensions_element.find("widthOverAll").text.isdigit() else None,
+				int(dimensions_element.find("lengthBody").text) if dimensions_element.find("lengthBody") is not None and dimensions_element.find("lengthBody").text.isdigit() else None
 			)
 		else:
 			return None
@@ -356,8 +357,8 @@ class CaravanPiFiles:
 		
 		if gas_scale_element is not None:
 			return (
-				float(gas_scale_element.find("emptyWeight").text) if gas_scale_element.find("emptyWeight") is not None and self.is_float(gas_scale_element.find("emptyWeight").text) else None,
-				float(gas_scale_element.find("fullWeight").text) if gas_scale_element.find("fullWeight") is not None and self.is_float(gas_scale_element.find("fullWeight").text) else None,
+				int(gas_scale_element.find("emptyWeight").text) if gas_scale_element.find("emptyWeight") is not None and gas_scale_element.find("emptyWeight").text.isdigit() else None,
+				int(gas_scale_element.find("gasWeightMax").text) if gas_scale_element.find("gasWeightMax") is not None and gas_scale_element.find("gasWeightMax").text.isdigit() else None,
 				int(gas_scale_element.find("pin_dout").text) if gas_scale_element.find("pin_dout") is not None and gas_scale_element.find("pin_dout").text.isdigit() else None,
 				int(gas_scale_element.find("pin_sck").text) if gas_scale_element.find("pin_sck") is not None and gas_scale_element.find("pin_sck").text.isdigit() else None,
 				gas_scale_element.find("strChannel").text if gas_scale_element.find("strChannel") is not None else None,
@@ -366,7 +367,7 @@ class CaravanPiFiles:
 		else:
 			return None
 
-	def writeGasScale(self, gasCylinderNumber, test, screen, emptyWeight, fullWeight, pin_dout, pin_sck, strChannel, refUnit):
+	def writeGasScale(self, gasCylinderNumber, emptyWeight, gasWeightMax, pin_dout, pin_sck, strChannel, refUnit):
 		tree = ET.parse(self.xml_file_path)
 		root = tree.getroot()
 		gas_scale_element = root.find(f"gasScaleDefaults{gasCylinderNumber}")
@@ -374,7 +375,7 @@ class CaravanPiFiles:
 			gas_scale_element = ET.SubElement(root, f"gasScaleDefaults{gasCylinderNumber}")
 		
 		# Create or update each configuration item
-		for key, value in [("emptyWeight", emptyWeight), ("fullWeight", fullWeight), ("pin_dout", pin_dout), ("pin_sck", pin_sck), ("strChannel", strChannel), ("refUnit", refUnit)]:
+		for key, value in [("emptyWeight", emptyWeight), ("gasWeightMax", gasWeightMax), ("pin_dout", pin_dout), ("pin_sck", pin_sck), ("strChannel", strChannel), ("refUnit", refUnit)]:
 			element = gas_scale_element.find(key)
 			if element is None:
 				element = ET.SubElement(gas_scale_element, key)
@@ -405,15 +406,15 @@ class CaravanPiFiles:
 		tank_element = root.find(f"tankDefaults{tankNumber}")
 		if tank_element is not None:
 			return (
-				float(tank_element.find("level1").text) if tank_element.find("level1") is not None and is_float(tank_element.find("level1").text) else None,
-				float(tank_element.find("level2").text) if tank_element.find("level2") is not None and is_float(tank_element.find("level2").text) else None,
-				float(tank_element.find("level3").text) if tank_element.find("level3") is not None and is_float(tank_element.find("level3").text) else None,
-				float(tank_element.find("level4").text) if tank_element.find("level4") is not None and is_float(tank_element.find("level4").text) else None
+				float(tank_element.find("level1").text) if tank_element.find("level1") is not None and self.is_float(tank_element.find("level1").text) else None,
+				float(tank_element.find("level2").text) if tank_element.find("level2") is not None and self.is_float(tank_element.find("level2").text) else None,
+				float(tank_element.find("level3").text) if tank_element.find("level3") is not None and self.is_float(tank_element.find("level3").text) else None,
+				float(tank_element.find("level4").text) if tank_element.find("level4") is not None and self.is_float(tank_element.find("level4").text) else None
 			)
 		else:
 			return None
 
-	def writeFillLevels(self, tankNumber, test, screen, level1, level2, level3, level4):
+	def writeFillLevels(self, tankNumber, level1, level2, level3, level4):
 		tree = ET.parse(self.xml_file_path)
 		root = tree.getroot()
 		tank_element = root.find(f"tankDefaults{tankNumber}")
@@ -533,7 +534,7 @@ class CaravanPiFiles:
 		try:
 			# sind beide Listen/Tupel gleich lang?
 			if len(sensor_values) != len(value_identifiers):
-				raise ValueError("Die Tupel fuer Werte und Bezeichner sind unterschiedlich lang")
+				raise ValueError(f"Die Tupel fuer Werte ({len(sensor_values)} Elemente: {sensor_values}) und Bezeichner ({len(value_identifiers)} Elemente {value_identifiers}) sind unterschiedlich lang")
 
 			# Bildschirmausgabe
 			if toScreen:

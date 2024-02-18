@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>CaravanPi Caravan Kalibrierungen</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Kalibrierung Lagesensor und Waagen</h1>
+			<p></p>
+
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="flash-message">{{ message }}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+
+			{% if stage == 'choose' %}
+				<p>Wählen Sie die Art der Kalibrierung:</p>
+				<ul>
+					{% for key, option in calibration_options.items() %}
+					<li><a href="/calibration/{{ key }}">{{ option.name }}</a></li>
+					{% endfor %}
+				</ul>
+			{% elif stage == 'input_gasscales' %}
+				<div>
+					<h2>{{ calibration_options['gasscales'].name }}</h2>
+					<p>
+						{{ calibration_options['gasscales'].instructions }}
+						<br/><br/>
+					</p>
+				</div>
+
+				<form action="/calibration/execute/gasscales" method="post">
+					<label for="scale_number">Nummer der Gaswaage (1 bis {{ calibration_options['gasscales'].max_scales }}):</label>
+					<input type="number" id="scale_number" name="scale_number" value="1" min="1" max="{{ calibration_options['gasscales'].max_scales }}" required>
+					<label for="weight">Testgewicht (in Gramm):</label>
+					<input type="number" id="weight" name="weight" value="1000" min="1" max="20000" required>
+					<label for="wait_time">Wartezeit vor dem Start (in Sekunden):</label>
+					<input type="number" id="wait_time" name="wait_time" value="5" min="1" max="10" required>
+					<p>
+						&nbsp;
+					</p>
+
+					<button type="submit" class="finish-button">Kalibrierung Gaswaage starten</button>
+				</form>			
+			{% elif stage == 'input_lagesensor' %}
+				<div>
+					<h2>{{ calibration_options['lagesensor'].name }}</h2>
+					<p>
+						{{ calibration_options['lagesensor'].instructions }}
+						<br/><br/>
+					</p>
+				</div>
+
+				<form action="/calibration/execute/lagesensor" method="post">
+					<label for="wait_time">Wartezeit vor dem Start (in Sekunden):</label>
+					<input type="number" id="wait_time" name="wait_time" value="60" min="1" max="120" required>
+					<p>
+						&nbsp;
+					</p>
+					<button type="submit" class="finish-button">Kalibrierung Lagesensor starten</button>
+				</form>			
+			{% elif stage == 'progress_gasscale' %}
+				<p>Die Kalibrierung der Gaswaage {{ scale_number }}<br/>mit dem Testgewicht {{ weight }} Gramm<br/>und einer Wartezeit von {{ wait_time }} Sekunden<br/>wird vorbereitet.<br/><br/></p>
+				<p>Kalibrierung läuft ....  bitte warten</p>
+				<script>
+					setTimeout(function() {
+						window.location.href = "{{ url_for('route_calibration_gasscale_running') }}";
+					}, 1000); // Wartet 1000 Millisekunden (1 Sekunden) bevor die URL aufgerufen wird
+				</script>
+			{% elif stage == 'progress_gasscale' %}
+				<p>Die Kalibrierung des Lagesensors wird mit einer Wartezeit von {{ wait_time }} Sekunden vorbereitet.<br/<<br/></p>
+				<p>Kalibrierung läuft ....  bitte warten</p>
+				<script>
+					setTimeout(function() {
+						window.location.href = "{{ url_for('route_calibration_lagesensor_running') }}";
+					}, 1000); // Wartet 1000 Millisekunden (1 Sekunden) bevor die URL aufgerufen wird
+				</script>
+			{% elif stage == 'result' %}
+				<p>Kalibrierung abgeschlossen.</p>
+				<button onclick="location.href='/'" class="finish-button">zur Startseite</button>
+			{% endif %}
+
+			<p>&nbsp;</p>
+			<p>&nbsp;</p>
+			<p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
+		</div>
+
+		<div class="footer">
+			<p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
+		</div>
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+
+</body>
+</html>
+

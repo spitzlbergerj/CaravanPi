@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <CaravanPiConfigurations>
   <caravanpiDefaults>
-    <countGasScales>1</countGasScales>
+    <countGasScales>2</countGasScales>
     <countTanks>1</countTanks>
     <write2file>1</write2file>
     <write2MariaDB>1</write2MariaDB>
@@ -14,51 +14,52 @@
     <MQTTport>8883</MQTTport>
     <MQTTuser>NodeRED-MQTT</MQTTuser>
     <MQTTpassword>dasGeheimePasswort</MQTTpassword>
+    <countClimateSensors>1</countClimateSensors>
     </caravanpiDefaults>
   <adjustmentPosition>
-    <adjustX>0.000000</adjustX>
-    <adjustY>0.784532</adjustY>
-    <adjustZ>9.257478</adjustZ>
-    <toleranceX>0.200000</toleranceX>
-    <toleranceY>0.200000</toleranceY>
-    <approximationX>0.250000</approximationX>
-    <approximationY>0.250000</approximationY>
+    <adjustX>-0.196133</adjustX>
+    <adjustY>0.5883989999999999</adjustY>
+    <adjustZ>9.218251</adjustZ>
+    <toleranceX>0.2</toleranceX>
+    <toleranceY>0.2</toleranceY>
+    <approximationX>0.25</approximationX>
+    <approximationY>0.25</approximationY>
     <distRight>140</distRight>
     <distFront>10</distFront>
     <distAxis>20</distAxis>
     </adjustmentPosition>
   <dimensionsCaravan>
-    <lengthOverAll>7900.0</lengthOverAll>
-    <widthOverAll>2300.0</widthOverAll>
-    <lengthBody>6200.0</lengthBody>
+    <lengthOverAll>7900</lengthOverAll>
+    <widthOverAll>2300</widthOverAll>
+    <lengthBody>6200</lengthBody>
     </dimensionsCaravan>
   <gasScaleDefaults1>
     <emptyWeight>3800</emptyWeight>
-    <fullWeight>6000</fullWeight>
+    <gasWeightMax>6000</gasWeightMax>
     <pin_dout>23</pin_dout>
     <pin_sck>24</pin_sck>
     <strChannel>A</strChannel>
-    <refUnit>-219.123529412</refUnit>
+    <refUnit>-4.687</refUnit>
     </gasScaleDefaults1>
   <gasScaleDefaults2>
-    <emptyWeight>0</emptyWeight>
-    <fullWeight>8000</fullWeight>
-    <pin_dout>16</pin_dout>
-    <pin_sck>12</pin_sck>
-    <strChannel>A</strChannel>
+    <emptyWeight>3800</emptyWeight>
+    <gasWeightMax>8000</gasWeightMax>
+    <pin_dout>23</pin_dout>
+    <pin_sck>24</pin_sck>
+    <strChannel>B</strChannel>
     <refUnit>54.266798419</refUnit>
     </gasScaleDefaults2>
   <tankDefaults1>
-    <level1>10</level1>
-    <level2>20</level2>
-    <level3>30</level3>
-    <level4>40</level4>
+    <level1>10.0</level1>
+    <level2>20.0</level2>
+    <level3>30.0</level3>
+    <level4>40.0</level4>
     </tankDefaults1>
   <tankDefaults2>
-    <level1>8</level1>
-    <level2>11</level2>
-    <level3>15</level3>
-    <level4>17</level4>
+    <level1>8.0</level1>
+    <level2>11.0</level2>
+    <level3>15.0</level3>
+    <level4>17.0</level4>
     </tankDefaults2>
   <voltageDefaults>
     <level1>12.0</level1>
@@ -68,4 +69,10 @@
   <testColor>
     <color>-2</color>
     </testColor>
+  <tankDefaults3>
+    <level1>10.0</level1>
+    <level2>10.0</level2>
+    <level3>10.0</level3>
+    <level4>10.0</level4>
+    </tankDefaults3>
   </CaravanPiConfigurations>

@@ -14,12 +14,7 @@ sys.path.append('/home/pi/CaravanPi/.lib')
 from CaravanPiFilesClass import CaravanPiFiles
 
 cplib = CaravanPiFiles()
-caravanpiDefaults_tuple = cplib.readCaravanPiDefaults()
-if caravanpiDefaults_tuple is None:
-	gasscales_max = 0
-else:
-	gasscales_max = caravanpiDefaults_tuple[0] if caravanpiDefaults_tuple[0] is not None else 0
-
+gasscales_max = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/countGasScales") or 0)
 
 # -----------------------------------------------
 # Routen

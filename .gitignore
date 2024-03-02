@@ -12,9 +12,8 @@ __pycache__/
 # ignoriere fremde libraries
 .lib/hx711py
 .lib/hx711py/*
-.lib/hx711pySJJSJJSJJSJJ
-.lib/hx711pySJJSJJSJJSJJ/*
 .lib/*pyc
+.lib/Adafruit_Python_ADS1x15
 
 # ignoriere defaults/_allt, das durch abwaerttskompatibilitaet entsteht
 defaults/_alt/

@@ -1,16 +1,14 @@
-#! /usr/bin/python2
+#!/usr/bin/python
 # coding=utf-8
-# temp2file.py
+# gasweight2file.py
 #
 # liest die Gaswaage ein und schreibt den Wert in eine Datei
 #
 #-------------------------------------------------------------------------------
 
-import time
 import sys
 import datetime
 import RPi.GPIO as GPIO
-import getopt
 import argparse
 
 # -----------------------------------------------
@@ -22,24 +20,8 @@ from CaravanPiFilesClass import CaravanPiFiles
 
 
 def clean():
-    print ("Cleaning...")
-    GPIO.cleanup()
-
-def write2file(gasCylinderNumber, wert, relativ):
-	try:
-		strGasScaleBez = "gasScale"+'{:.0f}'.format(gasCylinderNumber)
-		dateiName = "/home/pi/CaravanPi/values/"+strGasScaleBez
-		file = open(dateiName, 'a')
-		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-		strWert = '{:.0f}'.format(wert)
-		strRelativ = '{:.0f}'.format(relativ)
-		file.write("\n"+ strGasScaleBez + " " + str_from_time_now + " " + strWert + " " + strRelativ)
-		file.close()
-		return 0
-	except:
-		# Schreibfehler
-		print ("Die Datei " + dateiName + " konnte nicht geschrieben werden.")
-		return -1
+	print("Cleaning...")
+	GPIO.cleanup()
 
 def main():
 	# -------------------------
@@ -49,7 +31,6 @@ def main():
 	# -------------------------
 	# process call parameters
 	# -------------------------
-	opts = []
 	args = []
 	gasCylinderNumber = 1
 	tare = 0
@@ -124,20 +105,20 @@ def main():
 		else:
 			weight = hxlib.get_weight_A(5)
 
-		print ("aktuelle Messung Gaswaage: ", weight)
-
 		if (weight<0):
 			weight=weight*(-1)
-
-		print ("aktuelle Messung Gaswaage: ", weight)
 
 		nettoWeight = weight - tare - emptyWeight
 		nettoLevel = (nettoWeight/gasWeightMax) * 100
 
-		print ("Nettogewicht Gas: ", nettoWeight)
-		print ("Nettofüllgrad: ", nettoLevel)
-
-		write2file(gasCylinderNumber, nettoWeight, nettoLevel)
+		# Werte schreiben bzw. senden
+		cplib.handle_sensor_values(
+			args.screen,							# Anzeige am Bildschirm?
+			"gasfuellgrad",							# sensor_name = Datenbankname
+			f"gasscale-{gasCylinderNumber:.0f}",		# sensor_id = Filename und Spalte in der Datenbank
+			["gewicht", "fuellgrad",],				# Liste Spaltennamen
+			(float(nettoWeight), float(nettoLevel),)			# Tupel Sensorwerte
+		)
 
 	except RuntimeError as e:
 		print(f"ERROR - HX711 - Initialisierungsfehler: {e}")

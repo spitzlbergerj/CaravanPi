@@ -379,7 +379,7 @@ def check_1_wire():
 
 	except Exception as e:
 		print(f"Fehler beim Überprüfen des 1-Wire-Bus: {e}")
-		return False, "Fehler"
+		return False, "Fehler beim Prüfen"
 
 # ---------------------------------------------------------------------------------------------
 # i2c und die erwarteten Geräte über smbus2
@@ -400,11 +400,11 @@ def check_i2c():
 	global i2c_expected_device_addresses  # Globale Variable ansprechen
 
 	# Einlesen der Anzahlen für Waagen, Tanks, Klimasensoren
-	caravanpiDefaults_tuple = cplib.readCaravanPiDefaults()
-	if caravanpiDefaults_tuple is None:
+	expected_climates = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/countClimateSensors"))
+	if expected_climates is None:
 		expected_climates = 1
-	else:
-		expected_climates = caravanpiDefaults_tuple[13] if caravanpiDefaults_tuple[13] is not None else 0
+
+	print(f"erwartete Klimasensoren: {expected_climates}")
 
 	# Anpassen der erwarteten I2C-Geräteadressen basierend auf expected_climates
 	if expected_climates == 1:
@@ -426,16 +426,25 @@ def check_i2c():
 	# Umwandeln der gefundenen Geräteadressen in Hex-Strings ohne "0x" für die Ausgabe
 	found_devices_str = sorted([format(addr, 'x') for addr in found_devices_dec], key=lambda x: int(x, 16))
 
+	print(f"erwartete I2C Devices: {expected_devices_str}")
+	print(f"gefundene Devices: {found_devices_str}")
+
 	if found_devices_dec == expected_devices:
-		return True, Markup(f"OK<br>erwartet: {','.join(expected_devices_str)}<br>gefunden: {','.join(found_devices_str)}")
+		return_str = Markup(f"OK<br>erwartet: {','.join(expected_devices_str)}<br>gefunden: {','.join(found_devices_str)}")
+		print(f"alles OK: {return_str}")
+		return True, return_str
 	elif found_devices_dec.issubset(expected_devices):
 		missing_devices = expected_devices - found_devices_dec
 		missing_devices_str = sorted([format(addr, 'x') for addr in missing_devices], key=lambda x: int(x, 16))
-		return False, Markup(f"fehlende Devices!<br>erwartet: {','.join(expected_devices_str)}<br>gefunden: {','.join(found_devices_str)}<br>fehlend: {','.join(missing_devices_str)}")
+		return_str = Markup(f"fehlende Devices!<br>erwartet: {','.join(expected_devices_str)}<br>gefunden: {','.join(found_devices_str)}<br>fehlend: {','.join(missing_devices_str)}")
+		print(f"Devices fehlen: {return_str}")
+		return False, return_str
 	else:
 		extra_devices = found_devices_dec - expected_devices
 		extra_devices_str = sorted([format(addr, 'x') for addr in extra_devices], key=lambda x: int(x, 16))
-		return False, Markup(f"zu viele Devices!<br>erwartet: {','.join(expected_devices_str)}<br>gefunden: {','.join(found_devices_str)}<br>zusätzlich: {','.join(extra_devices_str)}")
+		return_str = Markup(f"zu viele Devices!<br>erwartet: {','.join(expected_devices_str)}<br>gefunden: {','.join(found_devices_str)}<br>zusätzlich: {','.join(extra_devices_str)}")
+		print(f"Devices zu viel: {return_str}")
+		return False, return_str
 	
 # ---------------------------------------------------------------------------------------------
 # hx711 prüfen
@@ -450,14 +459,14 @@ def check_hx711():
 
 		if result.returncode == 0:
 			print("HX711-Prüfung erfolgreich: ", result.stdout)
-			return True
+			return True, "OK"
 		else:
 			print("HX711-Prüfung fehlgeschlagen: ", result.stderr)
-			return False
+			return False, f"Fehler Skriptergebnis: {result.stderr}"
 
 	except Exception as e:
 		print(f"Fehler beim Ausführen des Skripts: {e}")
-		return False
+		return False, f"Fehler Skriptstart: {e}"
 
 # ---------------------------------------------------------------------------------------------
 # Netzwerk untersuchen
@@ -544,15 +553,11 @@ def count_script_occurrences(crontab_lines, script_name):
 
 def check_crontab_pi():
 	# Einlesen der Anzahlen für Waagen, Tanks, Klimasensoren
-	caravanpiDefaults_tuple = cplib.readCaravanPiDefaults()
-	if caravanpiDefaults_tuple is None:
-		expected_scales = 1
-		expected_tanks = 1
-		expected_climates = 1
-	else:
-		expected_scales = caravanpiDefaults_tuple[0] if caravanpiDefaults_tuple[0] is not None else 0
-		expected_tanks = caravanpiDefaults_tuple[1] if caravanpiDefaults_tuple[1] is not None else 0
-		expected_climates = caravanpiDefaults_tuple[13] if caravanpiDefaults_tuple[13] is not None else 0
+	expected_scales = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/countGasScales") or 0)
+	expected_tanks = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/countTanks") or 0)
+	expected_climates = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/countClimateSensors") or 0)
+
+	print(f"Crontab-Check: Waagen: {expected_scales}, Tanks: {expected_tanks}, Klimasensoren: {expected_climates}")
 
 	command = ['crontab', '-l', '-u', 'pi']
 	
@@ -586,13 +591,14 @@ def check_crontab_pi():
 		# 'scales': lambda: (scales_count := count_script_occurrences(crontab_lines, r'gasscale2file -g \d+'), scales_count == expected_scales),
 		# 'tanks': lambda: (tanks_count := count_script_occurrences(crontab_lines, r'tankFilllevel2file -t \d+'), tanks_count == expected_tanks),
 		# 'climates': lambda: (climates_count := count_script_occurrences(crontab_lines, r'climate2file -i (76|77)'), climates_count == expected_climates * 2)
-		'scales': lambda: (count := count_script_occurrences(crontab_lines, 'gasScale2file.py'), count == expected_scales),
-		'tanks': lambda: (count := count_script_occurrences(crontab_lines, 'freshLevels2file.py') + count_script_occurrences(crontab_lines, 'wasteLevels2file.py'), count == expected_tanks),
-		'climates': lambda: (count := count_script_occurrences(crontab_lines, 'climate2file.py'), count == expected_climates)	}
+		'scales': lambda: (scales_count := count_script_occurrences(crontab_lines, 'gasScale2file.py'), scales_count == expected_scales),
+		'tanks': lambda: (tanks_count := count_script_occurrences(crontab_lines, 'freshLevels2file.py') + count_script_occurrences(crontab_lines, 'wasteLevels2file.py'), tanks_count == expected_tanks),
+		'climates': lambda: (climates_count := count_script_occurrences(crontab_lines, 'climate2file.py'), climates_count == expected_climates)	}
 
-	print(titles)
-	print(checks)
-	print(check_functions)
+	print(f"Titles {titles}")
+	print(f"Checks {checks}")
+	print(f"Checkfunctions {check_functions}")
+
 
 	for check in checks:
 		title = titles[check]  # Titel für die aktuelle Prüfung
@@ -601,7 +607,7 @@ def check_crontab_pi():
 			if result:
 				checks_passed.append(f"{title}: OK")
 			else:
-				error_message = Markup(f"<span style='color: red;'>Fehler ({count} statt {expected_scales if check == 'scales' else expected_tanks if check == 'tanks' else expected_climates * 2})</span>")
+				error_message = Markup(f"<span style='color: red;'>Fehler ({count} statt {expected_scales if check == 'scales' else expected_tanks if check == 'tanks' else expected_climates})</span>")
 				checks_passed.append(f"{title}: {error_message}")
 		else:
 			result = check_functions[check]()
@@ -892,7 +898,7 @@ def register_checks_routes(app):
 			if check_info['run_check']:
 				# Check durchführen
 				result, result_text = check_i2c()
-				check_results['check_i2c']['result'] = result_text if result else 'Fehler'
+				check_results['check_i2c']['result'] = result_text
 				check_results['check_i2c']['color'] = 'green' if result else 'red'
 			else:
 				# Weiterleitung zum nächsten Check, wenn dieser Check übersprungen werden soll
@@ -912,8 +918,8 @@ def register_checks_routes(app):
 			next_route = find_next_route('check_hx711')
 			if check_info['run_check']:
 				# Check durchführen
-				result = check_hx711()
-				check_results['check_hx711']['result'] = 'OK' if result else 'Fehler'
+				result, result_text = check_hx711()
+				check_results['check_hx711']['result'] = result_text
 				check_results['check_hx711']['color'] = 'green' if result else 'red'
 			else:
 				# Weiterleitung zum nächsten Check, wenn dieser Check übersprungen werden soll

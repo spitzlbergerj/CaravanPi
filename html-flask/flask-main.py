@@ -1,6 +1,8 @@
 import subprocess
 import threading
 import os
+import glob
+from datetime import datetime
 from flask import Flask, Response, render_template
 
 # importieren der weiteren Flask-Python-Files
@@ -34,6 +36,27 @@ def show_config():
 		return Response(xml_content, mimetype='text/xml')
 	else:
 		return "Die Konfigurationsdatei konnte nicht gefunden werden.", 404
+
+@app.route('/list_logs')
+def list_logs():
+	# Pfad zum Verzeichnis, das die .log Dateien enthält
+	logs_directory = '/home/pi/CaravanPi/.log'
+	# Erstellen der Liste aller .log Dateien
+	log_files = glob.glob(os.path.join(logs_directory, '*.log'))
+	# Liste für die Dateiinformationen
+	files_info = []
+	for file in log_files:
+		# Dateigröße in Bytes
+		size = os.path.getsize(file)
+		# Letzte Änderung als Datum
+		mtime = datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+		files_info.append({
+			'name': os.path.basename(file),
+			'size': size,
+			'mtime': mtime
+		})
+	files_info.sort(key=lambda x: x['name'].lower())
+	return render_template('list_logs.html', files_info=files_info)
 
 @app.route('/reboot')
 def reboot_system():

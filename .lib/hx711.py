@@ -1,4 +1,14 @@
+# ----------------------------------------------------------------------------------------
+# HX711 Routine für Python
 #
+# Quelle: underdog: https://gist.github.com/underdoeg/98a38b54f889fce2b237
+#
+# Erweiterungen von Josef Spitzlberger für CaravanPi https://github.com/spitzlbergerj/CaravanPi
+#
+# - Robustheit erhöht, damit bei fehlendem oder defektem HX711 keine Endlos schleifen entstehen
+# - Fehlerstatus wird zurückgeliefert
+#
+# ---------------------------------------------------------------------------------------
 
 import RPi.GPIO as GPIO
 import time

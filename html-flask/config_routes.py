@@ -33,71 +33,121 @@ def register_config_routes(app):
 				# Daten aus dem Formular extrahieren
 				countGasScales = request.form.get('countGasScales')
 				countTanks = request.form.get('countTanks')
+				countClimateSensors = request.form.get('countClimateSensors')
+
 				write2file = request.form.get('write2file')
+
 				write2MariaDB = request.form.get('write2MariaDB')
-				send2MQTT = request.form.get('send2MQTT')
 				MariaDBhost = request.form.get('MariaDBhost')
 				MariaDBuser = request.form.get('MariaDBuser')
 				MariaDBpasswd = request.form.get('MariaDBpasswd')
 				MariaDBdatabase = request.form.get('MariaDBdatabase')
+
+				send2MQTT = request.form.get('send2MQTT')
 				MQTTbroker = request.form.get('MQTTbroker')
 				MQTTport = request.form.get('MQTTport')
 				MQTTuser = request.form.get('MQTTuser')
 				MQTTpassword = request.form.get('MQTTpassword')
-				countClimateSensors = request.form.get('countClimateSensors')
 
-				print(countGasScales, countTanks, write2file, write2MariaDB, send2MQTT, MariaDBhost, MariaDBuser, MariaDBpasswd, MariaDBdatabase, MQTTbroker, MQTTport, MQTTuser, MQTTpassword, countClimateSensors)
+				intervallGasscale = request.form.get('intervallGasscale')
+				intervallTemp = request.form.get('intervallTemp')
+				intervallClimate = request.form.get('intervallClimate')
+				intervallTanks = request.form.get('intervallTanks')
+				intervallPositionNormal = request.form.get('intervallPositionNormal')
+				intervallRaspberry = request.form.get('intervallRaspberry')
 
-				# Konvertierung der Daten in die richtigen Typen (z.B. in float)
+				LiontronMACAddress = request.form.get('LiontronMACAddress')
+				stromPiInstalled = request.form.get('stromPiInstalled')
+
+				gassensorInstalled = request.form.get('gassensorInstalled')
+				gassensorDigitalIn = request.form.get('gassensorDigitalIn')
+				gassensorAnalogIn = request.form.get('gassensorAnalogIn')
+				gassensorAlarmActive = request.form.get('gassensorAlarmActive')
+
+				v230CheckInstalled = request.form.get('v230CheckInstalled')
+				v230CheckADCPin = request.form.get('v230CheckADCPin')
+				v230CheckAlarmActive = request.form.get('v230CheckAlarmActive')
+
+				v12BatteryCheckInstalled = request.form.get('v12BatteryCheckInstalled')
+				v12BatteryCheckADCPin = request.form.get('v12BatteryCheckADCPin')
+				v12BatteryCheckAlarmActive = request.form.get('v12BatteryCheckAlarmActive')
+
+				v12CarCheckInstalled = request.form.get('v12CarCheckInstalled')
+				v12CarCheckADCPin = request.form.get('v12CarCheckADCPin')
+				v12CarCheckAlarmActive = request.form.get('v12CarCheckAlarmActive')
+
+				BuzzerGPIOPin = request.form.get('BuzzerGPIOPin')
+
 				try:
-					countGasScales = int(countGasScales) if countGasScales and 1 <= int(countGasScales) <= 2 else None
-					countTanks = int(countTanks) if countTanks and 1 <= int(countTanks) <= 3 else None
-					write2file = write2file if write2file else None
-					write2MariaDB = write2MariaDB if write2MariaDB else None
-					send2MQTT = send2MQTT if send2MQTT else None
-					MariaDBhost = MariaDBhost if MariaDBhost else None
-					MariaDBuser = MariaDBuser if MariaDBuser else None
-					MariaDBpasswd = MariaDBpasswd if MariaDBpasswd else None
-					MariaDBdatabase = MariaDBdatabase if MariaDBdatabase else None
-					MQTTbroker = MQTTbroker if MQTTbroker else None
-					MQTTport = int(MQTTport) if MQTTport else None
-					MQTTuser = MQTTuser if MQTTuser else None
-					MQTTpassword = MQTTpassword if MQTTpassword else None
-					countClimateSensors = int(countClimateSensors) if countClimateSensors and 1 <= int(countClimateSensors) <= 2 else None
+					# Konvertierung der Daten in die richtigen Typen (z.B. in float) und einfügen in ein Dictionary
+					config_dict = {
+						'countGasScales': int(countGasScales) if countGasScales and 1 <= int(countGasScales) <= 2 else None,
+						'countTanks': int(countTanks) if countTanks and 1 <= int(countTanks) <= 3 else None,
+						'countClimateSensors': int(countClimateSensors) if countClimateSensors and 1 <= int(countClimateSensors) <= 2 else None,
+
+						'write2file': bool(write2file) if write2file is not None else None,
+
+						'write2MariaDB': bool(write2MariaDB) if write2MariaDB is not None else None,
+						'MariaDBhost': MariaDBhost if MariaDBhost else None,
+						'MariaDBuser': MariaDBuser if MariaDBuser else None,
+						'MariaDBpasswd': MariaDBpasswd if MariaDBpasswd else None,
+						'MariaDBdatabase': MariaDBdatabase if MariaDBdatabase else None,
+
+						'send2MQTT': bool(send2MQTT) if send2MQTT is not None else None,
+						'MQTTbroker': MQTTbroker if MQTTbroker else None,
+						'MQTTport': int(MQTTport) if MQTTport else None,
+						'MQTTuser': MQTTuser if MQTTuser else None,
+						'MQTTpassword': MQTTpassword if MQTTpassword else None,
+
+						'intervallGasscale': int(intervallGasscale) if intervallGasscale and 1 <= int(intervallGasscale) <= 120 else None,
+						'intervallTemp': int(intervallTemp) if intervallTemp and 1 <= int(intervallTemp) <= 120 else None,
+						'intervallClimate': int(intervallClimate) if intervallClimate and 1 <= int(intervallClimate) <= 120 else None,
+						'intervallTanks': int(intervallTanks) if intervallTanks and 1 <= int(intervallTanks) <= 120 else None,
+						'intervallPositionNormal': int(intervallPositionNormal) if intervallPositionNormal and 1 <= int(intervallPositionNormal) <= 120 else None,
+						'intervallRaspberry': int(intervallRaspberry) if intervallRaspberry and 1 <= int(intervallRaspberry) <= 120 else None,
+
+						'LiontronMACAddress': LiontronMACAddress if LiontronMACAddress else None,
+						'stromPiInstalled': bool(stromPiInstalled) if stromPiInstalled is not None else None,
+
+						'gassensorInstalled': bool(gassensorInstalled) if gassensorInstalled is not None else None,
+						'gassensorDigitalIn': int(gassensorDigitalIn) if gassensorDigitalIn and 0 <= int(gassensorDigitalIn) <= 40 else None,
+						'gassensorAnalogIn': int(gassensorAnalogIn) if gassensorAnalogIn and 0 <= int(gassensorAnalogIn) <= 3 else None,
+						'gassensorAlarmActive': bool(gassensorAlarmActive) if gassensorAlarmActive is not None else None,
+
+						'v230CheckInstalled': bool(v230CheckInstalled) if v230CheckInstalled is not None else None,
+						'v230CheckADCPin': int(v230CheckADCPin) if v230CheckADCPin and 0 <= int(v230CheckADCPin) <= 40 else None,
+						'v230CheckAlarmActive': bool(v230CheckAlarmActive) if v230CheckAlarmActive is not None else None,
+
+						'v12BatteryCheckInstalled': bool(v12BatteryCheckInstalled) if v12BatteryCheckInstalled is not None else None,
+						'v12BatteryCheckADCPin': int(v12BatteryCheckADCPin) if v12BatteryCheckADCPin and 0 <= int(v12BatteryCheckADCPin) <= 40 else None,
+						'v12BatteryCheckAlarmActive': bool(v12BatteryCheckAlarmActive) if v12BatteryCheckAlarmActive is not None else None,
+
+						'v12CarCheckInstalled': bool(v12CarCheckInstalled) if v12CarCheckInstalled is not None else None,
+						'v12CarCheckADCPin': int(v12CarCheckADCPin) if v12CarCheckADCPin and 0 <= int(v12CarCheckADCPin) <= 40 else None,
+						'v12CarCheckAlarmActive': bool(v12CarCheckAlarmActive) if v12CarCheckAlarmActive is not None else None,
+
+						'BuzzerGPIOPin': int(BuzzerGPIOPin) if BuzzerGPIOPin and 0 <= int(BuzzerGPIOPin) <= 40 else None,
+
+					}
 				except ValueError:
-					# Behandlung von Konvertierungsfehlern
+					# Behandlung von Konvertierungsfehlern, z.B. wenn ein Wert nicht in den erwarteten Typ konvertiert werden kann
 					flash('Fehler in Wertebehandlung')
 					pass
 
+				print(config_dict)
+
 				# Aufruf der Funktion zum Schreiben der Daten
-				cplib.writeCaravanPiDefaults(countGasScales, countTanks, write2file, write2MariaDB, MariaDBhost, MariaDBuser, MariaDBpasswd, MariaDBdatabase, send2MQTT, MQTTbroker, MQTTport, MQTTuser, MQTTpassword, countClimateSensors)
+				cplib.writeCaravanPiDefaults(config_dict)
 				flash('Die Werte wurden erfolgreich gespeichert') 
 
 			return redirect(url_for('config_caravanpi'))
 
-		caravanpiDefaults_tuple = cplib.readCaravanPiDefaults()
-		print(caravanpiDefaults_tuple)
-		if caravanpiDefaults_tuple is None:
+		caravanpiDefaults = cplib.readCaravanPiDefaults()
+		print(caravanpiDefaults)
+		if caravanpiDefaults is None:
 			caravanpiDefaults = {}
-		else:
-			# Umwandlung des Tupels in ein Dictionary
-			caravanpiDefaults = {
-				'countGasScales': caravanpiDefaults_tuple[0],
-				'countTanks': caravanpiDefaults_tuple[1],
-				'write2file': caravanpiDefaults_tuple[2],
-				'write2MariaDB': caravanpiDefaults_tuple[3],
-				'MariaDBhost': caravanpiDefaults_tuple[4],
-				'MariaDBuser': caravanpiDefaults_tuple[5],
-				'MariaDBpasswd': caravanpiDefaults_tuple[6],
-				'MariaDBdatabase': caravanpiDefaults_tuple[7],
-				'send2MQTT': caravanpiDefaults_tuple[8],
-				'MQTTbroker': caravanpiDefaults_tuple[9],
-				'MQTTport': caravanpiDefaults_tuple[10],
-				'MQTTuser': caravanpiDefaults_tuple[11],
-				'MQTTpassword': caravanpiDefaults_tuple[12],
-				'countClimateSensors': caravanpiDefaults_tuple[13]
-			}
 		return render_template('config_caravanpi.html', caravanpiDefaults=caravanpiDefaults)
+	
 
 	@app.route('/config_dimension_caravan', methods=['GET', 'POST'])
 	def config_dimension_caravan():
@@ -212,11 +262,7 @@ def register_config_routes(app):
 	def config_gaswaage():
 
 		# Ermitteln der Anzahl der Gasflaschenwaagen
-		caravanpiDefaults_tuple = cplib.readCaravanPiDefaults()
-		if caravanpiDefaults_tuple is None:
-			anzWaagen = 1
-		else:
-			anzWaagen = caravanpiDefaults_tuple[0]
+		anzWaagen = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/countGasScales") or 1)
 
 		print(f'Waagen: {anzWaagen}')
 
@@ -278,11 +324,7 @@ def register_config_routes(app):
 	def config_tanks():
 
 		# Ermitteln der Anzahl der Gasflaschenwaagen
-		caravanpiDefaults_tuple = cplib.readCaravanPiDefaults()
-		if caravanpiDefaults_tuple is None:
-			anzTanks = 1
-		else:
-			anzTanks = caravanpiDefaults_tuple[1]
+		anzTanks = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/countTanks") or 1)
 
 		print(f'Tanks: {anzTanks}')
 

@@ -13,13 +13,12 @@
 #
 #-------------------------------------------------------------------------------
 
-import time, datetime
+import datetime
 import statistics
 import signal
 import sys
 from time import sleep
-import os
-import getopt
+import argparse
 
 # imports for sensor ADXL345
 import board
@@ -34,6 +33,7 @@ import RPi.GPIO as GPIO
 
 # import for opening URL to change update Intervall on magic Mirror
 import urllib.request
+from urllib.error import URLError, HTTPError, ContentTooShortError
 
 # -----------------------------------------------
 # libraries from CaravanPi
@@ -42,6 +42,13 @@ sys.path.append('/home/pi/CaravanPi/.lib')
 from mcp23017 import mcp23017,pin
 from CaravanPiLedClass import Led
 from CaravanPiFilesClass import CaravanPiFiles
+
+# -------------------------
+# Library initialisieren
+# -------------------------
+cplib = CaravanPiFiles()
+	
+
 
 # -----------------------------------------------
 # global variables
@@ -113,21 +120,41 @@ pinSwitchNowHorizontal = 6
 # tactile switch to activate the 'live' mode
 pinSwitchLive = 13
 pinLEDLive = 5
+
+# MagicMirror URL
+MMMUrl = "http://127.0.0.1:8080/MMM-CaravanPiPosition/changeUpdateInterval"
+MMMavailable = True
  
 # -------------------------
-# call options 
+# checke den MagicMirror, ob er Interrupts empfangen kann
 # -------------------------
-shortOptions = 'hfsl'
-longOptions = ['help', 'file', 'screen', 'live']
 
-def usage():
-	print ("---------------------------------------------------------------------")
-	print (sys.argv[0], "-h -f -s -l")
-	print ("  -h   show this guide")
-	print ("  -f   write values to file ", filePosition)
-	print ("  -s   display values on this screen\n")
-	print ("  -l   start in 'live' mode\n")
-
+def check_url_and_execute(url):
+	try:
+		# Versuch, die URL zu öffnen und die Antwort zu lesen
+		response = urllib.request.urlopen(url)
+		# Prüfung des HTTP-Statuscode
+		if response.status == 200:
+			print(f"Die Website {url} ist erreichbar und der Befehl wurde erfolgreich ausgeführt.")
+		else:
+			print(f"Die Website {url} ist erreichbar, aber der Befehl führte zu einem HTTP-Fehler mit dem Statuscode: {response.status}")
+		return response.status
+	except HTTPError as e:
+		# HTTP-Fehler (z.B. 404, 501, ...)
+		print(f"HTTP-Fehler beim Zugriff auf die URL {url}: {e.code} - {e.reason}")
+		return -4
+	except URLError as e:
+		# URL-Fehler (z.B. kein Netzwerk, falsche Domain, ...)
+		print(f"URL-Fehler beim Zugriff auf die Website {url}: {e.reason}")
+		return -3
+	except ContentTooShortError as e:
+		# Der heruntergeladene Inhalt ist kürzer als erwartet
+		print("Der heruntergeladene Inhalt ist kürzer als erwartet.")
+		return -2
+	except Exception as e:
+		# alle anderen Fehler
+		print(f"Ein unerwarteter Fehler ist aufgetreten: {url} - {e}")
+		return -1
 
 # -------------------------
 # 3-axis-sensor 
@@ -456,20 +483,24 @@ def switchInterruptLive(channel):
 
 	global globAdjustSwitchY
 	global liveMode
+	global MMMavailable
+
+	print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "Taster Live Modus gedrückt")
+
 	if liveMode == 1:
 		print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: Live Modus beendet !!!")
 		liveMode = 0
 		GPIO.output(pinLEDLive, False)
 		ledOff()
-		# change update Intervall on MagicMirror
-		urllib.request.urlopen('http://127.0.0.1:8080/MMM-CaravanPiPosition/changeUpdateInterval')
 		globAdjustSwitchY = 0
+		# change update Intervall on MagicMirror
+		if MMMavailable: urllib.request.urlopen(MMMUrl)
 	else:
 		print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: Live Modus startet !!!")
 		liveMode = 1
 		GPIO.output(pinLEDLive, True)
 		# change update Intervall on MagicMirror
-		urllib.request.urlopen('http://127.0.0.1:8080/MMM-CaravanPiPosition/changeUpdateInterval')
+		if MMMavailable: urllib.request.urlopen(MMMUrl)
 
 def signalInterruptUSR1(signum, stack):
 	# -------------------------
@@ -481,24 +512,33 @@ def signalInterruptUSR1(signum, stack):
 
 	global adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis
 	print(signum, ' received: read defaults again')
-	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
+	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = cplib.readAdjustment()
 
 def signalInterruptUSR2(signum, stack):
 	# -------------------------
-	# signalInterruptUSR1 
+	# signalInterruptUSR2
 	# SIGUSR2 was send to this process (from Config Website)
 	#
 	# read color from file to test LEDs
 	# first switchLiveMode if live
 	# -------------------------
 
-	print(signum, ' received: test LEDs')
-	color = int(CaravanPiFiles.readTestColor())
+	print(signum, 'SIGUSR2 erhalten')
+
+	# Lesen der Testfarbe
+	color = int(cplib.readCaravanPiConfigItem("testColor/color"))
+
+	# color = int(cplib.readTestColor())
 	print('test LEDs with color ', color)
+
+	# Falls grad auch liveModus, dann diesen ausschalten
 	if liveMode == 1:
 		switchInterruptLive(0)
-	setAlle(color)
-	
+
+	if color == 99:
+		ledOff()
+	else:
+		setAlle(color)
 
 	
 
@@ -506,7 +546,7 @@ def signalInterruptUSR2(signum, stack):
 	
 def main():
 	# -------------------------
-	# main 
+	# globale Variable 
 	# -------------------------
 
 	global adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis
@@ -515,6 +555,41 @@ def main():
 	global lengthOverAll, width, lengthBody
 	global pinSwitchNowHorizontal, pinSwitchLive, pinLEDLive
 	global liveMode
+	global MMMavailable
+
+	# -------------------------
+	# Argumente verarbeiten 
+	# -------------------------
+
+	# initialisieren
+	liveMode=0
+
+	# Initialisieren des Argument-Parsers
+	parser = argparse.ArgumentParser(description="regelmäßiges Auslesen des Lagesensors und Steuern der LEDs")
+
+	# Definition der Argumente
+	parser.add_argument("-s", "--screen", action="store_true", help="Ausgabe auch am Bildschirm")
+	parser.add_argument("-l", "--live", action="store_true", help="starte im Live Modus")
+	parser.add_argument("-f", "--file", action="store_true", help="Obsolet - nicht mehr angeben bitte")
+
+	# Parsen der Argumente
+	args = parser.parse_args()
+
+	if args.file:
+		print("Obsolet: Die Option '-f/--file' wird nicht mehr verwendet.")
+		
+	if args.live:
+		print("starten im Live Modus")
+		liveMode = 1
+		GPIO.output(pinLEDLive, True)
+
+	# -----------------------------------------------------------------------------
+	# Prüfen, ob MagicMirror erreichbar ist
+	# -----------------------------------------------------------------------------
+	if check_url_and_execute(MMMUrl) == 200:
+		MMMavailable = True
+	else:
+		MMMavailable = False
 
 	# -------------------------
 	# tactile switches
@@ -530,42 +605,6 @@ def main():
 	GPIO.setup(pinLEDLive, GPIO.OUT)	
 	GPIO.output(pinLEDLive, False)
 	
-	# -------------------------
-	# process call parameters
-	# -------------------------
-	opts = []
-	args = []
-	writeFile = 0
-	displayScreen = 0
-	liveMode=0
-	
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], shortOptions, longOptions)
-	except getopt.GetoptError:
-		print(datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ERROR: options not correct")
-		usage()
-		sys.exit()
-	
-	for o, a in opts:
-		if o == "--help" or o == "-h":
-			print("HELP")
-			usage()
-			sys.exit()
-		elif o == "--file" or o == "-f":
-			print("output also to file ", filePosition)
-			writeFile = 1
-		elif o == "--screen" or o == "-s":
-			print("output also to this screen")
-			displayScreen = 1
-		elif o == "--live" or o == "-l":
-			print("start in live mode")
-			liveMode = 1
-			GPIO.output(pinLEDLive, True)
-
-
-	for a in args:
-		print("further argument: ", a)
-	
 	
 	# -------------------------
 	# avoid outliers - init values
@@ -574,15 +613,15 @@ def main():
 	lastY = None
 	lastZ = None
 	secondLastX = None
-	
+
 	# read defaults
 	# The 3-axis sensor may not be installed exactly horizontally. The values to compensate for this installation difference are read from a file.
 	# --> adjustX, adjustY, adjustZ
 	# In addition, the LEDs should already indicate "horizontal" as soon as the deviation from the horizontal is within a tolerance.
 	# --> approximationX, approximationY
-	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = CaravanPiFiles.readAdjustment()
+	(adjustX, adjustY, adjustZ, toleranceX, toleranceY, approximationX, approximationY, distRight, distFront, distAxis) = cplib.readAdjustment()
 	# dimensions of the caravan
-	(lengthOverAll, width, lengthBody) = CaravanPiFiles.readDimensions()
+	(lengthOverAll, width, lengthBody) = cplib.readDimensions()
 
 	# -------------------------
 	# listen to SIGUSR1 for renew the defaults
@@ -694,8 +733,52 @@ def main():
 			diffVR = diffVR - diffNormal
 			diffVo = diffVo - diffNormal
 			
-			# write values to file and or screen
-			write2file(writeFile, displayScreen, x, y, z, tolX, tolY, z-adjustZ, lastX, secondLastX, diffHL, diffHR, diffVL, diffVR, diffZL, diffZR, diffVo)
+			# ------------------------------------------------------------------------------------------------------------------------------
+			# write values to file 
+			# ACHTUNG
+			# write2file soll entfallen, aber MMM liest noch aus der Datei position
+			# daher diese Zeile vorerst noch aktiv lassen
+			# ------------------------------------------------------------------------------------------------------------------------------
+			#write2file(1, 1, x, y, z, tolX, tolY, z-adjustZ, lastX, secondLastX, diffHL, diffHR, diffVL, diffVR, diffZL, diffZR, diffVo)
+
+			cplib.handle_sensor_values(
+				args.screen,									# Anzeige am Bildschirm?
+				"ausrichtung",									# sensor_name = Datenbankname
+				"ADXL345",										# sensor_id = Filename und Spalte in der Datenbank
+				[
+					"aktuell_x", 
+					"aktuell_y",
+					"aktuell_z",
+					"toleranz_x",
+					"toleranz_y",
+					"letztes_x",
+					"vorletztes_x",
+					"differenz_hinten_links",
+					"differenz_hinten_rechts",
+					"differenz_vorne_links",
+					"differenz_vorne_rechts",
+					"differenz_zentral_links",
+					"differenz_zentral_rechts",
+					"differenz_deichsel",
+				],												# Liste Spaltennamen
+				(
+					float(x),
+					float(y),
+					float(z),
+					float(tolX),
+					float(tolY),
+					float(lastX) if lastX is not None else None,
+					float(secondLastX) if secondLastX is not None else None,
+					float(diffHL),
+					float(diffHR),
+					float(diffVL),
+					float(diffVR),
+					float(diffZL),
+					float(diffZR),
+					float(diffVo),
+				)												# Tupel Sensorwerte
+			)
+
 
 			if liveMode == 1:
 				ledX = x
@@ -722,10 +805,11 @@ def main():
 				lastY = y
 				lastZ = z
 
-				sleep(.1)
+				sleep(.5)
 			else:
+				# Warten über Schleife, damit Tasten, Signale, etc. während des Schlafens nicht verloren gehen
 				j=0
-				while j< 120 and liveMode == 0: # 120/.5 = 60 Sekunden
+				while j< 600 and liveMode == 0: # 600/.5 = 300 Sekunden = 5 Minuten
 					j=j+1
 					sleep (.5)
 				# falls inzwsichen LEDtest gestartet wurde, alle LEDs aus

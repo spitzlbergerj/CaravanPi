@@ -15,11 +15,33 @@
     <MQTTuser>NodeRED-MQTT</MQTTuser>
     <MQTTpassword>dasGeheimePasswort</MQTTpassword>
     <countClimateSensors>1</countClimateSensors>
+    <stromPiInstalled>0</stromPiInstalled>
+    <intervallGasscale>10</intervallGasscale>
+    <intervallTemp>10</intervallTemp>
+    <intervallClimate>10</intervallClimate>
+    <intervallTanks>10</intervallTanks>
+    <intervallPositionNormal>10</intervallPositionNormal>
+    <intervallRaspberry>10</intervallRaspberry>
+    <LiontronMACAddress>A4:C1:38:C2:06:47</LiontronMACAddress>
+    <gassensorInstalled>1</gassensorInstalled>
+    <gassensorDigitalIn>16</gassensorDigitalIn>
+    <gassensorAnalogIn>0</gassensorAnalogIn>
+    <gassensorAlarmActive>1</gassensorAlarmActive>
+    <v230CheckInstalled>0</v230CheckInstalled>
+    <v230CheckADCPin>1</v230CheckADCPin>
+    <v230CheckAlarmActive>1</v230CheckAlarmActive>
+    <v12BatteryCheckInstalled>0</v12BatteryCheckInstalled>
+    <v12BatteryCheckADCPin>2</v12BatteryCheckADCPin>
+    <v12BatteryCheckAlarmActive>1</v12BatteryCheckAlarmActive>
+    <v12CarCheckInstalled>0</v12CarCheckInstalled>
+    <v12CarCheckADCPin>3</v12CarCheckADCPin>
+    <v12CarCheckAlarmActive>1</v12CarCheckAlarmActive>
+    <BuzzerGPIOPin>26</BuzzerGPIOPin>
     </caravanpiDefaults>
   <adjustmentPosition>
-    <adjustX>-0.196133</adjustX>
-    <adjustY>0.5883989999999999</adjustY>
-    <adjustZ>9.218251</adjustZ>
+    <adjustX>0.6668522</adjustX>
+    <adjustY>1.7259703999999998</adjustY>
+    <adjustZ>8.7083052</adjustZ>
     <toleranceX>0.2</toleranceX>
     <toleranceY>0.2</toleranceY>
     <approximationX>0.25</approximationX>
@@ -34,15 +56,15 @@
     <lengthBody>6200</lengthBody>
     </dimensionsCaravan>
   <gasScaleDefaults1>
-    <emptyWeight>3800</emptyWeight>
+    <emptyWeight>30</emptyWeight>
     <gasWeightMax>6000</gasWeightMax>
     <pin_dout>23</pin_dout>
     <pin_sck>24</pin_sck>
     <strChannel>A</strChannel>
-    <refUnit>-4.687</refUnit>
+    <refUnit>4.687</refUnit>
     </gasScaleDefaults1>
   <gasScaleDefaults2>
-    <emptyWeight>3800</emptyWeight>
+    <emptyWeight>30</emptyWeight>
     <gasWeightMax>8000</gasWeightMax>
     <pin_dout>23</pin_dout>
     <pin_sck>24</pin_sck>
@@ -67,7 +89,7 @@
     <level3>12.3</level3>
     </voltageDefaults>
   <testColor>
-    <color>-2</color>
+    <color>99</color>
     </testColor>
   <tankDefaults3>
     <level1>10.0</level1>
@@ -75,4 +97,6 @@
     <level3>10.0</level3>
     <level4>10.0</level4>
     </tankDefaults3>
+  <gassensorAlarmActive>1</gassensorAlarmActive>
+  <v230CheckAlarmActive>1</v230CheckAlarmActive>
   </CaravanPiConfigurations>

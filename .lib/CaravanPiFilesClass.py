@@ -47,71 +47,6 @@ class CaravanPiFiles:
 	MQTTuser = None
 	MQTTpassword = None
 
-	# -----------------------------------------------
-	# COMPATIBILITY CODE - Anfang
-	# -----------------------------------------------
-	# Mapping for caravanpiDefaults file
-	mappings = {
-		"caravanpiDefaults": [
-			"countGasScales", 
-			"countTanks", 
-			"write2file", 
-			"write2MariaDB", 
-			"MariaDBhost",
-			"MariaDBuser",
-			"MariaDBpasswd",
-			"MariaDBdatabase",
-			"send2MQTT", 
-			"MQTTbroker", 
-			"MQTTport", 
-			"MQTTuser", 
-			"MQTTpassword", 
-			"countClimateSensors",
-		],
-		"adjustmentPosition": [
-			"adjustX", 
-			"adjustY", 
-			"adjustZ", 
-			"toleranceX", 
-			"toleranceY", 
-			"approximationX", 
-			"approximationY", 
-			"distRight", 
-			"distFront", 
-			"distAxis"
-		],
-		"dimensionsCaravan": [
-			"lengthOverAll", 
-			"widthOverAll", 
-			"lengthBody"
-		],
-		"gasScaleDefaults": [
-			"emptyWeight", 
-			"gasWeightMax", 
-			"pin_dout", 
-			"pin_sck", 
-			"strChannel", 
-			"refUnit"
-		],
-		"tankDefaults": [
-			"level1", 
-			"level2", 
-			"level3", 
-			"level4"
-		],
-		"voltageDefaults": [
-			"level1", 
-			"level2", 
-			"level3"
-		],
-		"testColor": [
-			"color"
-		]
-	}
-	# -----------------------------------------------
-	# COMPATIBILITY CODE - Ende
-	# -----------------------------------------------
-
 	# ---------------------------------------------------------------------------------------------
 	# __init__
 	#
@@ -130,6 +65,29 @@ class CaravanPiFiles:
 		self.update_settings()
 
 	# ---------------------------------------------------------------------------------------------
+		# universelle Typumwandlung
+	# ---------------------------------------------------------------------------------------------
+	def typwandlung(self, wert, ziel_typ):
+		if ziel_typ == "int":
+			return int(wert)
+		elif ziel_typ == "float":
+			return float(wert)
+		elif ziel_typ == "bool":
+			# Für Booleans könnte man eine spezifischere Logik implementieren,
+			# die "true", "True", "1", etc. als True behandelt.
+			return bool(wert) and wert.lower() in ["true", "1", "yes"]
+		elif ziel_typ == "str":
+			return str(wert)
+		elif ziel_typ == "list":
+			# Annahme: Wert ist ein komma-separierter String
+			return wert.split(',')
+		elif ziel_typ == "dict":
+			# Sehr einfache Implementierung; in der Praxis würde man JSON oder einen ähnlichen Ansatz verwenden
+			return dict(item.split(':') for item in wert.split(','))
+		else:
+			raise ValueError(f"Unbekannter Zieltyp: {ziel_typ}")
+
+	# ---------------------------------------------------------------------------------------------
 	# update_settings
 	#
 	# setzt die globalen Variable
@@ -138,9 +96,17 @@ class CaravanPiFiles:
 	# ----------------------------------------------------------------------------------------------
 	def update_settings(self):
 		# Aktualisiert die Klassenattribute basierend auf der XML-Datei
-		defaults = self.readCaravanPiDefaults()
-		if defaults:
-			_, _, self.write2file, self.write2MariaDB, self.MariaDBhost, self.MariaDBuser, self.MariaDBpasswd, self.MariaDBdatabase, self.send2MQTT, self.MQTTbroker, self.MQTTport, self.MQTTuser, self.MQTTpassword, _ = defaults
+		self.write2file = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/write2file"), "bool")
+		self.write2MariaDB = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/write2MariaDB"), "bool")
+		self.MariaDBhost = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MariaDBhost"), "str")
+		self.MariaDBuser = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MariaDBuser"), "str")
+		self.MariaDBpasswd = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MariaDBpasswd"), "str")
+		self.MariaDBdatabase = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MariaDBdatabase"), "str")
+		self.send2MQTT = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/send2MQTT"), "bool")
+		self.MQTTbroker = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MQTTbroker"), "str")
+		self.MQTTport = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MQTTport"), "int")
+		self.MQTTuser = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MQTTuser"), "str")
+		self.MQTTpassword = self.typwandlung(self.readCaravanPiConfigItem("caravanpiDefaults/MQTTpassword"), "str")
 
 	# ---------------------------------------------------------------------------------------------
 	# format_xml
@@ -165,7 +131,7 @@ class CaravanPiFiles:
 	# ---------------------------------------------------------------------------------------------
 	# is_float
 	#
-	# prüft einen Stroing-Wert auf den Typ float
+	# prüft einen String-Wert auf den Typ float
 	# ----------------------------------------------------------------------------------------------
 
 	def is_float(self, value):
@@ -181,65 +147,159 @@ class CaravanPiFiles:
 	# 
 	# =========================================================================================================================================================
 
-
 	# ---------------------------------------------------------------------------------------------
-	# CaravanPiDefaults
-	#
+	# CaravanPi Config Items
 	# ----------------------------------------------------------------------------------------------
 
-	def readCaravanPiDefaults(self):
-		tree = ET.parse(self.xml_file_path)
-		root = tree.getroot()
-		defaults_element = root.find("caravanpiDefaults")
+	def find_or_create_element_by_path(self, root, path, create_if_missing=False):
+		# ---------------------------------------------------------------------------------------------
+		# Findet oder erstellt ein Element basierend auf einem '/' getrennten Pfad.
+		# ---------------------------------------------------------------------------------------------
+		current_element = root
+		for part in path.split('/'):
+			next_element = current_element.find(part)
+			if next_element is None and create_if_missing:
+				next_element = ET.SubElement(current_element, part)
+			elif next_element is None:
+				return None
+			current_element = next_element
+		return current_element	
+	
 
-		if defaults_element is not None:
-			write2file = defaults_element.find("write2file").text == '1' if defaults_element.find("write2file") is not None else False
-			write2MariaDB = defaults_element.find("write2MariaDB").text == '1' if defaults_element.find("write2MariaDB") is not None else False
-			send2MQTT = defaults_element.find("send2MQTT").text == '1' if defaults_element.find("send2MQTT") is not None else False
-
-			return (
-				int(defaults_element.find("countGasScales").text) if defaults_element.find("countGasScales") is not None and defaults_element.find("countGasScales").text.isdigit() else None,
-				int(defaults_element.find("countTanks").text) if defaults_element.find("countTanks") is not None and defaults_element.find("countTanks").text.isdigit() else None,
-				write2file,
-				write2MariaDB,
-				defaults_element.find("MariaDBhost").text if defaults_element.find("MariaDBhost") is not None else None,
-				defaults_element.find("MariaDBuser").text if defaults_element.find("MariaDBuser") is not None else None,
-				defaults_element.find("MariaDBpasswd").text if defaults_element.find("MariaDBpasswd") is not None else None,
-				defaults_element.find("MariaDBdatabase").text if defaults_element.find("MariaDBdatabase") is not None else None,
-				send2MQTT,
-				defaults_element.find("MQTTbroker").text if defaults_element.find("MQTTbroker") is not None else None,
-				int(defaults_element.find("MQTTport").text) if defaults_element.find("MQTTport") is not None and defaults_element.find("MQTTport").text.isdigit() else None,
-				defaults_element.find("MQTTuser").text if defaults_element.find("MQTTuser") is not None else None,
-				defaults_element.find("MQTTpassword").text if defaults_element.find("MQTTpassword") is not None else None,
-				int(defaults_element.find("countClimateSensors").text) if defaults_element.find("countClimateSensors") is not None and defaults_element.find("countClimateSensors").text.isdigit() else None,
-			)
+	def readCaravanPiConfigItem(self, element_path):
+		# ---------------------------------------------------------------------------------------------
+		# Liest einen Wert basierend auf dem übergebenen XML-Pfad.
+		# element_path ist so anzugeben "parent/child/grandchild"
+		# ---------------------------------------------------------------------------------------------
+		if not os.path.exists(self.xml_file_path):
+			print("Die XML-Datei wurde nicht gefunden.")
+			return None
+		
+		try:
+			tree = ET.parse(self.xml_file_path)
+			root = tree.getroot()
+		except ET.ParseError as e:
+			print(f"Fehler beim Parsen der XML-Datei: {e}")
+			return None
+		
+		elem = self.find_or_create_element_by_path(root, element_path, create_if_missing=False)
+		if elem is not None:
+			return elem.text
 		else:
+			print(f"Element mit dem Pfad '{element_path}' nicht gefunden.")
 			return None
 
-	def writeCaravanPiDefaults(self, countGasScales, countTanks, write2file, write2MariaDB, MariaDBhost, MariaDBuser, MariaDBpasswd, MariaDBdatabase, send2MQTT, MQTTbroker, MQTTport, MQTTuser, MQTTpassword, countClimateSensors):
-		tree = ET.parse(self.xml_file_path)
-		root = tree.getroot()
-		defaults_element = root.find("caravanpiDefaults")
-		if defaults_element is None:
-			defaults_element = ET.SubElement(root, "caravanpiDefaults")
-		
-		# Konvertierung der booleschen Werte in "0" oder "1"
-		write2file = '1' if write2file else '0'
-		write2MariaDB = '1' if write2MariaDB else '0'
-		send2MQTT = '1' if send2MQTT else '0'
 
-		for key, value in [("countGasScales", countGasScales), ("countTanks", countTanks), ("write2file", write2file), ("write2MariaDB", write2MariaDB), ("MariaDBhost", MariaDBhost), ("MariaDBuser", MariaDBuser), ("MariaDBpasswd", MariaDBpasswd), ("MariaDBdatabase", MariaDBdatabase), ("send2MQTT", send2MQTT), ("MQTTbroker", MQTTbroker), ("MQTTport", MQTTport), ("MQTTuser", MQTTuser), ("MQTTpassword", MQTTpassword), ("countClimateSensors", countClimateSensors)]:
-			element = defaults_element.find(key)
-			if element is None:
-				element = ET.SubElement(defaults_element, key)
-			element.text = str(value)
-		
+	def writeCaravanPiConfigItem(self, element_path, value):
+		# ---------------------------------------------------------------------------------------------
+		# Schreibt oder aktualisiert einen Wert basierend auf dem übergebenen XML-Pfad.
+		# ---------------------------------------------------------------------------------------------
+
+		if not os.path.exists(self.xml_file_path):
+			print("Die XML-Datei wurde nicht gefunden.")
+			return -1
+
+		try:
+			tree = ET.parse(self.xml_file_path)
+			root = tree.getroot()
+		except ET.ParseError as e:
+			print(f"Fehler beim Parsen der XML-Datei: {e}")
+			return -1
+
+		final_element = self.find_or_create_element_by_path(root, element_path, create_if_missing=True)
+		final_element.text = str(value)
+
 		# Formatieren des XML-Baums vor dem Speichern
 		self.format_xml(root)
 
-		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
+		try:
+			tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
+			return 0
+		except IOError as e:
+			print(f"Fehler beim Schreiben in die XML-Datei: {e}")
+			return -1
+
+
+	# ---------------------------------------------------------------------------------------------
+	# CaravanPiDefaults
+	# ----------------------------------------------------------------------------------------------
+
+	def readCaravanPiDefaults(self):
+		# ---------------------------------------------------------------------------------------------
+		# Liest die CaravanPi Default Werte aus der XML
+		# ---------------------------------------------------------------------------------------------
+		if not os.path.exists(self.xml_file_path):
+			print("Die XML-Datei wurde nicht gefunden.")
+			return -1
+
+		tree = ET.parse(self.xml_file_path)
+		root = tree.getroot()
+		defaults_element = root.find("caravanpiDefaults")
+		defaults = {}
+
+		if defaults_element is not None:
+			for child in defaults_element:
+				if child.text.isdigit():
+					defaults[child.tag] = int(child.text)
+				elif child.text.lower() in ['1', 'true']:
+					defaults[child.tag] = True
+				elif child.text.lower() in ['0', 'false']:
+					defaults[child.tag] = False
+				else:
+					defaults[child.tag] = child.text
+
+		return defaults
+
+
+	def writeCaravanPiDefaults(self, config_dict):
+
+		if not os.path.exists(self.xml_file_path):
+			print("Die XML-Datei wurde nicht gefunden.")
+			return -1
+
+		try:
+			tree = ET.parse(self.xml_file_path)
+			root = tree.getroot()
+			defaults_element = root.find("caravanpiDefaults")
+			if defaults_element is None:
+				defaults_element = ET.SubElement(root, "caravanpiDefaults")
 			
+			# Konvertierung der booleschen Werte in "0" oder "1" für spezifische Schlüssel
+			for key in [
+							"write2file", 
+							"write2MariaDB", 
+							"send2MQTT", 
+							"stromPiInstalled", 
+							"gassensorInstalled", 
+							"gassensorAlarmActive", 
+							"v230CheckInstalled", 
+							"v230CheckAlarmActive", 
+							"v12BatteryCheckInstalled", 
+							"v12BatteryCheckAlarmActive", 
+							"v12CarCheckInstalled",
+							"v12CarCheckAlarmActive",
+						]:
+				if key in config_dict:
+					config_dict[key] = '1' if config_dict[key] else '0'
+
+			for key, value in config_dict.items():
+				if value is not None:  # Überspringe None-Werte
+					# Benutze die angepasste Funktion, um den Pfad zu behandeln
+					final_element = self.find_or_create_element_by_path(defaults_element, key, create_if_missing=True)
+					final_element.text = str(value)
+
+			# Formatieren des XML-Baums vor dem Speichern
+			self.format_xml(root)
+
+			# Schreiben der formatierten XML-Daten in die Datei
+			tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
+			return 0
+		
+		except Exception as e:
+			print(f"Fehler beim Schreiben in die XML-Datei: {e}")
+			return -1
+
+					
 	# ---------------------------------------------------------------------------------------------
 	# adjustmentPosition
 	#
@@ -478,42 +538,6 @@ class CaravanPiFiles:
 		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
 
 
-
-	# ---------------------------------------------------------------------------------------------
-	# testColor
-	#
-	# content of file
-	# 		color			Color to show for testing LEDs 
-	# ----------------------------------------------------------------------------------------------
-
-	def readTestColor(self):
-		tree = ET.parse(self.xml_file_path)
-		root = tree.getroot()
-		test_color_element = root.find("testColor")
-		if test_color_element is not None:
-			return test_color_element.find("color").text if test_color_element.find("color") is not None else None
-		else:
-			return None
-
-	def writeTestColor(self, color):
-		tree = ET.parse(self.xml_file_path)
-		root = tree.getroot()
-		test_color_element = root.find("testColor")
-		if test_color_element is None:
-			test_color_element = ET.SubElement(root, "testColor")
-		
-		color_element = test_color_element.find("color")
-		if color_element is None:
-			color_element = ET.SubElement(test_color_element, "color")
-		color_element.text = str(color)
-		
-		# Formatieren des XML-Baums vor dem Speichern
-		self.format_xml(root)
-
-		# Schreiben der formatierten XML-Daten in die Datei
-		tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)
-
-
 	# =========================================================================================================================================================
 	# 
 	# Schreiben und Lesen der jeweils aktuellen Sensor Werte
@@ -731,6 +755,53 @@ class CaravanPiFiles:
 	# =========================================================================================================================================================
 	# COMPATIBILITY CODE - Anfang bis Dateiende
 	# =========================================================================================================================================================
+
+	# Mapping for caravanpiDefaults file
+	mappings = {
+		"caravanpiDefaults": [
+			"countGasScales", 
+			"countTanks", 
+		],
+		"adjustmentPosition": [
+			"adjustX", 
+			"adjustY", 
+			"adjustZ", 
+			"toleranceX", 
+			"toleranceY", 
+			"approximationX", 
+			"approximationY", 
+			"distRight", 
+			"distFront", 
+			"distAxis"
+		],
+		"dimensionsCaravan": [
+			"lengthOverAll", 
+			"widthOverAll", 
+			"lengthBody"
+		],
+		"gasScaleDefaults": [
+			"emptyWeight", 
+			"gasWeightMax", 
+			"pin_dout", 
+			"pin_sck", 
+			"strChannel", 
+			"refUnit"
+		],
+		"tankDefaults": [
+			"level1", 
+			"level2", 
+			"level3", 
+			"level4"
+		],
+		"voltageDefaults": [
+			"level1", 
+			"level2", 
+			"level3"
+		],
+		"testColor": [
+			"color"
+		]
+	}
 
 	# ---------------------------------------------------------------------------------------------
 	# check_create_xml

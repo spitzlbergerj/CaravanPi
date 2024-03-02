@@ -9,8 +9,6 @@
 
 import os
 import sys
-import time
-import datetime
 import argparse
 
 
@@ -93,22 +91,22 @@ def main():
 			print("erfolgreich")
 		return 0
 	
+	cplib = CaravanPiFiles()
 	x = 0
 	while x < tempSensorAnzahl:
 		# Sensorwerte verarbeiten
 		# Erstellen einer Instanz der CaravanPi Library
-		cplib = CaravanPiFiles()
 		cplib.handle_sensor_values(
-			args.screen,										# Anzeige am Bildschirm?
-			"temperatursensor",									# sensor_name = Datenbankname
-			f"DS1820-{tempSensorBezeichnung[x]}",				# sensor_id = Filename und Spalte in der Datenbank
-			["temperatur"],										# Liste Spaltennamen
-			(float(tempSensorWert[x]),)									# Tupel Sensorwerte
+			args.screen,								# Anzeige am Bildschirm?
+			"temperatursensor",							# sensor_name = Datenbankname
+			f"DS1820-{tempSensorBezeichnung[x]}",		# sensor_id = Filename und Spalte in der Datenbank
+			["temperatur"],								# Liste Spaltennamen
+			(float(tempSensorWert[x]),)					# Tupel Sensorwerte
 		)    
 		x = x + 1
 
 	return 0          
-argparsebbb
+
 if __name__=="__main__":
 	result = main()
 	sys.exit(result)

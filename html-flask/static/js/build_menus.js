@@ -11,13 +11,14 @@ function populateMainLinks(menu, includeHome) {
 		{ text: "Statusanzeige CaravanPi, Sensoren, Applikationen, ...", url: 'http://' + host + ':5000/checks', isExternal: false, addSeparator: true, header: "Statusanzeige und Konfiguration"  },
 		{ text: "Konfiguration der Abmessungen und Sensoren", url: 'http://' + host + ':5000/configs', isExternal: false, addSeparator: false  },
 		{ text: "Kalibrierung der Sensoren", url: 'http://' + host + ':5000/calibration', isExternal: false, addSeparator: false  },
-		{ text: "Test-Routinen", url: 'http://' + host + ':5000/tests', isExternal: false, addSeparator: true  },
+		{ text: "Test-Routinen", url: 'http://' + host + ':5000/tests_home', isExternal: false, addSeparator: true  },
 		{ text: "MagicMirror Konfiguration", url: 'http://' + host + ':8080/remote.html#main-menu', isExternal: true, addSeparator: false, header: "MagicMirror"  },
 		{ text: "MagicMirror Remote-Anzeige", url: 'http://' + host + ':8080', isExternal: true, addSeparator: true  },
 		{ text: "Grafana Website", url: 'http://' + host + ':3000', isExternal: true, addSeparator: false, header: "MariaDB"  },
 		{ text: "phpMyAdmin", url: 'http://' + host + '/phpmyadmin/', isExternal: true, addSeparator: true  },
-		{ text: "CaravanPi Config anzeigen", url: 'http://' + host + ':5000/show_config', isExternal: true, addSeparator: false, header: "Sonstiges"  },
-		{ text: "RPi neu starten", url: 'http://' + host + ':5000/reboot', isExternal: true, addSeparator: false  },
+		{ text: "CaravanPi Config anzeigen", url: 'http://' + host + ':5000/show_config', isExternal: true, addSeparator: false, header: "Config / LOGs anzeigen"  },
+		{ text: "CaravanPi LOG Dateien anzeigen", url: 'http://' + host + ':5000/list_logs', isExternal: true, addSeparator: true  },
+		{ text: "RPi neu starten", url: 'http://' + host + ':5000/reboot', isExternal: true, addSeparator: false, header: "Raspberry Pi Steuerung"   },
 		{ text: "RPi ausschalten", url: 'http://' + host + ':5000/shutdown', isExternal: false, addSeparator: false  },
 	];
 
@@ -121,7 +122,9 @@ function populateTestLinks(menu) {
 	var port = window.location.port;
 
 	var links = [
-		{ text: "Testen der LEDs", url: 'http://' + host + ':5000/test_LED', isExternal: false, addSeparator: false },
+		{ text: "Testen der LEDs", url: 'http://' + host + ':5000/test_LEDs', isExternal: false, addSeparator: false },
+		{ text: "Testen des Buzzers", url: 'http://' + host + ':5000/test_buzzer', isExternal: false, addSeparator: false },
+		{ text: "Testen der Taster", url: 'http://' + host + ':5000/test_switches', isExternal: false, addSeparator: true },
 		{ text: "Statusanzeige CaravanPi, Sensoren, Applikationen, ...", url: 'http://' + host + ':5000/checks', isExternal: false, addSeparator: false  },
 	];
 

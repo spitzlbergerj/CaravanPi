@@ -7,9 +7,13 @@
 #Since this class is not initialized via __init__, the functions do not contain a fist parameter self
 #
 #-------------------------------------------------------------------------------
-import sys
 import os
 import time
+import psutil
+import sys
+import subprocess
+
+
 
 
 class CaravanPiFunctions:
@@ -27,25 +31,97 @@ class CaravanPiFunctions:
 	# -----------------------------------------------
 	# determine process number pid
 	# -----------------------------------------------
-	def process_running(self, name):
-		for fso in os.listdir('/proc'):
-			path = os.path.join('/proc', fso)
-			if os.path.isdir(path):
-				try:
-					# das Verzeichnis eines Prozesses trägt die
-					# numerische UID als Namen
-					uid = int(fso)
-					stream = open(os.path.join(path, 'cmdline'))
-					cmdline = stream.readline()
-					stream.close()
-					if name in cmdline and "/bin/sh" not in cmdline:
-						return uid
-				except ValueError:
-					# kein Prozessverzeichnis
-					continue
+	def process_running(self, partial_name):
+		# Bestimmt die PID eines laufenden Prozesses anhand seines Namens.
+		for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+			# Überprüft, ob der gesuchte Prozessname in der Kommandozeile enthalten ist
+			if partial_name in ' '.join(proc.info['cmdline']):
+				return proc.pid
 		return 0
 	
+	# -----------------------------------------------
+	# sende ein signal an einen Prozess, der einen String enthält
+	# sende das Signal nur an den ersten gefunden
+	# dies ist notwendig, da der prozess in der Prozessliste zweimal auftritt, da er durch cron gestartet wird
+	# -----------------------------------------------
+
+	def send_signal_to_process(self, partial_name, signal2process):
+		found_process = None
+
+		pid = self.process_running(partial_name)
+
+		if pid:
+			found_process = psutil.Process(pid)
+
+			# gibt es Kindprozesse?
+			# also wurde von crontab gestartet?
+			children = found_process.children()
+			if children:
+				try:
+					children[0].send_signal(signal2process)
+					print(f"Signal {signal2process} wurde erfolgreich an Kindprozess {children[0].pid} gesendet.")
+				except Exception as e:
+					print(f"Fehler beim Senden von {signal2process} an Kindprozess {children[0].pid}: {e}")
+					return -1
+			else:
+				# Versucht, das Signal an den Prozess (ohne Kindprozesse) zu senden
+				# Prozess wurde anscheinend manuell gestartet
+				try:
+					found_process.send_signal(signal2process)
+					print(f"Signal {signal2process} wurde erfolgreich an Prozess {found_process.pid} gesendet.")
+				except Exception as e:
+					print(f"Fehler beim Senden von {signal2process} an Prozess {found_process.pid}: {e}")
+					return -1
+
+			return 0
+		else:
+			print(f"Kein Prozess mit Teilstring '{partial_name}' gefunden.")
+			return -1
+		
 	
+	def start_process_in_background(self, command):
+		try:
+			# Stellt sicher, dass der Befehl als Hintergrundprozess läuft
+			process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+			print(f"Prozess {process.pid} wurde erfolgreich im Hintergrund gestartet.")
+			return 0
+		except Exception as e:
+			print(f"Fehler beim Starten des Prozesses: {e}")
+			return -1
+
+	
+	# -----------------------------------------------
+	# Spiele Alarmtöne
+	# -----------------------------------------------
+	def play_alarm_single(self, gpio, buzzer_pin, alarmnr):
+		gpio.setmode(gpio.BCM)
+		gpio.setup(buzzer_pin, gpio.OUT)
+
+		# Muster für die verschiedenen Alarme als Liste von (Tonlänge, Pausenlänge)-Tupeln (jeweils in Sekunden)
+		patterns = {
+			0: [(0.05, 0.1), (0.5, 1)],  # Standardmuster für andere Alarme
+			1: [(0.05, 0.1), (0.05, 0.1), (0.5, 1)],  # Alarm 1
+			2: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 1)],  # Alarm 2
+			3: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 1)],  # Alarm 2
+		}
+
+		# Muster basierend auf alarmnrsetzen
+		pattern = patterns.get(alarmnr, patterns[0])
+
+		print(f"Alarm {alarmnr}")
+
+		# Durchlaufe das gewählte Muster
+		for tone_length, pause_length in pattern:
+			gpio.output(buzzer_pin, gpio.HIGH)
+			time.sleep(tone_length)
+			gpio.output(buzzer_pin, gpio.LOW)
+			time.sleep(pause_length)
+
+		print("Alarm Ende")
+
+		#gpio.cleanup()
+		return True
+
 	# -----------------------------------------------
 	# Spiele einen Ton
 	# -----------------------------------------------
@@ -55,7 +131,6 @@ class CaravanPiFunctions:
 			pwm.start(50)  # Start PWM mit 50% Tastverhältnis
 		time.sleep(duration)
 		pwm.stop()
-
 
 	# -----------------------------------------------
 	# Spiele die Melodie Erfolg

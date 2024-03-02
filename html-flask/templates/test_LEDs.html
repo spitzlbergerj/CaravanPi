@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>CaravanPi Konfiguration Batterie</title>
+	<title>CaravanPi Test LEDs</title>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
 </head>
 <body>
@@ -24,8 +24,7 @@
 			</div>
 			<hr>
 
-			<h1>Konfiguration der Batterie</h1>
-			<p>Bitte geben Sie die entsprechenden Werte an.</p>
+			<h1>Test der LEDs zur Lageanzeige</h1>
 			<p></p>
 
 		
@@ -43,48 +42,35 @@
 				<div class="row">
 					<div>
 						<p>
-						<br/><br/><b>Konfiguration der Batterie</b><br/>
-						Für die Batterie sind verschiedene Warnstufen konfiguriert. Die Voltwerte, ab wann welche Stufe gilt, können hier konfiguriert werden.
+						Die LEDs an den Ecken, der Achse und an der Deichsel geben an, ob das Fahrzeug in der Waage steht. Der Farbcode wurde einprägsam gewählt. <br/><br/>Grün = zu nahe an der grünen Wiese = zu tief. <br/>Blau = zu nahe am blauen Himmel = zu hoch. <br/>Rot = Stopp<br/>Blinkend = gleich kommt rot.
 						</p>
 					</div>
 				</div>
 
-				<!-- Leval 1 -->
-				<div class="row">
-					<div class="col-75">
-						<label for="level1">Level 1 (in l)</label>  
-					</div>
-					<div class="col-25">
-						<input name="level1" type="number" step="0.01" min="1" value="{{ batterie.get('level1', '')}}" >
-					</div>
-				</div>
+				<div>
 
-				<!-- Leval 2 -->
-				<div class="row">
-					<div class="col-75">
-						<label for="level2">Level 2 (in l)</label>  
+					<!-- LED blau -->
+					<div class="row">
+						<input type="submit" name="LEDblue" value="BLAU" class="finish-button" onclick="hideAndShowMessage()" style="background-color: blue; color: white;">
+						<input type="submit" name="LEDblueblink" value="BLAU blinkend" class="finish-button" onclick="hideAndShowMessage()" style="background-color: blue; color: white;">
 					</div>
-					<div class="col-25">
-						<input name="level2" type="number" step="0.01" min="1" value="{{ batterie.get('level2', '')}}" >
-					</div>
-				</div>
 
-				<!-- Leval 3 -->
-				<div class="row">
-					<div class="col-75">
-						<label for="level3">Level 1 (in l)</label>  
+					<!-- LED rot -->
+					<div class="row">
+						<input type="submit" name="LEDred" value="ROT" class="finish-button" onclick="hideAndShowMessage()" style="background-color: red; color: white;">
 					</div>
-					<div class="col-25">
-						<input name="level3" type="number" step="0.01" min="1" value="{{ batterie.get('level3', '')}}" >
+
+					<!-- LED grün -->
+					<div class="row">
+						<input type="submit" name="LEDgreen" value="GRÜN" class="finish-button" onclick="hideAndShowMessage()" style="background-color: green; color: white;">
+						<input type="submit" name="LEDgreenblink" value="GRÜN blinkend" class="finish-button" onclick="hideAndShowMessage()" style="background-color: green; color: white;">
 					</div>
+
 				</div>
 
 				<!-- Button -->
 				<div class="row">
-					<div class="button-container">
-						<input type="submit" name="submit" value="Speichern" class="finish-button" onclick="hideAndShowMessage()">
-						<input type="submit" name="cancel" value="Zurück" class="finish-button">
-					</div>
+						<input type="submit" name="cancel" value="LED Test beenden" class="finish-button">
 				</div>
 			</form>
 
@@ -95,7 +81,7 @@
 
 	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
 	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
-
+	
 </body>
 </html>
 

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Test Taster</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Test der Taster</h1>
+			<p></p>
+
+		
+			<form class="caravanpi-form" method="post" id="tasterTest">
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+							Achtung: Drücken Sie nicht den Ein/Aus Taster. Dieser wird hier nicht abgefangen und fürt zum Reboot oder Shutdown für den Raspberry Pi.
+						</p>
+					</div>
+				</div>
+
+				<div>
+					{% if switchTestStarted %}
+						<div>
+							<h3>Test läuft!</h3>
+							<p> Drücken Sie nun einzelne Tasten. Etwas zeitverzögert wird hier angezeigt, welche Taste gedrückt wurde:</p>
+						</div>					
+					{% endif %}
+					
+					{% with messages = get_flashed_messages() %}
+						{% if messages %}
+							{% for message in messages %}
+								<div class="flash-message">{{ message }}</div>
+							{% endfor %}
+						{% endif %}
+					{% endwith %}
+	
+					{% if not switchTestStarted %}
+						<!-- Taster Test  -->
+						<div class="row">
+							<input type="submit" name="start" value="Taster Test starten" class="finish-button" onclick="hideAndShowMessage()">
+						</div>
+					{% else %}
+						<div id="messages"></div>
+					{% endif %}
+				</div>
+
+				<!-- Button -->
+				<div class="row">
+						<input type="submit" name="cancel" value="Taster Test beenden" class="finish-button" onclick="enableStartButton()">
+				</div>
+			</form>
+
+		</div>
+
+        {% include 'footer.html' %}
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+	
+	<script>
+		// Funktion, die den Tasterzustand vom Server abfragt
+		function pollSwitchState(switchName) {
+			fetch(`/poll_switch_status/${switchName}`)
+				.then(response => response.json())
+				.then(data => {
+					if (data.pressed) {
+						console.log(data.message);
+						// Nachricht im DOM anzeigen
+						displayMessage(data.message);
+					}
+				})
+				.catch(error => console.error(`Error polling switch state for ${switchName}:`, error));
+		}
+
+		function displayMessage(message) {
+			// Wählen Sie das Element aus, in dem die Nachricht angezeigt werden soll
+			var messagesContainer = document.getElementById("messages");
+			// Erstellen Sie ein neues div für die Nachricht
+			var messageDiv = document.createElement("div");
+			messageDiv.classList.add("flash-message"); // Fügen Sie Ihre Flash-Nachrichtenklasse hinzu
+			messageDiv.innerText = message;
+			// Fügen Sie die Nachricht dem Container hinzu
+			messagesContainer.appendChild(messageDiv);
+		}
+
+		// regelmäßig alle 2000 Millisekunden abfragen)
+		setInterval(() => pollSwitchState('position'), 2000);
+		setInterval(() => pollSwitchState('gasscale'), 2000);
+		setInterval(() => pollSwitchState('horizontal'), 2000);
+		setInterval(() => pollSwitchState('live'), 2000);
+	</script>
+</body>
+</html>
+

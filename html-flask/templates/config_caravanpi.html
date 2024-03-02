@@ -63,7 +63,7 @@
 				<!-- in Dateien -->
 				<div class="row">
 					<div class="col-75">
-						<label for="write2file">in Wertedateien speichern?</label>  
+						<label for="write2file">in Wertedateien speichern (teilweise für MagicMirror noch notwendig)?</label>  
 					</div>
 					<div class="col-25">
 						<input name="write2file" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('write2file', False) else '' }}>
@@ -90,37 +90,45 @@
 				<!-- Datenbank Einstellungen -->
 				<div class="db-settings">
 					<div class="row">
-						<div class="col-75">
-							<label for="MariaDBhost">IP Adresse des Datenbank Servers (default: localhost)</label>  
+						<div class="col-60">
+							<label for="MariaDBhost">IP Adresse des Datenbank Servers</label>  
 						</div>
-						<div class="col-25">
+						<div class="col-40">
 							<input name="MariaDBhost" type="char" value="{{ caravanpiDefaults.get('MariaDBhost', '')}}" >
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-75">
+						<div class="col-60">
 							<label for="MariaDBuser">Datenbank User</label>  
 						</div>
-						<div class="col-25">
+						<div class="col-40">
 							<input name="MariaDBuser" type="char" value="{{ caravanpiDefaults.get('MariaDBuser', '')}}" >
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-75">
+						<div class="col-60">
 							<label for="MariaDBpasswd">Datenbank Passwort</label>  
 						</div>
-						<div class="col-25">
-							<input name="MariaDBpasswd" type="char" value="{{ caravanpiDefaults.get('MariaDBpasswd', '')}}" >
+						<div class="col-40">
+							<div class="password-wrapper">
+								<input class="password-field" name="MariaDBpasswd" type="password" id="passwordMariaDB" value="{{ caravanpiDefaults.get('MariaDBpasswd', '')}}" >
+								<button type="button" class="toggle-password" 
+										onmousedown="togglePasswordVisibility(true, 'passwordMariaDB')" 
+										onmouseup="togglePasswordVisibility(false, 'passwordMariaDB')" 
+										onmouseleave="togglePasswordVisibility(false, 'passwordMariaDB')">
+								<img src="/static/images/eye-solid.png" alt="Einblenden">
+								</button>
+							</div>
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-75">
+						<div class="col-60">
 							<label for="MariaDBdatabase">Name der Datenbank</label>  
 						</div>
-						<div class="col-25">
+						<div class="col-40">
 							<input name="MariaDBdatabase" type="char" value="{{ caravanpiDefaults.get('MariaDBdatabase', '')}}" >
 						</div>
 					</div>
@@ -146,47 +154,55 @@
 				<!-- MQTT Einstellungen -->
 				<div class="mqtt-settings">
 					<div class="row">
-						<div class="col-75">
+						<div class="col-60">
 							<label for="MQTTbroker">Adresse des MQTT Brokers</label>  
 						</div>
-						<div class="col-25">
+						<div class="col-40">
 							<input name="MQTTbroker" type="char" value="{{ caravanpiDefaults.get('MQTTbroker', '')}}" >
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-75">
-							<label for="MQTTport">Port über den der MQTT Broker angesprochen werden will</label>  
+						<div class="col-60">
+							<label for="MQTTport">Port des MQTT Brokers</label>  
 						</div>
-						<div class="col-25">
+						<div class="col-40">
 							<input name="MQTTport" type="char" value="{{ caravanpiDefaults.get('MQTTport', '')}}" >
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-75">
+						<div class="col-60">
 							<label for="MQTTuser">MQTT User</label>  
 						</div>
-						<div class="col-25">
+						<div class="col-40">
 							<input name="MQTTuser" type="char" value="{{ caravanpiDefaults.get('MQTTuser', '')}}" >
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-75">
+						<div class="col-60">
 							<label for="MQTTpassword">MQTT Passwort</label>  
 						</div>
-						<div class="col-25">
-							<input name="MQTTpassword" type="char" value="{{ caravanpiDefaults.get('MQTTpassword', '')}}" >
-						</div>
+						<div class="col-40">
+							<div class="password-wrapper">
+								<input class="password-field" name="MQTTpassword" type="password" id="passwordMQTT" value="{{ caravanpiDefaults.get('MQTTpassword', '')}}" >
+								<button type="button" class="toggle-password" 
+										onmousedown="togglePasswordVisibility(true, 'passwordMQTT')" 
+										onmouseup="togglePasswordVisibility(false, 'passwordMQTT')" 
+										onmouseleave="togglePasswordVisibility(false, 'passwordMQTT')">
+								<img src="/static/images/eye-solid.png" alt="Einblenden">
+								</button>
+							</div>
+
 					</div>
 				</div>
 
 				<br/><br/>
 				<hr>
-				<p><b>Sonstige Einstellungen</b><br/></p>
+				<p><b>Anzahl von Sensoren</b><br/></p>
 
-				<!-- Sonstige Einstellungen -->
+				<!-- Sensorenanzahl -->
 				<div class="row">
 					<div class="col-75">
 						<label for="countGasScales">Anzahl Gasflaschenwaagen</label>  
@@ -214,6 +230,243 @@
 					</div>
 				</div>
 
+				<br/><br/>
+				<hr>
+				<p><b>Einstellungen für die Abfrageintervalle der Sensoren</b><br/></p>
+
+				<!-- crontab Intervalle -->
+
+				<div class="row">
+					<div class="col-75">
+						<label for="intervallGasscale">Gasflaschenwaagen (in min)</label>  
+					</div>
+					<div class="col-25">
+						<input name="intervallGasscale" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallGasscale', '')}}" >
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="intervallTemp">Temperatursensoren (in min)</label>  
+					</div>
+					<div class="col-25">
+						<input name="intervallTemp" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallTemp', '')}}" >
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="intervallClimate">Klimasensoren (in min)</label>  
+					</div>
+					<div class="col-25">
+						<input name="intervallClimate" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallClimate', '')}}" >
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="intervallTanks">Tanks (in min)</label>  
+					</div>
+					<div class="col-25">
+						<input name="intervallTanks" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallTanks', '')}}" >
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="intervallPositionNormal">Lagedaten (in min)</label>  
+					</div>
+					<div class="col-25">
+						<input name="intervallPositionNormal" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallPositionNormal', '')}}" >
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="intervallRaspberry">Systemdaten des Raspberry Pi (in min)</label>  
+					</div>
+					<div class="col-25">
+						<input name="intervallRaspberry" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallRaspberry', '')}}" >
+					</div>
+				</div>
+
+
+				<br/><br/>
+				<hr>
+				<p><b>Liontron Battery Management</b><br/></p>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="LiontronMACAddress">Liontron LiPo Batterie MAC Adresse</label>  
+					</div>
+					<div class="col-25">
+						<input name="LiontronMACAddress" type="char" value="{{ caravanpiDefaults.get('LiontronMACAddress', '')}}" >
+					</div>
+				</div>
+
+
+
+				<br/><br/>
+				<hr>
+				<p><b>Gassensor</b><br/></p>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="gassensorInstalled">ist ein Gassensor installiert?</label>  
+					</div>
+					<div class="col-25">
+						<input name="gassensorInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorInstalled', False) else '' }}>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="gassensorDigitalIn">GPIO Pin des Digitalausgangs des Gasssensors</label>  
+					</div>
+					<div class="col-25">
+						<input name="gassensorDigitalIn" type="char" value="{{ caravanpiDefaults.get('gassensorDigitalIn', '')}}" >
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="gassensorAnalogIn">ADC Pin des Analogausgangs des Gasssensors</label>  
+					</div>
+					<div class="col-25">
+						<input name="gassensorAnalogIn" type="char" value="{{ caravanpiDefaults.get('gassensorAnalogIn', '')}}" >
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="gassensorAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
+					</div>
+					<div class="col-25">
+						<input name="gassensorAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorAlarmActive', False) else '' }}>
+					</div>
+				</div>
+
+
+
+				<br/><br/>
+				<hr>
+				<p><b>230V Überwachung</b><br/></p>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="v230CheckInstalled">ist eine 230V Überwachung installiert?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v230CheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckInstalled', False) else '' }}>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="v230CheckADCPin">ADC Pin der 230V Überwachung</label>  
+					</div>
+					<div class="col-25">
+						<input name="v230CheckADCPin" type="char" value="{{ caravanpiDefaults.get('v230CheckADCPin', '')}}" >
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v230CheckAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v230CheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckAlarmActive', False) else '' }}>
+					</div>
+				</div>
+
+
+
+				<br/><br/>
+				<hr>
+				<p><b>12V Bordbatterie Überwachung</b><br/></p>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="v12BatteryCheckInstalled">ist eine 12V Bordbatterie Überwachung installiert?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12BatteryCheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckInstalled', False) else '' }}>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="v12BatteryCheckADCPin">ADC Pin der 230V Überwachung</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12BatteryCheckADCPin" type="char" value="{{ caravanpiDefaults.get('v12BatteryCheckADCPin', '')}}" >
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v12BatteryCheckAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12BatteryCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmActive', False) else '' }}>
+					</div>
+				</div>
+
+
+				<br/><br/>
+				<hr>
+				<p><b>12V Auto Überwachung</b><br/></p>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="v12CarCheckInstalled">ist eine 12V Auto Überwachung installiert?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12CarCheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckInstalled', False) else '' }}>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="v12CarCheckADCPin">ADC Pin der 12V Auto Überwachung</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12CarCheckADCPin" type="char" value="{{ caravanpiDefaults.get('v12CarCheckADCPin', '')}}" >
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v12CarCheckAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12CarCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmActive', False) else '' }}>
+					</div>
+				</div>
+
+
+
+				<br/><br/>
+				<hr>
+				<p><b>Sonstige Einstellungen</b><br/></p>
+
+				<!-- Sonstige Einstellungen -->
+
+				<div class="row">
+					<div class="col-75">
+						<label for="stromPiInstalled">ist ein StromPi installiert?</label>  
+					</div>
+					<div class="col-25">
+						<input name="stromPiInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('stromPiInstalled', False) else '' }}>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-75">
+						<label for="BuzzerGPIOPin">GPIO Pin des Buzzers</label>  
+					</div>
+					<div class="col-25">
+						<input name="BuzzerGPIOPin" type="char" value="{{ caravanpiDefaults.get('BuzzerGPIOPin', '')}}" >
+					</div>
+				</div>
+
+
 
 				<!-- Button -->
 				<div class="row">
@@ -224,14 +477,9 @@
 				</div>
 			</form>
 
-			<p>&nbsp;</p>
-			<p>&nbsp;</p>
-			<p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
 		</div>
 
-		<div class="footer">
-			<p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
-		</div>
+        {% include 'footer.html' %}
 	</div>
 
 	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
@@ -239,6 +487,14 @@
 
 	<!-- Steuerung der Sichtbarkeit der Felder für MariaDB und MQTT -->
 	<script>
+		function togglePasswordVisibility(show, passwordId) {
+			event.preventDefault(); // Verhindert das Neuladen der Seite
+			var passwordInput = document.getElementById(passwordId);
+			var buttonImage = document.querySelector('button[onmousedown*="' + passwordId + '"] img');
+			passwordInput.type = show ? "text" : "password";
+			buttonImage.src = show ? "/static/images/eye-slash-solid.png" : "/static/images/eye-solid.png";
+		}
+
 		document.addEventListener('DOMContentLoaded', function() {
 			// Funktion zum Ein-/Ausblenden der Einstellungen
 			function toggleSettings(checkbox, settingsClass, shouldClearValues = false) {

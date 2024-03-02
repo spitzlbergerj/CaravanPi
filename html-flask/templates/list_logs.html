@@ -25,12 +25,23 @@
 			<hr>
 
 			<p>&nbsp;</p>
-			<p>Konfiguration und Bedienung des CaravanPi</p>
+			<p>CaravanPi - LOG Dateien</p>
 			<p><br></p>
 
-			<div class="menu" id="mainMenu">
-				<!-- Hauptmenü-Links werden per JavaScript hinzugefügt -->
-			</div>
+			<table border="1">
+				<tr>
+					<th>Dateiname</th>
+					<th>Größe (Bytes)</th>
+					<th>Letzte Änderung</th>
+				</tr>
+				{% for file in files_info %}
+					<tr>
+						<td>{{ file.name }}</td>
+						<td style="text-align: right; padding-right: 40px;">{{ file.size }}</td>
+						<td>{{ file.mtime }}</td>
+					</tr>
+				{% endfor %}
+			</table>
 
 		</div>
 

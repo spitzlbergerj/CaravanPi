@@ -30,35 +30,17 @@ def main():
 
 	# buzzer
 	io.setmode(io.BCM)
-	io.setup(BUZZER_PIN, io.OUT)
-	io.output(BUZZER_PIN, io.LOW)
 
-	# Wait 30 secondes so that any vibrations of the caravan can subside
-	# during this waiting time slow beeping of the buzzer
-	i=0
-	while i < 3:
-		io.output(BUZZER_PIN, io.HIGH)
-		sleep(.1)
-		io.output(BUZZER_PIN, io.LOW)
-		sleep(.9)
-		i+=1
-		
-	# buzzer beeps rapidly to signal imminent measurement
-	i=0
-	while i < 3:
-		io.output(BUZZER_PIN, io.HIGH)
-		sleep(.1)
-		io.output(BUZZER_PIN, io.LOW)
-		sleep(.1)
-		i+=1
-		
-	# long beep of the buzzer to signal completion
-	sleep(.5)
-	io.output(BUZZER_PIN, io.HIGH)
-	sleep(1)
-	io.output(BUZZER_PIN, io.LOW)
-	io.cleanup()
-	sleep(.5)
+	cpfunclib.play_alarm_single(io, BUZZER_PIN, 1)
+	time.sleep(1)
+	cpfunclib.play_alarm_single(io, BUZZER_PIN, 2)
+	time.sleep(1)
+	cpfunclib.play_alarm_single(io, BUZZER_PIN, 3)
+	time.sleep(1)
+
+	cpfunclib.play_alarm_single(io, BUZZER_PIN, 99)
+	time.sleep(1)
+
 
 	cpfunclib.play_melody(io, BUZZER_PIN, 'success')
 

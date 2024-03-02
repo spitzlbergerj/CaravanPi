@@ -219,7 +219,60 @@ label {
     margin-top: 6px;
 }
   
+.col-40 {
+    float: left;
+    width: 40%;
+    margin-top: 6px;
+}
   
+.col-60 {
+    float: left;
+    width: 60%;
+    margin-top: 6px;
+}
+
+/* Buttons für LED Test */
+.ledtest-button-container {
+    text-align: center; /* Zentriert den Text über den Buttons */
+    width: 100%; /* Stellt sicher, dass der Container die volle Breite einnimmt */
+}
+
+.ledtest-description {
+    margin: 0 0 10px 0; /* Fügt einen unteren Abstand hinzu, entfernt aber den oberen Abstand */
+}
+
+.ledtest-buttons {
+    display: flex; /* Verwendet Flexbox, um die Buttons nebeneinander anzuordnen */
+    justify-content: space-between; /* Verteilt den verfügbaren Platz gleichmäßig zwischen den Buttons */
+}
+
+/* ---------------------------------------------------------
+ * Passwort Eingabefelder
+ * ---------------------------------------------------------
+ */
+
+ .password-wrapper {
+    display: flex;
+    align-items: center; /* Vertikal zentrieren */
+    justify-content: space-between;
+  }
+
+  .password-field {
+    flex-grow: 1; /* Lässt das Passwortfeld den verfügbaren Platz ausfüllen */
+    margin-right: 10px; /* Fügt einen rechten Abstand hinzu */
+  }
+
+  .toggle-password {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .toggle-password img {
+    height: 20px;
+    width: 25px;
+  }
 
 /* ---------------------------------------------------------
  * Flask flash Nachrichten

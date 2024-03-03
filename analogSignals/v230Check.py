@@ -15,6 +15,7 @@
 import sys
 import argparse
 import time
+from datetime import datetime 
 import RPi.GPIO as GPIO
 import board
 import busio
@@ -37,12 +38,13 @@ def main():
 						help='Ausgabe auf dem Bildschirm')
 	parser.add_argument('-c', '--check', action='store_true', 
 						help='Führt den Funktionstest aus')
-	parser.add_argument('-d', '--delay', type=str, default='60',
+	parser.add_argument('-d', '--delay', type=str, default='30',
 						help='Wartezeit zwischen zwei Messungen in Sekunden')
 
 	# Argumente parsen
 	args = parser.parse_args()
 	delay = float(args.delay)
+	delayAlarm = 1.5
 
 	# Libraries anbinden
 	cplib = CaravanPiFiles()
@@ -54,11 +56,11 @@ def main():
 		return False
 
 	# ist die 230V Überwachung konfiguriert?
-	v230CheckInstalled = bool(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled") is not None else False
+	v230CheckInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled") is not None else False
 	v230CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckADCPin") is not None else -1
-	v230CheckAlarmActive = bool(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive") is not None else False
+	v230CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive") is not None else False
 						  
-	print(f"ADC Pin: {v230CheckADCPin}, Alarm aktiv: {v230CheckAlarmActive}")
+	print(f"ADC Pin: {v230CheckADCPin}, Alarm aktiv: {v230CheckAlarmActive}, Delay: {delay} Sekunden")
 
 	if not v230CheckInstalled:
 		print(f"keine 230V Überwachung konfiguriert - Skript beenden")
@@ -111,27 +113,38 @@ def main():
 	
 	errorcount = 0
 	schwelle = 2.0
+	v230DropDetected = False
+
 
 	try: # Main program loop
 		while True:  
 			try:
+				# Einlesen, ob Alarm ausgegeben werden soll
+				v230CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive") is not None else False
+				if not v230CheckAlarmActive:
+					print("Alarm über Config ausgeschaltet")
+
 				# Die Check-Platine gibt 3,x Volt aus, falls keine 230 V anliegen
 				# Falls 230V anliegen, ist der Wert deutlich unter 2.5 V
-				print("Analog: {:>5}\t{:>5.3f}".format(channel.value, channel.voltage))
-
-				print("---")
+				print(f"{datetime.now().strftime('%Y%m%d %H:%M:%S')}: ", "Analog: {:>5}, {:>5.3f}, ".format(channel.value, channel.voltage))
 
 				if channel.voltage > schwelle:
 					# 230 V liegen nicht an
+					v230DropDetected = True
+					# Alarm ausgeben, wenn nicht abgeschaltet
 					if v230CheckAlarmActive:
 						cpfunc.play_alarm_single(GPIO, buzzer_pin, 2)
 				else:
 					# 230 Volt liegen an
-					# Alarm wieder einschalten
-					cplib.writeCaravanPiConfigItem("v230CheckAlarmActive", 1)
-					v230CheckAlarmActive = True
+					v230DropDetected = False
 					
-				time.sleep(delay)
+					if not v230CheckAlarmActive:
+						# Alarm wieder einschalten
+						print("Alarm in Config einschalten")
+						cplib.writeCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive", 1)
+						v230CheckAlarmActive = True
+					
+				time.sleep(delayAlarm if v230DropDetected else delay)
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -147,7 +160,8 @@ def main():
 				errorcount = 0
 
 	except KeyboardInterrupt:
-		# Savenging work after the end of the program
+		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen
+		cpfunc.play_alarm_single(GPIO, buzzer_pin, 1)
 		print('Script end!')
 			
 

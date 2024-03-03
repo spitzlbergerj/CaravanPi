@@ -98,17 +98,16 @@ class CaravanPiFunctions:
 		gpio.setup(buzzer_pin, gpio.OUT)
 
 		# Muster für die verschiedenen Alarme als Liste von (Tonlänge, Pausenlänge)-Tupeln (jeweils in Sekunden)
+		# Wartezeit beim letzten Eintrag immer 0.1, damit die Alarmausgabe keine zusätzlcihe Wartezeit verursacht, die bei Abschalten des Alarms über Config dann fehlt
 		patterns = {
-			0: [(0.05, 0.1), (0.5, 1)],  # Standardmuster für andere Alarme
-			1: [(0.05, 0.1), (0.05, 0.1), (0.5, 1)],  # Alarm 1
-			2: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 1)],  # Alarm 2
-			3: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 1)],  # Alarm 2
+			0: [(0.05, 0.1), (0.5, 0.1)],  # Standardmuster für andere Alarme
+			1: [(0.05, 0.1), (0.05, 0.1), (0.5, 0.1)],  # Alarm 1
+			2: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 0.1)],  # Alarm 2
+			3: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 0.1)],  # Alarm 2
 		}
 
 		# Muster basierend auf alarmnrsetzen
 		pattern = patterns.get(alarmnr, patterns[0])
-
-		print(f"Alarm {alarmnr}")
 
 		# Durchlaufe das gewählte Muster
 		for tone_length, pause_length in pattern:
@@ -117,9 +116,6 @@ class CaravanPiFunctions:
 			gpio.output(buzzer_pin, gpio.LOW)
 			time.sleep(pause_length)
 
-		print("Alarm Ende")
-
-		#gpio.cleanup()
 		return True
 
 	# -----------------------------------------------

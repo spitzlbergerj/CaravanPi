@@ -139,6 +139,11 @@ th, td {
  * ---------------------------------------------------------
  */
 
+.button-container {
+    display: flex;
+    justify-content: flex-start; /* oder 'flex-start' für keinen Zwischenraum */
+    padding: 0 5px;
+}
 
 .finish-button {
     background-color: white;
@@ -157,11 +162,43 @@ th, td {
     background-color: #f8f8f8; /* Leichte Farbänderung beim Überfahren mit der Maus */
 }
 
-.button-container {
+/* Menüs als Buttons */
+
+.menu-button-container {
     display: flex;
-    justify-content: flex-start; /* oder 'flex-start' für keinen Zwischenraum */
-    padding: 0 5px;
+    flex-direction: row; /* Richtet Kinder (Buttons) horizontal aus */
+    flex-wrap: wrap; /* Erlaubt das Umfließen auf eine neue Zeile bei Bedarf */
+    justify-content: flex-start; /* Startet die Ausrichtung der Kinder am Anfang des Containers */
 }
+.menu-row-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Abstand zwischen den Zeilen */
+}
+
+.menu-header-container {
+    flex: 0 0 100px; /* feste Breite, keine Schrumpfung, kein Wachstum */
+    text-align: left; /* Text linksbündig ausrichten */
+    /* Weitere Stildefinitionen für die Überschrift */
+}
+
+.menu-button {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px grey;
+    padding: 15px;
+    font-size: 18px; /* oder die gewünschte Größe */
+    cursor: pointer; /* Zeigt den Mauszeiger als Hand, um die Klickbarkeit anzuzeigen */
+    margin-top: 0px;
+    margin-right: 10px;
+    flex-grow: 1; /* Lässt die Buttons den verfügbaren Platz einnehmen */
+}
+.menu-button:hover {
+    background-color: #f8f8f8; /* Leichte Farbänderung beim Überfahren mit der Maus */
+}
+
 
 
 

@@ -1,20 +1,22 @@
 #!/usr/bin/python
 # coding=utf-8
-# v230Check.py
+# v12Check.py
 #
-# überprüft das Vorhandensein von 230V
+# überprüft das Vorhandensein von 12V
+# Dabei mehrere 12V Eingänge überwacht werden, bei geeignetem Parameter
 #
-# nutzt dazu eine Spezialplatine und einen ADC1115
-# Wenn 230v nicht da ist, wird ein Alarmton ausgegeben bis der Landstrom zurückkehrt
+# nutzt dazu einen Spannungsteiler, einen LevelConverter und einen ADC1115
+# Wenn 12V nicht da ist oder ein zu niedriges Spannungslevel vorhanden ist, wird ein Alarmton ausgegeben
 #
-# ist 230v vorhanden, wird in den Defaults der Alarm wieder eingeschaltet, so dass ein 
-# vorübergehend über die Config ausgeschalteter Alarm wieder aktiviert wird, sobald Landstrom wieder da ist
+# ist ein ausreichendes Level wieder vorhanden, wird in den Defaults der Alarm wieder eingeschaltet, so dass ein 
+# vorübergehend über die Config ausgeschalteter Alarm wieder aktiviert wird
 #
 #-------------------------------------------------------------------------------
 
 import sys
 import argparse
 import time
+from datetime import datetime 
 import RPi.GPIO as GPIO
 import board
 import busio
@@ -32,17 +34,20 @@ from CaravanPiFunctionsClass import CaravanPiFunctions
 
 def main():
 	# ArgumentParser-Objekt erstellen
-	parser = argparse.ArgumentParser(description='Lesen aller Temperatursensoren am 1-Wire-Bus')
+	parser = argparse.ArgumentParser(description='Überwachung der 12V Versorgung')
 	parser.add_argument('-s', '--screen', action='store_true',
 						help='Ausgabe auf dem Bildschirm')
 	parser.add_argument('-c', '--check', action='store_true', 
 						help='Führt den Funktionstest aus')
-	parser.add_argument('-d', '--delay', type=str, default='60',
-						help='Wartezeit zwischen zwei Messungen in Sekunden')
+	parser.add_argument('-d', '--delay', type=str, default='30',
+						help='Wartezeit zwischen zwei Messungen in Sekunden, default=30')
+	parser.add_argument('-b', '--battery', type=str, choices=['car', 'bord'], default='bord',
+						help='12V Anschluss wählen zwischen "bord" und "car", default = "bord"')
 
 	# Argumente parsen
 	args = parser.parse_args()
 	delay = float(args.delay)
+	delayAlarm = 1.5
 
 	# Libraries anbinden
 	cplib = CaravanPiFiles()
@@ -53,15 +58,33 @@ def main():
 		print("Buzzer GPIO Pin nicht richtig konfiguriert - Programmende")
 		return False
 
-	# ist die 230V Überwachung konfiguriert?
-	v230CheckInstalled = bool(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled") is not None else False
-	v230CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckADCPin") is not None else -1
-	v230CheckAlarmActive = bool(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive") is not None else False
-						  
-	print(f"ADC Pin: {v230CheckADCPin}, Alarm aktiv: {v230CheckAlarmActive}")
+	# ist die 12V Überwachung konfiguriert?
+	if args.battery == "bord":
+		v12CheckInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckInstalled") is not None else False
+		v12CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckADCPin") is not None else -1
+		v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmActive") is not None else False
+		v12xmlItemAlarm = "v12BatteryCheckAlarmActive"
+	elif args.battery == "car":
+		v12CheckInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckInstalled") is not None else False
+		v12CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckADCPin") is not None else -1
+		v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmActive") is not None else False
+		v12xmlItemAlarm = "v12CarCheckAlarmActive"
+	else:
+		print(f"falscher Battery Parameter - Skript beenden")
+		return False
 
-	if not v230CheckInstalled:
-		print(f"keine 230V Überwachung konfiguriert - Skript beenden")
+	v12Level1 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level1")) if cplib.readCaravanPiConfigItem("voltageDefaults/level1") is not None else -1
+	v12Level2 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level2")) if cplib.readCaravanPiConfigItem("voltageDefaults/level2") is not None else -1
+	v12Level3 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level3")) if cplib.readCaravanPiConfigItem("voltageDefaults/level3") is not None else -1
+
+	if v12Level1 == -1 or v12Level2 == -1 or v12Level3 == -1:
+		print(f"Batterie Default Level nicht korrekt definiert ({v12Level1}, {v12Level2}, {v12Level3}) - Skript beenden")
+		return False
+
+	print(f"ADC Pin: {v12CheckADCPin}, Alarm aktiv: {v12CheckAlarmActive}, Delay: {delay} Sekunden, Levels: {v12Level1}, {v12Level2}, {v12Level3}")
+
+	if not v12CheckInstalled:
+		print(f"keine 12V Überwachung für {args.battery} konfiguriert - Skript beenden")
 		return False
 
 	# Verbindung zum AD Wandler herstellen
@@ -91,53 +114,77 @@ def main():
 	# Connect fehlgeschlagen, dann beenden
 	if not connectOK:
 		return False
-
-	# Schweelwerte holen
-	v1 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level1")) if cplib.readCaravanPiConfigItem("voltageDefaults/level1") is not None else 0
-	v2 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level2")) if cplib.readCaravanPiConfigItem("voltageDefaults/level2") is not None else 0
-	v3 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level3")) if cplib.readCaravanPiConfigItem("voltageDefaults/level3") is not None else 0
 						  
-	print(f"Level 1: {v1}, Level 2: {v2}, Level 3: {v3}")
-
 	# GPIO für Buzzer initialisieren
 	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BCM)
 	
 	# Create single-ended input on channel 0
-	if v230CheckADCPin == 0: 
+	if v12CheckADCPin == 0: 
 		channel = AnalogIn(ads, ADS.P0)
-	elif v230CheckADCPin == 1: 
+	elif v12CheckADCPin == 1: 
 		channel = AnalogIn(ads, ADS.P1)
-	elif v230CheckADCPin == 2: 
+	elif v12CheckADCPin == 2: 
 		channel = AnalogIn(ads, ADS.P2)
-	elif v230CheckADCPin == 3: 
+	elif v12CheckADCPin == 3: 
 		channel = AnalogIn(ads, ADS.P3)
 	else:
-		print("AnalogIn Pin ist falsch, SOLL: 0 - 3, IST: {v230CheckADCPin}")
+		print("AnalogIn Pin ist falsch, SOLL: 0 - 3, IST: {v12CheckADCPin}")
 		return False
 	
 	errorcount = 0
+	v12DropDetected = False
+
+	# Umrechnung der Batterie Levels nach dem Logiklevel Wandler 
+	# ????
+
+	# Test mit 5 Volt
+	v12Level1 = 1.2
+	v12Level2 = 1.6
+	v12Level3 = 1.7
 
 	try: # Main program loop
 		while True:  
 			try:
-				print("Analog: {:>5}\t{:>5.3f}".format(channel.value, channel.voltage))
+				# Einlesen, ob Alarm ausgegeben werden soll
+				v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}"), "bool") if cplib.readCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}") is not None else False
+				if not v12CheckAlarmActive:
+					print("Alarm über Config ausgeschaltet")
 
-				print("---")
+				# Eine voll geladene Batterie gibt etwa 13.3 Volt aus, unter 12 Volt gilt eine Batterie als leer
+				print(f"{datetime.now().strftime('%Y%m%d %H:%M:%S')}: ", "Analog: {:>5}, {:>5.3f}, ".format(channel.value, channel.voltage))
 
-				v3 = 3
-
-				if channel.voltage <= v3:
-					# Ladung nicht mehr ausreichend
-					if v230CheckAlarmActive:
-						cpfunc.play_alarm_single(GPIO, buzzer_pin, 2)
+				if channel.voltage <= v12Level1:
+					print(f"Batterie leer bei {channel.voltage} Volt")
+					# Batterie leer
+					v12DropDetected = True
+					# Alarm ausgeben, wenn nicht abgeschaltet
+					if v12CheckAlarmActive:
+						cpfunc.play_alarm_single(GPIO, buzzer_pin, 3)
+				elif channel.voltage <= v12Level2:
+					print(f"Batterie ok bei {channel.voltage} Volt")
+					# Batterie noch OK
+					v12DropDetected = False
+				elif channel.voltage > v12Level2 and channel.voltage <= v12Level3:
+					print(f"Batterie voll geladen bei {channel.voltage} Volt")
+					# Batterie voll
+					v12DropDetected = False
 				else:
-					# Ladung ausreichend
-					# Alarm wieder einschalten
-					cplib.writeCaravanPiConfigItem("v230CheckAlarmActive", 1)
-					v230CheckAlarmActive = True
+					print(f"Batterie bei {channel.voltage} Volt - seltsamer Zustand")
+					# Batterie überladen oder defekt ??
+					v12DropDetected = True
+					# Alarm ausgeben, wenn nicht abgeschaltet
+					if v12CheckAlarmActive:
+						cpfunc.play_alarm_single(GPIO, buzzer_pin, 3)
 					
-				time.sleep(delay)
+				if channel.voltage > v12Level1 and channel.voltage <= v12Level3:
+					if not v12CheckAlarmActive:
+						# Alarm wieder einschalten
+						print("Alarm in Config einschalten")
+						cplib.writeCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}", 1)
+						v12CheckAlarmActive = True
+					
+				time.sleep(delayAlarm if v12DropDetected else delay)
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -153,7 +200,8 @@ def main():
 				errorcount = 0
 
 	except KeyboardInterrupt:
-		# Savenging work after the end of the program
+		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen
+		cpfunc.play_alarm_single(GPIO, buzzer_pin, 1)
 		print('Script end!')
 			
 

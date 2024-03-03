@@ -73,9 +73,9 @@ class CaravanPiFiles:
 		elif ziel_typ == "float":
 			return float(wert)
 		elif ziel_typ == "bool":
-			# Für Booleans könnte man eine spezifischere Logik implementieren,
-			# die "true", "True", "1", etc. als True behandelt.
-			return bool(wert) and wert.lower() in ["true", "1", "yes"]
+			# "true", "True", "1", etc. werden als True behandelt.
+			# "0" ist false
+			return wert.lower() in ["true", "1", "yes"]
 		elif ziel_typ == "str":
 			return str(wert)
 		elif ziel_typ == "list":
@@ -207,10 +207,14 @@ class CaravanPiFiles:
 			return -1
 
 		final_element = self.find_or_create_element_by_path(root, element_path, create_if_missing=True)
+		# print(ET.tostring(final_element, encoding='unicode'))
+
 		final_element.text = str(value)
+		# print(ET.tostring(final_element, encoding='unicode'))
 
 		# Formatieren des XML-Baums vor dem Speichern
 		self.format_xml(root)
+		# print(ET.tostring(root, encoding='unicode'))
 
 		try:
 			tree.write(self.xml_file_path, encoding='utf-8', xml_declaration=True)

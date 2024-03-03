@@ -9,6 +9,7 @@
 import sys
 import argparse
 import time
+from datetime import datetime 
 import RPi.GPIO as GPIO
 import board
 import busio
@@ -27,19 +28,19 @@ from CaravanPiFunctionsClass import CaravanPiFunctions
 
 
 def main():
-	print("auf gehts")
 	# ArgumentParser-Objekt erstellen
 	parser = argparse.ArgumentParser(description='Lesen aller Temperatursensoren am 1-Wire-Bus')
 	parser.add_argument('-s', '--screen', action='store_true',
 						help='Ausgabe auf dem Bildschirm')
 	parser.add_argument('-c', '--check', action='store_true', 
 						help='Führt den Funktionstest aus')
-	parser.add_argument('-d', '--delay', type=str, default='60',
+	parser.add_argument('-d', '--delay', type=str, default='30',
 						help='Wartezeit zwischen zwei Messungen in Sekunden')
 
 	# Argumente parsen
 	args = parser.parse_args()
 	delay = int(args.delay)
+	delayAlarm = 1.5
 
 	# Libraries anbinden
 	cplib = CaravanPiFiles()
@@ -51,12 +52,12 @@ def main():
 		return False
 
 	# gibt es einen Gassensor?
-	gassensorInstalled = bool(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorInstalled")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorInstalled") is not None else False
+	gassensorInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorInstalled") is not None else False
 	gassensorDigitalIn = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorDigitalIn")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorDigitalIn") is not None else -1
 	gassensorAnalogIn = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAnalogIn")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAnalogIn") is not None else -1
-	gassensorAlarmActive = bool(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive") is not None else False
+	gassensorAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive") is not None else False
 						  
-	print(f"Digital: {gassensorDigitalIn} , Analog: {gassensorAnalogIn}, Alarm aktiv: {gassensorAlarmActive}")
+	print(f"Digital: {gassensorDigitalIn} , Analog: {gassensorAnalogIn}, Alarm aktiv: {gassensorAlarmActive}, Delay: {delay} Sekunden")
 
 	if not gassensorInstalled:
 		print(f"kein Gassensor konfiguriert - Skript beenden")
@@ -110,26 +111,34 @@ def main():
 		return False
 	
 	errorcount = 0
+	gasDetected = False
 
 	try: # Main program loop
 		while True:  
 			try:
-				print("Analog: {:>5}\t{:>5.3f}".format(channel.value, channel.voltage))
-				print("Digital: {}".format(GPIO.input(gassensorDigitalIn)))
+				# Einlesen, ob Alarm ausgegeben werden soll
+				gassensorAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive") is not None else False
+				if not gassensorAlarmActive:
+					print("Alarm über Config ausgeschaltet")
 
-				print("---")
+				print(f"{datetime.now().strftime('%Y%m%d %H:%M:%S')}: ", "Analog: {:>5}, {:>5.3f}, ".format(channel.value, channel.voltage), "Digital: {}".format(GPIO.input(gassensorDigitalIn)))
 
 				if GPIO.input(gassensorDigitalIn) == 0:
 					# Gas detektiert
+					gasDetected = True
+					# Alarm ausgeben, wenn nicht abgeschaltet
 					if gassensorAlarmActive:
 						cpfunc.play_alarm_single(GPIO, buzzer_pin, 1)
 				else:
 					# kein Gas detektiert
-					# Alarm wieder einschalten
-					cplib.writeCaravanPiConfigItem("gassensorAlarmActive", 1)
-					gassensorAlarmActive = True
+					gasDetected = False
+
+					if not gassensorAlarmActive:
+						# Alarm wieder einschalten
+						cplib.writeCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive", 1)
+						gassensorAlarmActive = True
 					
-				time.sleep(delay)
+				time.sleep(delayAlarm if gasDetected else delay)
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -145,7 +154,8 @@ def main():
 				errorcount = 0
 
 	except KeyboardInterrupt:
-		# Savenging work after the end of the program
+		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen
+		cpfunc.play_alarm_single(GPIO, buzzer_pin, 1)
 		print('Script end!')
 			
 

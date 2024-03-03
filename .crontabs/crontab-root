@@ -1,8 +1,5 @@
 # crontab root
 #
-# Output of the crontab jobs (including errors) is sent through
-# email to the user the crontab file belongs to (unless redirected).
-#
 # min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
 #
 # beim Neustart Skript fuer Sensor starten
@@ -13,8 +10,9 @@
 # 05 20 * * *  /usr/local/bin/backup.sh > /home/pi/CaravanPi/.log/backup.log 2>&1
 #
 # Backup Dateien starten
-@reboot sleep 300 && /home/pi/CaravanPi/backup/backup-caravanpi.sh > /home/pi/CaravanPi/.log/backup-caravanpi.log 2>&1
-01 02 * * * /home/pi/CaravanPi/backup/backup-caravanpi.sh > /home/pi/CaravanPi/.log/backup-caravanpi.log 2>&1
+
+@reboot sleep 300 && /home/pi/backup/backup.sh >>/home/pi/CaravanPi/.log/backup.log 2>&1
+01 02 * * * /home/pi/backup/backup.sh >>/home/pi/CaravanPi/.log/backup.log 2>&1
 #
 # Logrotate starten
 @reboot sleep 300 && logrotate /etc/logrotate.conf

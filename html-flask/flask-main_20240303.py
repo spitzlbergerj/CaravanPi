@@ -2,19 +2,8 @@ import subprocess
 import threading
 import os
 import glob
-import sys
 from datetime import datetime
-from flask import Flask, Response, render_template, redirect, url_for, flash
-
-# -----------------------------------------------
-# CaravanPi File/MARIADB/MQTT library einbinden
-# -----------------------------------------------
-sys.path.append('/home/pi/CaravanPi/.lib')
-from CaravanPiFilesClass import CaravanPiFiles
-from CaravanPiFunctionsClass import CaravanPiFunctions
-
-cplib = CaravanPiFiles()
-
+from flask import Flask, Response, render_template
 
 # importieren der weiteren Flask-Python-Files
 from checks_routes import register_checks_routes
@@ -82,27 +71,6 @@ def shutdown_system():
 	threading.Timer(5, lambda: subprocess.run(['sudo', 'shutdown', '-h', 'now'])).start()
 	# Rendert sofort eine Seite, die dem Benutzer mitteilt, dass ein Neustart im Gange ist
 	return render_template('reboot_shutdown.html')
-
-@app.route('/aktor/alarm_230v_aus')
-def aktor_alarm_230v_aus():
-	print("Alarm 230v in Config ausschalten")
-	cplib.writeCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive", 0)
-	flash('Alarm wurde ausgeschaltet') 
-	return redirect(url_for('home'))
-
-@app.route('/aktor/alarm_12v_bord_aus')
-def aktor_alarm_12v_bord_aus():
-	print("Alarm 12v bord in Config ausschalten")
-	cplib.writeCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmActive", 0)
-	flash('Alarm wurde ausgeschaltet') 
-	return redirect(url_for('home'))
-
-@app.route('/aktor/alarm_12v_car_aus')
-def aktor_alarm_12v_car_aus():
-	print("Alarm 12v car in Config ausschalten")
-	cplib.writeCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmActive", 0)
-	flash('Alarm wurde ausgeschaltet') 
-	return redirect(url_for('home'))
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=5000, debug=True)

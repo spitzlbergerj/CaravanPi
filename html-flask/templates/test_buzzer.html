@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Test Buzzer</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Test des Buzzers</h1>
+			<p></p>
+
+		
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="flash-message">{{ message }}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+
+
+			<form class="caravanpi-form" method="post">
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+							Der Buzzer wird benutzt, um auf startende Kalibrierungen hinzuweisen.
+						</p>
+					</div>
+				</div>
+
+				<div>
+
+					<!-- Buzzer Test  -->
+					<div class="row">
+						<input type="submit" name="start" value="Buzzer Test starten" class="finish-button" onclick="hideAndShowMessage()">
+					</div>
+
+				</div>
+
+				<!-- Button -->
+				<div class="row">
+						<input type="submit" name="cancel" value="Buzzer Test beenden" class="finish-button">
+				</div>
+			</form>
+
+		</div>
+
+        {% include 'footer.html' %}
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+	
+</body>
+</html>
+

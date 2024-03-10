@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Test LEDs</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Test der LEDs zur Lageanzeige</h1>
+			<p></p>
+
+		
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="flash-message">{{ message }}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+
+
+			<form class="caravanpi-form" method="post">
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+						Die LEDs an den Ecken, der Achse und an der Deichsel geben an, ob das Fahrzeug in der Waage steht. Der Farbcode wurde einprägsam gewählt. <br/><br/>Grün = zu nahe an der grünen Wiese = zu tief. <br/>Blau = zu nahe am blauen Himmel = zu hoch. <br/>Rot = Stopp<br/>Blinkend = gleich kommt rot.
+						</p>
+					</div>
+				</div>
+
+				<div>
+
+					<!-- LED blau -->
+					<div class="row">
+						<input type="submit" name="LEDblue" value="BLAU" class="finish-button" onclick="hideAndShowMessage()" style="background-color: blue; color: white;">
+						<input type="submit" name="LEDblueblink" value="BLAU blinkend" class="finish-button" onclick="hideAndShowMessage()" style="background-color: blue; color: white;">
+					</div>
+
+					<!-- LED rot -->
+					<div class="row">
+						<input type="submit" name="LEDred" value="ROT" class="finish-button" onclick="hideAndShowMessage()" style="background-color: red; color: white;">
+					</div>
+
+					<!-- LED grün -->
+					<div class="row">
+						<input type="submit" name="LEDgreen" value="GRÜN" class="finish-button" onclick="hideAndShowMessage()" style="background-color: green; color: white;">
+						<input type="submit" name="LEDgreenblink" value="GRÜN blinkend" class="finish-button" onclick="hideAndShowMessage()" style="background-color: green; color: white;">
+					</div>
+
+				</div>
+
+				<!-- Button -->
+				<div class="row">
+						<input type="submit" name="cancel" value="LED Test beenden" class="finish-button">
+				</div>
+			</form>
+
+		</div>
+
+        {% include 'footer.html' %}
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+	
+</body>
+</html>
+

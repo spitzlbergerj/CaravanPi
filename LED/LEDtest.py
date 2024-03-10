@@ -58,7 +58,7 @@ mcp23017.write_byte_data (mcp2address,pinsBout,0x00)
 
 
 # alle LEDs MCP #1 der Reihe nach jeweils blau, rot grün
-print("der Reihe nach alle LED blau, dann rot, dann grün")
+print("alle LED des MCP #1 der Reihe nach alle LED blau, dann rot, dann grün")
 mcp23017.write_byte_data (mcp1address,pinsAout,0x01)
 time.sleep(1)
 mcp23017.write_byte_data (mcp1address,pinsAout,0x00)
@@ -95,6 +95,7 @@ mcp23017.write_byte_data (mcp1address,pinsBout,0x80)
 time.sleep(1)
 
 # alle aus
+print("alle LEDs aus")
 mcp23017.write_byte_data (mcp1address,pinsAout,0x00)
 mcp23017.write_byte_data (mcp1address,pinsBout,0x00)
 mcp23017.write_byte_data (mcp2address,pinsAout,0x00)
@@ -102,6 +103,7 @@ mcp23017.write_byte_data (mcp2address,pinsBout,0x00)
 time.sleep(1)
 
 # alle LEDs MCP #2 der Reihe nach jeweils blau, rot, grün
+print("alle LED des MCP #2 der Reihe nach alle LED blau, dann rot, dann grün")
 mcp23017.write_byte_data (mcp2address,pinsAout,0x01)
 time.sleep(1)
 mcp23017.write_byte_data (mcp2address,pinsAout,0x00)
@@ -153,6 +155,7 @@ time.sleep(1)
 # Blinkschleife
 while True:
   # alle LEDs aus
+  print("alle LEDs aus")
   mcp23017.write_byte_data (mcp1address,pinsAout,0x00)
   mcp23017.write_byte_data (mcp1address,pinsBout,0x00)
   mcp23017.write_byte_data (mcp2address,pinsAout,0x00)

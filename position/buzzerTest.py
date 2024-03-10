@@ -7,8 +7,18 @@
 #-------------------------------------------------------------------------------
 
 import time
+import sys
 from time import sleep
 import RPi.GPIO as io
+
+# -----------------------------------------------
+# libraries from CaravanPi 
+# -----------------------------------------------
+sys.path.append('/home/pi/CaravanPi/.lib')
+from CaravanPiFilesClass import CaravanPiFiles
+from CaravanPiFunctionsClass import CaravanPiFunctions
+
+cpfunclib = CaravanPiFunctions()
 
 # buzzer
 BUZZER_PIN = 26
@@ -26,7 +36,7 @@ def main():
 	# Wait 30 secondes so that any vibrations of the caravan can subside
 	# during this waiting time slow beeping of the buzzer
 	i=0
-	while i < 30:
+	while i < 3:
 		io.output(BUZZER_PIN, io.HIGH)
 		sleep(.1)
 		io.output(BUZZER_PIN, io.LOW)
@@ -35,7 +45,7 @@ def main():
 		
 	# buzzer beeps rapidly to signal imminent measurement
 	i=0
-	while i < 10:
+	while i < 3:
 		io.output(BUZZER_PIN, io.HIGH)
 		sleep(.1)
 		io.output(BUZZER_PIN, io.LOW)
@@ -43,10 +53,15 @@ def main():
 		i+=1
 		
 	# long beep of the buzzer to signal completion
+	sleep(.5)
 	io.output(BUZZER_PIN, io.HIGH)
-	sleep(2)
+	sleep(1)
 	io.output(BUZZER_PIN, io.LOW)
 	io.cleanup()
+	sleep(.5)
+
+	cpfunclib.play_melody(io, BUZZER_PIN, 'success')
+
 	
 
 if __name__ == "__main__":

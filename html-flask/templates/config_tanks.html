@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Konfiguration Tanks</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Konfiguration der Tanks</h1>
+			<p></p>
+
+		
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="flash-message">{{ message }}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+
+
+			<form class="caravanpi-form" method="post">
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+						CaravanPi geht davon aus, dass jeder Tank vier Fülllevels liefert. In den nachfolgenden Werten kann angegeben werden wie viel Liter pro Level ausgegeben werden sollen.<br/><br/>
+						Bitte geben Sie die entsprechenden Werte für die Anzahl der Tanks an, die in der CaravanPi Konfiguration angegeben wurden.
+						</p>
+					</div>
+				</div>
+
+				{% for tank in tanks %}
+		  			<div class="tank_{{ loop.index }}">
+
+						{% if loop.index > 1 %}
+							<br/>
+							<hr style="border: 2px solid black;">
+							<br/>
+						{% endif %}
+						<h3>Tank {{ loop.index }}</h3>
+
+						<!-- Leval 1 -->
+						<div class="row">
+							<div class="col-75">
+								<label for="level1_{{ loop.index }}">Level 1 (in l)</label>  
+							</div>
+							<div class="col-25">
+								<input name="level1_{{ loop.index }}" type="number" step="0.1" min="1" value="{{ tank.get('level1', '')}}" >
+							</div>
+						</div>
+
+						<!-- Leval 2 -->
+						<div class="row">
+							<div class="col-75">
+								<label for="level2_{{ loop.index }}">Level 2 (in l)</label>  
+							</div>
+							<div class="col-25">
+								<input name="level2_{{ loop.index }}" type="number" step="0.1" min="1" value="{{ tank.get('level2', '')}}" >
+							</div>
+						</div>
+
+						<!-- Leval 3 -->
+						<div class="row">
+							<div class="col-75">
+								<label for="level3_{{ loop.index }}">Level 1 (in l)</label>  
+							</div>
+							<div class="col-25">
+								<input name="level3_{{ loop.index }}" type="number" step="0.1" min="1" value="{{ tank.get('level3', '')}}" >
+							</div>
+						</div>
+
+						<!-- Leval 1 -->
+						<div class="row">
+							<div class="col-75">
+								<label for="level4_{{ loop.index }}">Level 1 (in l)</label>  
+							</div>
+							<div class="col-25">
+								<input name="level4_{{ loop.index }}" type="number" step="0.1" min="1" value="{{ tank.get('level4', '')}}" >
+							</div>
+						</div>
+
+
+						<p>
+						</p>
+					</div>
+				{% endfor %}
+
+				<!-- Button -->
+				<div class="row">
+					<div class="button-container">
+						<input type="submit" name="submit" value="Speichern" class="finish-button" onclick="hideAndShowMessage()">
+						<input type="submit" name="cancel" value="Zurück" class="finish-button">
+					</div>
+				</div>
+			</form>
+
+		</div>
+
+        {% include 'footer.html' %}
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+
+	<!-- Steuerung der Sichtbarkeit der Felder für Waage 2 -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var anzTanks = {{ anzTanks }}; // Von Flask übergeben
+
+			// Funktion zum Ein-/Ausblenden der Einstellungen
+			function toggleSettings(settingsClass, shouldDisplay = true, shouldClearValues = false) {
+				var settings = document.querySelector(settingsClass);
+				settings.style.display = shouldDisplay ? 'block' : 'none';
+				if (shouldClearValues) {
+					settings.querySelectorAll('input').forEach(function(input) {
+						input.value = ''; // Setzt den Wert jedes Eingabefeldes zurück
+					});
+				}
+			}
+		
+			// Immer anzeigen für tank_1
+			toggleSettings('.tank_1', true, false);
+
+			// Bedingtes Anzeigen für tank_2 basierend auf anzTanks
+			if (anzTanks >= 2) {
+				toggleSettings('.tank_2', true, false);
+			} else {
+				toggleSettings('.tank_2', false, true);
+			}
+
+			// Bedingtes Anzeigen für tank_3 basierend auf anzTanks
+			if (anzTanks >= 3) {
+				toggleSettings('.tank_3', true, false);
+			} else {
+				toggleSettings('.tank_3', false, true);
+			}
+		});
+	</script>
+	
+</body>
+</html>
+

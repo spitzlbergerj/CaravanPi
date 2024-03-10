@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Sensible Daten sollen aus Dateien entfernt werden
+# Crontabs sollen in .crontabs gesichert werden
+
+# Pfad zu den Dateien und zum Backup-Verzeichnis
+CONFIG_XML="defaults/caravanpiConfig.xml"
+README_MD="defaults/README.md"
+BACKUP_DIR=".git_sensible_backup"
+CRONTABS_DIR="/home/pi/CaravanPi/.crontabs"
+
+# Backup-Funktion
+backup_files() {
+    cp "$1" "$BACKUP_DIR/$(basename $1).backup"
+}
+
+# Dateien vor der Bearbeitung sichern
+backup_files "$CONFIG_XML"
+backup_files "$README_MD"
+
+# Funktion, um die Dateien zu bearbeiten (wie zuvor)
+update_files() {
+    sed -i 's/<MariaDBpasswd>[^<]*<\/MariaDBpasswd>/<MariaDBpasswd>dasGeheimePasswort<\/MariaDBpasswd>/' "$1"
+    sed -i 's/<MQTTpassword>[^<]*<\/MQTTpassword>/<MQTTpassword>dasGeheimePasswort<\/MQTTpassword>/' "$1"
+    sed -i 's/<MQTTbroker>[^<]*<\/MQTTbroker>/<MQTTbroker>MQTTBrokerWebAdresse<\/MQTTbroker>/' "$1"
+}
+
+# Dateien aktualisieren
+update_files "$CONFIG_XML"
+update_files "$README_MD"
+
+# Crontab-Export hinzufügen
+mkdir -p "$CRONTABS_DIR"
+crontab -l > "$CRONTABS_DIR/crontab-pi"
+sudo crontab -u root -l > "$CRONTABS_DIR/crontab-root" 2>/dev/null
+
+# Fügen Sie die geänderten Dateien dem Commit hinzu
+git add "$CONFIG_XML"
+git add "$README_MD"
+git add "$CRONTABS_DIR/crontab-pi"
+git add "$CRONTABS_DIR/crontab-root"
+
+exit 0

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Caravan Lagesensor</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Einstellungen Lagesensor</h1>
+			<p></p>
+
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="flash-message">{{ message }}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+
+
+
+			<form class="caravanpi-form" method="post">
+				
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+						<h3>Position des Lagesensors im Caravan</h2>
+							Zur Errechnung der Abweichung vom Idealwert in cm muss die Lage des Sensors im Caravan möglichst genau bestimmt werden. Alle Maßangaben beziehen sich stets auf den Abstand des Sensors zur <b>Mitte der vorderen, rechten Caravanstütze</b>. Bei Wohnmobilen geben Sie jeweils den Abstand des Sensors zur <b>Vorderachse und der Mitte des rechten Reifens( Beifahrerseite) an.</b> an.
+						</p>
+					</div>
+				</div>
+				<img src="/static/images/CaravanPiLagesensor.png" alt="Lagesensor Position CaravanPi" class="responsive" width="600" height="258">
+				
+				<!-- Abstände LageSensor -->
+				<div class="row">
+					<div class="col-75">
+						<label for="distFront">Abstand Lagesensor zur linken vorderen Stützen längsseits (in mm)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="distFront" value="{{ lagesensor.get('distFront', '')}}"  step="1">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="distRight">Abstand Lagesensor zur linken vorderen Stützen quer (in mm)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="distRight" value="{{ lagesensor.get('distRight', '')}}"  step="1">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="distAxis">Abstand Lagesensor zur Achse (in mm)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="distAxis" value="{{ lagesensor.get('distAxis', '')}}"  step="1">
+					</div>
+				</div>
+				<div>
+					<p>
+						<br/><br/>
+
+						<h3>Toleranz und Annäherung</h3><br/>
+						Der verwendete Lagesensor ist sehr empfinglich und registriert auch kleine Erschütterungen. Um das Ausrichten 
+						des Caravan dennoch sicher zu ermöglichen, wurden Toleranzabweichungen eingeführt. Unterscheidet sich der aktuelle Lagewert
+						nur um max. diese Toleranz (+/-) vom idealen Horizontalwert, so gilt diese Lage immer noch als waagrecht und wird als solche angezeigt.<br/>
+						Um die Annäherung an den "tolerierten" Idealwert anzuzeigen, blinken die LEDs. Ab welcher Differenz zum Idelawert das Blinken beginnen soll,
+						wird mit den Annäherungswerten eingestellt. <br/><br/>
+					</p>
+				</div>
+			
+				<!-- Toleranz X -->
+				<div class="row">
+					<div class="col-75">
+						<label for="toleranceX">Toleranz Längsrichtung(in m/s)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="toleranceX" value="{{ lagesensor.get('toleranceX', '')}}" step="0.05" min="-5" max="5">
+					</div>
+				</div>
+				
+				<!-- Toleranz Y -->
+				<div class="row">
+					<div class="col-75">
+						<label for="toleranceY">Toleranz Querrichtung (in m/s)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="toleranceY" value="{{ lagesensor.get('toleranceY', '')}}" step="0.05" min="-5" max="5">
+					</div>
+				</div>
+
+				<!-- Approximation X -->
+				<div class="row">
+					<div class="col-75">
+						<label for="approximationX">Annäherung Längsrichtung(in m/s)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="approximationX" value="{{ lagesensor.get('approximationX', '')}}" step="0.05" min="-5" max="5">
+					</div>
+				</div>
+				
+				<!-- Approximation Y -->
+				<div class="row">
+					<div class="col-75">
+						<label for="approximationY">Annäherung Querrichtung (in m/s)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="approximationY" value="{{ lagesensor.get('approximationY', '')}}" step="0.05" min="-5" max="5">
+					</div>
+				</div>
+
+				<br/><br/>
+
+				<div style="color:red">
+					<div class="logo">
+						<hr>
+							<b>!!! ACHTUNG !!!</b>
+						<hr>
+					</div>
+					<p>
+						<b>Korrektur horizontale Lage</b><br/>
+						Die nachfolgenden Werte werden automatisch beim Kalibrieren gesetzt. Sie liegen bei horizontalem Fahrzeug am Sensor als spezifische Nullwerte an. Es ist nicht notwendig, diese manuell zu setzen. Tun Sie dies bitte auch nicht - es sei denn, Sie wissen, was Sie tun.<br/><br/>
+					</p>
+				</div>
+
+				<!-- Toleranz X -->
+				<div  style="color:red" class="row">
+					<div class="col-75">
+						<label for="adjustX">Korrektur X (in m/s)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="adjustX" value="{{ lagesensor.get('adjustX', '')}}" step="0.000000001" min="-30.000000" max="30.000000">
+					</div>
+				</div>
+				
+				<!-- Toleranz Y -->
+				<div  style="color:red" class="row">
+					<div class="col-75">
+						<label for="adjustY">Korrektur Y (in m/s)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="adjustY" value="{{ lagesensor.get('adjustY', '')}}" step="0.000000001" min="-30.000000" max="30.000000">
+					</div>
+				</div>
+
+				<!-- Approximation X -->
+				<div  style="color:red" class="row">
+					<div class="col-75">
+						<label for="adjustZ">Korrektur Z (in m/s)</label>  
+					</div>
+					<div class="col-25">
+						<input type="number" name="adjustZ" value="{{ lagesensor.get('adjustZ', '')}}" step="0.000000001" min="-30.000000" max="30.000000">
+					</div>
+				</div>
+				
+				<!-- Button -->
+				<div class="row">
+					<div class="button-container">
+						<input type="submit" name="submit" value="Speichern" class="finish-button" onclick="hideAndShowMessage()">
+						<input type="submit" name="cancel" value="Zurück" class="finish-button">
+					</div>
+				</div>
+			</form>
+
+		</div>
+
+        {% include 'footer.html' %}
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+
+</body>
+</html>
+

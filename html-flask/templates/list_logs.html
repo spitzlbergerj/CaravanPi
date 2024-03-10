@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Websites</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<p>&nbsp;</p>
+			<p>CaravanPi - LOG Dateien</p>
+			<p><br></p>
+
+			<table border="1">
+				<tr>
+					<th>Dateiname</th>
+					<th>Größe (Bytes)</th>
+					<th>Letzte Änderung</th>
+				</tr>
+				{% for file in files_info %}
+					<tr>
+						<td>{{ file.name }}</td>
+						<td style="text-align: right; padding-right: 40px;">{{ file.size }}</td>
+						<td>{{ file.mtime }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+
+		</div>
+
+        {% include 'footer.html' %}
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+
+</body>
+</html>
+

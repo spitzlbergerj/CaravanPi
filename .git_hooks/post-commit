@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Pfad zu den Dateien und zum Backup-Verzeichnis
+CONFIG_XML="defaults/caravanpiConfig.xml"
+README_MD="defaults/README.md"
+BACKUP_DIR=".git_sensible_backup"
+
+# Wiederherstellungsfunktion
+restore_files() {
+    mv "$BACKUP_DIR/$(basename $1).backup" "$1"
+}
+
+# Dateien nach dem Commit wiederherstellen
+restore_files "$CONFIG_XML"
+restore_files "$README_MD"
+
+exit 0

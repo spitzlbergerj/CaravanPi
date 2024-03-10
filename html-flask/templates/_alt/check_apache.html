@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CaravanPi - Check aller Komponenten</title>
+        <meta http-equiv="refresh" content="1; url={{ url_for('route_check_i2c') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/checks.css') }}">
+    </head>
+    <body>
+    <div class="container">
+        <div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div id="hamburgerMenu" class="hamburger-menu-content">
+            <!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+        </div>
+
+        <div class="content">
+            <div class="logo">
+                <img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+            </div>
+            <hr>
+
+            <p>&nbsp;</p>
+            <p>Mit dem Aufruf dieser Website werden eine Reihe von Check-Routinen gestartet, die alle Komponenten des CaravanPi der Reihe nach durchtesten. Die Checks benötigen insgesamt ca. 15 Minuten. Haben Sie also etwas Geduld.</p>
+            <p></p>
+
+            <h1>Basis Systeme</h1>
+
+            <table>
+                <tr>
+                    <td>MagicMirror</td>
+                    <td><b><span style="color: {{ check_results['check_magicmirror']['color'] }} ">{{ check_results['check_magicmirror']['result'] }}</span></b></td>
+                </tr>
+                <tr>
+                    <td>MariaDB</td>
+                    <td><b><span style="color: {{ check_results['check_mariadb']['color'] }}">{{ check_results['check_mariadb']['result'] }}</span></b></td>
+                </tr>
+                <tr>
+                    <td>Grafana</td>
+                    <td><b><span style="color: {{ check_results['check_grafana']['color'] }}">{{ check_results['check_grafana']['result'] }}</span></b></td>
+                </tr>
+                <tr>
+                    <td>Apache Webserver</td>
+                    <td><b><span style="color: {{ check_results['check_apache']['color'] }}">{{ check_results['check_apache']['result'] }}</span></b></td>
+                </tr>
+            </table>
+        
+            <h1>Sensoren</h1>
+
+            <table>
+                <tr>
+                    <td>1-Wire Bus</td>
+                    <td>... Prüfung läuft ...</td>
+                </tr>
+                <tr>
+                    <td>I2C Bus ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Wägezelle HX711</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Klimasensor 76 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Klimasensor 77 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Thermometer 1 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Thermometer 2 ok?</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Thermometer 3 ok?</td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>Weitere Infos zum Projekt CaravanPi finden Sie auf der <a href="https://www.caravanpi.de">CaravanPi-Website</a> und auf <a href="https://github.com/spitzlbergerj/CaravanPi">github</a></p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; CaravanPi - Josef Spitzlberger - 2024</p>
+        </div>
+    </div>
+
+
+
+    <script>
+        function populateLinks(menu, includeHome) {
+            var host = window.location.hostname;
+            var port = window.location.port;
+
+            var links = [
+                { text: "Startseite", url: 'http://' + host + ':5000/', isExternal: false },
+                { text: "Konfigurationswebsite", url: 'http://' + host + ':5000/configs', isExternal: false },
+                { text: "Status-Überprüfungswebsite", url: 'http://' + host + ':5000/checks', isExternal: false },
+                { text: "MagicMirror Konfiguration", url: 'http://' + host + ':8080/remote.html#main-menu', isExternal: true },
+                { text: "MagicMirror Remote-Anzeige", url: 'http://' + host + ':8080', isExternal: true },
+                { text: "Grafana Website", url: 'http://' + host + ':3000', isExternal: true },
+                { text: "phpMyAdmin", url: 'http://' + host + '/phpmyadmin/', isExternal: true }
+            ];
+
+            if (!includeHome) {
+                links.shift(); // Entfernt die Startseite, wenn includeHome false ist
+            }
+
+            links.forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url;
+                a.textContent = link.text;
+                if (link.isExternal) {
+                    a.target = "_blank"; // Öffnet den Link in einem neuen Fenster/Tab
+                }
+                menu.appendChild(a);
+            });
+        }
+
+        function toggleHamburgerMenu() {
+            var menu = document.getElementById("hamburgerMenu");
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+            } else {
+                menu.style.display = "block";
+            }
+        }
+
+        window.onload = function() {
+            var mainMenu = document.getElementById("mainMenu");
+            var hamburgerMenu = document.getElementById("hamburgerMenu");
+
+            populateLinks(hamburgerMenu, true); // Hamburger-Menü mit Startseite
+        };
+    </script>
+</body>
+</html>
+

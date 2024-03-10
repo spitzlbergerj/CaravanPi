@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CaravanPi Caravan Dimensionen</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Dimensionen des Fahrzeugs</h1>
+			<p></p>
+
+		
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="flash-message">{{ message }}</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+
+
+			<form class="caravanpi-form" method="post">
+				<img src="/static/images/CaravanPiDimensionen.png" alt="Dimensionen CaravanPi">
+				
+				<!-- Erläuterung  -->
+				<div class="row">
+					<div>
+						<p>
+						<br/><br/><b>Abmessungen des Caravans</b><br/>
+							Zur Errechnung der Abweichung vom Idealwert in cm werden die Dimensionen des Caravans benötigt. <br/>
+							Bitte geben Sie hierbei immer die Werte bis zu den <b>Auflagepunkten der Stützen</b> an.
+						</p>
+					</div>
+				</div>
+				
+				<!-- Länge über alles -->
+				<div class="row">
+					<div class="col-75">
+						<label for="lengthOverAll">Länge über alles (in mm)</label>  
+					</div>
+					<div class="col-25">
+						<input name="lengthOverAll" type="number" step="10" min="3000" value="{{ dimensions.get('lengthOverAll', '')}}" >
+					</div>
+				</div>
+
+				<!-- Breite über alles -->
+				<div class="row">
+					<div class="col-75">
+						<label for="widthOverAll">Breite über alles (in mm)</label>  
+					</div>
+					<div class="col-25">
+						<input name="widthOverAll" type="number" step="10" min="1700" value="{{ dimensions.get('widthOverAll', '')}}" >
+					</div>
+				</div>
+
+				<!-- Länge Aufbau -->
+				<div class="row">
+					<div class="col-75">
+						<label for="lengthBody">Länge Aufbau (in mm)</label>  
+					</div>
+					<div class="col-25">
+						<input name="lengthBody" type="number" step="10" min="2000" value="{{ dimensions.get('lengthBody', '')}}" >
+					</div>
+				</div>
+
+				<!-- Button -->
+				<div class="row">
+					<div class="button-container">
+						<input type="submit" name="submit" value="Speichern" class="finish-button" onclick="hideAndShowMessage()">
+						<input type="submit" name="cancel" value="Zurück" class="finish-button">
+					</div>
+				</div>
+			</form>
+
+		</div>
+
+        {% include 'footer.html' %}
+	</div>
+
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+
+</body>
+</html>
+

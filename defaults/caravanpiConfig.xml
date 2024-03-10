@@ -8,12 +8,12 @@
     <send2MQTT>1</send2MQTT>
     <MariaDBhost>localhost</MariaDBhost>
     <MariaDBuser>caravanpi</MariaDBuser>
-    <MariaDBpasswd>fd3eMLnnO3E7MFXphAUGusLM21vF0TwvJO9uvjvd</MariaDBpasswd>
+    <MariaDBpasswd>dasGeheimePasswort</MariaDBpasswd>
     <MariaDBdatabase>CaravanPiValues</MariaDBdatabase>
-    <MQTTbroker>fbaaeb99.ala.us-east-1.emqxsl.com</MQTTbroker>
+    <MQTTbroker>MQTTBrokerWebAdresse</MQTTbroker>
     <MQTTport>8883</MQTTport>
     <MQTTuser>NodeRED-MQTT</MQTTuser>
-    <MQTTpassword>2yDxhXpAYVmhZY4VePLQYhu7hjLFFcnfkfNsRfLE</MQTTpassword>
+    <MQTTpassword>dasGeheimePasswort</MQTTpassword>
     <countClimateSensors>1</countClimateSensors>
     <stromPiInstalled>0</stromPiInstalled>
     <intervallGasscale>10</intervallGasscale>

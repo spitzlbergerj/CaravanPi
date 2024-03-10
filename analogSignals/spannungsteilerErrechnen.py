@@ -31,8 +31,17 @@ beste_kombination = finde_spannungsteiler(widerstaende, Vin, Vout_ziel)
 
 if beste_kombination:
     R1, R2, Vout = beste_kombination
-    print(f"Beste Kombination: R1 = {R1} Ohm, R2 = {R2} Ohm, erwartete Ausgangsspannung = {Vout:.2f} V")
+    print(f" ")
+    print(f" ")
+    print(f"an vorhandenen Widerständen wurden dabei angenommen: {widerstaende}")
+    print(f" ")
+    print(f" ")
+
+    print(f"Beste Kombination: R1 = {R1} Ohm")
+    print(f"                   R2 = {R2} Ohm")
+    print(f"                   Eingangsspannung      = {Vin:.2f} V")
+    print(f"                   erw. Ausgangsspannung = {Vout:.2f} V")
+    print(f" ")
+    print(f"Schema:            {Vin:.2f} V ----- {R1} Ohm  ----- {Vout:.2f} V ----- {R2} Ohm ----- GND")
 else:
     print("Keine geeignete Kombination gefunden.")
-
-print(f"an vorhandenen Widerständen wurden dabei angenommen: {widerstaende}")

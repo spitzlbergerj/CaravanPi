@@ -21,6 +21,7 @@ from checks_routes import register_checks_routes
 from config_routes import register_config_routes
 from calibration_routes import register_calibration_routes
 from test_routes import register_test_routes
+from actors_routes import register_actors_routes
 
 app = Flask(__name__)
 app.secret_key = 'd@o842FTz-_M2hbcU37N-ynvcwMNLe4tEoiZoH@4' # Zeichenfolge ist nicht wichtig, sollte kompliziert sein
@@ -30,6 +31,19 @@ register_checks_routes(app)
 register_config_routes(app)
 register_calibration_routes(app)
 register_test_routes(app)
+register_actors_routes(app)
+
+# Unterstützungsfunktionen
+
+def get_i2cdetect_output():
+    try:
+        # Führen Sie den Befehl aus und erfassen Sie die Ausgabe
+        result = subprocess.run(['/usr/sbin/i2cdetect', '-y', '1'], capture_output=True, text=True, check=True)
+        output = result.stdout
+    except subprocess.CalledProcessError as e:
+        # Falls ein Fehler auftritt, geben Sie eine entsprechende Nachricht zurück
+        output = f"Ein Fehler ist aufgetreten: {e}"
+    return output
 
 # definieren der zentralen Routen
 
@@ -68,6 +82,13 @@ def list_logs():
 		})
 	files_info.sort(key=lambda x: x['name'].lower())
 	return render_template('list_logs.html', files_info=files_info)
+
+@app.route('/i2cdetect')
+def i2cdetect():
+    # Rufen Sie die Funktion auf, um die i2cdetect-Ausgabe zu erhalten
+    i2cdetect_output = get_i2cdetect_output()
+    # Senden Sie die Ausgabe als Response zurück, hier als einfacher Text
+    return Response(i2cdetect_output, mimetype='text/plain')
 
 @app.route('/reboot')
 def reboot_system():

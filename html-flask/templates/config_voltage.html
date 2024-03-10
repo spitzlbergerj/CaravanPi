@@ -44,7 +44,8 @@
 					<div>
 						<p>
 						<br/><br/><b>Konfiguration der Batterie</b><br/>
-						Für die Batterie sind verschiedene Warnstufen konfiguriert. Die Voltwerte, ab wann welche Stufe gilt, können hier konfiguriert werden.
+						Für die Batterie sind verschiedene Warnstufen konfiguriert. Die Voltwerte, ab wann welche Stufe gilt, können hier konfiguriert werden. Die Level sind so zu interpretieren:
+						</br></br><span style="color: white; background-color: green; font-weight: bold;">&nbsp;&nbsp;VOLL --- Level 3 </span>---<span style="color: white; background-color:  greenyellow; font-weight: bold;"> OK --- Level 2 </span>---<span style="color:white ; background-color:  orange; font-weight: bold;"> OK --- Level 1 </span>---<span style="color:white; background-color:  red; font-weight: bold;"> LEER&nbsp;&nbsp;</span>
 						</p>
 					</div>
 				</div>
@@ -52,30 +53,30 @@
 				<!-- Leval 1 -->
 				<div class="row">
 					<div class="col-75">
-						<label for="level1">Level 1 (in l)</label>  
+						<label for="level1">Level 1 (in xx,x Volt)</label>  
 					</div>
 					<div class="col-25">
-						<input name="level1" type="number" step="0.01" min="1" value="{{ batterie.get('level1', '')}}" >
+						<input name="level1" type="number" step="0.1" min="1" value="{{ batterie.get('level1', '')}}" >
 					</div>
 				</div>
 
 				<!-- Leval 2 -->
 				<div class="row">
 					<div class="col-75">
-						<label for="level2">Level 2 (in l)</label>  
+						<label for="level2">Level 2 (in xx,x Volt)</label>  
 					</div>
 					<div class="col-25">
-						<input name="level2" type="number" step="0.01" min="1" value="{{ batterie.get('level2', '')}}" >
+						<input name="level2" type="number" step="0.1" min="1" value="{{ batterie.get('level2', '')}}" >
 					</div>
 				</div>
 
 				<!-- Leval 3 -->
 				<div class="row">
 					<div class="col-75">
-						<label for="level3">Level 1 (in l)</label>  
+						<label for="level3">Level 3 (in xx,x Volt)</label>  
 					</div>
 					<div class="col-25">
-						<input name="level3" type="number" step="0.01" min="1" value="{{ batterie.get('level3', '')}}" >
+						<input name="level3" type="number" step="0.1" min="1" value="{{ batterie.get('level3', '')}}" >
 					</div>
 				</div>
 

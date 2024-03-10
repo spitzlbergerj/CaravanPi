@@ -25,23 +25,27 @@
     <LiontronMACAddress>A4:C1:38:C2:06:47</LiontronMACAddress>
     <gassensorInstalled>1</gassensorInstalled>
     <gassensorDigitalIn>16</gassensorDigitalIn>
-    <gassensorAnalogIn>0</gassensorAnalogIn>
+    <gassensorAnalogIn>1</gassensorAnalogIn>
     <gassensorAlarmActive>1</gassensorAlarmActive>
     <v230CheckInstalled>1</v230CheckInstalled>
-    <v230CheckADCPin>1</v230CheckADCPin>
+    <v230CheckADCPin>0</v230CheckADCPin>
     <v230CheckAlarmActive>0</v230CheckAlarmActive>
     <v12BatteryCheckInstalled>1</v12BatteryCheckInstalled>
     <v12BatteryCheckADCPin>2</v12BatteryCheckADCPin>
     <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>
-    <v12CarCheckInstalled>1</v12CarCheckInstalled>
+    <v12CarCheckInstalled>0</v12CarCheckInstalled>
     <v12CarCheckADCPin>3</v12CarCheckADCPin>
     <v12CarCheckAlarmActive>0</v12CarCheckAlarmActive>
     <BuzzerGPIOPin>26</BuzzerGPIOPin>
+    <v12BatteryR1>560</v12BatteryR1>
+    <v12BatteryR2>150</v12BatteryR2>
+    <v12CarR1>560</v12CarR1>
+    <v12CarR2>150</v12CarR2>
     </caravanpiDefaults>
   <adjustmentPosition>
-    <adjustX>0.6668522</adjustX>
-    <adjustY>1.7259703999999998</adjustY>
-    <adjustZ>8.7083052</adjustZ>
+    <adjustX>-0.0392266</adjustX>
+    <adjustY>1.5298374</adjustY>
+    <adjustZ>8.9044382</adjustZ>
     <toleranceX>0.2</toleranceX>
     <toleranceY>0.2</toleranceY>
     <approximationX>0.25</approximationX>
@@ -84,9 +88,9 @@
     <level4>17.0</level4>
     </tankDefaults2>
   <voltageDefaults>
-    <level1>12.0</level1>
-    <level2>12.15</level2>
-    <level3>12.3</level3>
+    <level1>12.2</level1>
+    <level2>12.8</level2>
+    <level3>13.4</level3>
     </voltageDefaults>
   <testColor>
     <color>99</color>

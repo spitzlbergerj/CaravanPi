@@ -71,10 +71,14 @@ def register_config_routes(app):
 				v12BatteryCheckInstalled = request.form.get('v12BatteryCheckInstalled')
 				v12BatteryCheckADCPin = request.form.get('v12BatteryCheckADCPin')
 				v12BatteryCheckAlarmActive = request.form.get('v12BatteryCheckAlarmActive')
+				v12BatteryR1 = request.form.get('v12BatteryR1')
+				v12BatteryR2 = request.form.get('v12BatteryR2')
 
 				v12CarCheckInstalled = request.form.get('v12CarCheckInstalled')
 				v12CarCheckADCPin = request.form.get('v12CarCheckADCPin')
 				v12CarCheckAlarmActive = request.form.get('v12CarCheckAlarmActive')
+				v12CarR1 = request.form.get('v12CarR1')
+				v12CarR2 = request.form.get('v12CarR2')
 
 				BuzzerGPIOPin = request.form.get('BuzzerGPIOPin')
 
@@ -121,10 +125,14 @@ def register_config_routes(app):
 						'v12BatteryCheckInstalled': bool(v12BatteryCheckInstalled) if v12BatteryCheckInstalled is not None else None,
 						'v12BatteryCheckADCPin': int(v12BatteryCheckADCPin) if v12BatteryCheckADCPin and 0 <= int(v12BatteryCheckADCPin) <= 40 else None,
 						'v12BatteryCheckAlarmActive': bool(v12BatteryCheckAlarmActive) if v12BatteryCheckAlarmActive is not None else None,
+						'v12BatteryR1': int(v12BatteryR1) if v12BatteryR1 and 0 <= int(v12BatteryR1) <= 10000000 else None,
+						'v12BatteryR2': int(v12BatteryR2) if v12BatteryR2 and 0 <= int(v12BatteryR2) <= 10000000 else None,
 
 						'v12CarCheckInstalled': bool(v12CarCheckInstalled) if v12CarCheckInstalled is not None else None,
 						'v12CarCheckADCPin': int(v12CarCheckADCPin) if v12CarCheckADCPin and 0 <= int(v12CarCheckADCPin) <= 40 else None,
 						'v12CarCheckAlarmActive': bool(v12CarCheckAlarmActive) if v12CarCheckAlarmActive is not None else None,
+						'v12CarR1': int(v12CarR1) if v12CarR1 and 0 <= int(v12CarR1) <= 10000000 else None,
+						'v12CarR2': int(v12CarR2) if v12CarR2 and 0 <= int(v12CarR2) <= 10000000 else None,
 
 						'BuzzerGPIOPin': int(BuzzerGPIOPin) if BuzzerGPIOPin and 0 <= int(BuzzerGPIOPin) <= 40 else None,
 
@@ -132,6 +140,7 @@ def register_config_routes(app):
 				except ValueError:
 					# Behandlung von Konvertierungsfehlern, z.B. wenn ein Wert nicht in den erwarteten Typ konvertiert werden kann
 					flash('Fehler in Wertebehandlung')
+					config_dict = {}
 					pass
 
 				print(config_dict)

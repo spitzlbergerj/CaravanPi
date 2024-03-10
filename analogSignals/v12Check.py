@@ -31,6 +31,27 @@ sys.path.append('/home/pi/CaravanPi/.lib')
 from CaravanPiFilesClass import CaravanPiFiles
 from CaravanPiFunctionsClass import CaravanPiFunctions
 
+def berechne_spannungsteiler(R1, R2, Vin=None, Vout=None):
+	# Innerhalb eines Spannungsteilers mit folgendem Aufbau
+	#
+	#     Vin ----- R1 ----- Vout ----- R2 ----- GND
+	#
+	# gilt folgende Formel
+	# 
+	#     Vout = Vin * ( R2 / (R1 + R2) )
+	#
+    if Vin is not None and Vout is None:
+        # Berechne Vout aus Vin, R1 und R2
+        Vout = Vin * (R2 / (R1 + R2))
+        return Vout
+    elif Vout is not None and Vin is None:
+        # Berechne Vin aus Vout, R1 und R2
+        Vin = Vout * ((R1 + R2) / R2)
+        return Vin
+    else:
+        # Fehler, falls beide oder keine Spannungen angegeben sind
+        print("Bitte geben Sie genau eine Spannung (entweder Vin oder Vout) an.")
+        return None
 
 def main():
 	# ArgumentParser-Objekt erstellen
@@ -64,15 +85,26 @@ def main():
 		v12CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckADCPin") is not None else -1
 		v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmActive") is not None else False
 		v12xmlItemAlarm = "v12BatteryCheckAlarmActive"
+		v12R1 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR1")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR1") is not None else 0
+		v12R2 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR2")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR2") is not None else 0
+
 	elif args.battery == "car":
 		v12CheckInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckInstalled") is not None else False
 		v12CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckADCPin") is not None else -1
 		v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmActive") is not None else False
 		v12xmlItemAlarm = "v12CarCheckAlarmActive"
+		v12R1 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR1")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR1") is not None else 0
+		v12R2 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR2")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR2") is not None else 0
 	else:
 		print(f"falscher Battery Parameter - Skript beenden")
 		return False
 
+	# Skript beenden, falls Überwachung nicht installiert/konfiguriert
+	if not v12CheckInstalled:
+		print(f"keine 12V Überwachung für {args.battery} konfiguriert - Skript beenden")
+		return False
+
+	# Soll Werte an der Batterie
 	v12Level1 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level1")) if cplib.readCaravanPiConfigItem("voltageDefaults/level1") is not None else -1
 	v12Level2 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level2")) if cplib.readCaravanPiConfigItem("voltageDefaults/level2") is not None else -1
 	v12Level3 = float(cplib.readCaravanPiConfigItem("voltageDefaults/level3")) if cplib.readCaravanPiConfigItem("voltageDefaults/level3") is not None else -1
@@ -81,11 +113,12 @@ def main():
 		print(f"Batterie Default Level nicht korrekt definiert ({v12Level1}, {v12Level2}, {v12Level3}) - Skript beenden")
 		return False
 
-	print(f"ADC Pin: {v12CheckADCPin}, Alarm aktiv: {v12CheckAlarmActive}, Delay: {delay} Sekunden, Levels: {v12Level1}, {v12Level2}, {v12Level3}")
+	# Soll Werte nach Spannungsteiler
+	v12Level1nSpT = berechne_spannungsteiler(v12R1, v12R2, Vin=v12Level1)
+	v12Level2nSpT = berechne_spannungsteiler(v12R1, v12R2, Vin=v12Level2)
+	v12Level3nSpT = berechne_spannungsteiler(v12R1, v12R2, Vin=v12Level3)
 
-	if not v12CheckInstalled:
-		print(f"keine 12V Überwachung für {args.battery} konfiguriert - Skript beenden")
-		return False
+	print(f"ADC Pin: {v12CheckADCPin}, Alarm aktiv: {v12CheckAlarmActive}, Delay: {delay} Sekunden, Levels: {v12Level1}/{v12Level1nSpT}, {v12Level2}/{v12Level2nSpT}, {v12Level3}/{v12Level3nSpT}")
 
 	# Verbindung zum AD Wandler herstellen
 	connectOK = False
@@ -135,14 +168,6 @@ def main():
 	errorcount = 0
 	v12DropDetected = False
 
-	# Umrechnung der Batterie Levels nach dem Logiklevel Wandler 
-	# ????
-
-	# Test mit 5 Volt
-	v12Level1 = 1.2
-	v12Level2 = 1.6
-	v12Level3 = 1.7
-
 	try: # Main program loop
 		while True:  
 			try:
@@ -152,25 +177,25 @@ def main():
 					print("Alarm über Config ausgeschaltet")
 
 				# Eine voll geladene Batterie gibt etwa 13.3 Volt aus, unter 12 Volt gilt eine Batterie als leer
-				print(f"{datetime.now().strftime('%Y%m%d %H:%M:%S')}: ", "Analog: {:>5}, {:>5.3f}, ".format(channel.value, channel.voltage))
+				print(f"{datetime.now().strftime('%Y%m%d %H:%M:%S')}: ", "Analog: {:>5}, {:>5.2f}, ".format(channel.value, channel.voltage))
 
-				if channel.voltage <= v12Level1:
-					print(f"Batterie leer bei {channel.voltage} Volt")
+				if channel.voltage <= v12Level1nSpT:
+					print(f"Batterie leer bei {berechne_spannungsteiler(v12R1, v12R2, Vout=channel.voltage):.2f}/{channel.voltage:.2f} Volt")
 					# Batterie leer
 					v12DropDetected = True
 					# Alarm ausgeben, wenn nicht abgeschaltet
 					if v12CheckAlarmActive:
 						cpfunc.play_alarm_single(GPIO, buzzer_pin, 3)
-				elif channel.voltage <= v12Level2:
-					print(f"Batterie ok bei {channel.voltage} Volt")
+				elif channel.voltage <= v12Level2nSpT:
+					print(f"Batterie ok bei {berechne_spannungsteiler(v12R1, v12R2, Vout=channel.voltage):.2f}/{channel.voltage:.2f} Volt")
 					# Batterie noch OK
 					v12DropDetected = False
-				elif channel.voltage > v12Level2 and channel.voltage <= v12Level3:
-					print(f"Batterie voll geladen bei {channel.voltage} Volt")
+				elif channel.voltage > v12Level2nSpT and channel.voltage <= v12Level3nSpT:
+					print(f"Batterie voll geladen bei {berechne_spannungsteiler(v12R1, v12R2, Vout=channel.voltage):.2f}/{channel.voltage:.2f} Volt")
 					# Batterie voll
 					v12DropDetected = False
 				else:
-					print(f"Batterie bei {channel.voltage} Volt - seltsamer Zustand")
+					print(f"Batterie bei {berechne_spannungsteiler(v12R1, v12R2, Vout=channel.voltage):.2f}/{channel.voltage:.2f} Volt - seltsamer Zustand")
 					# Batterie überladen oder defekt ??
 					v12DropDetected = True
 					# Alarm ausgeben, wenn nicht abgeschaltet

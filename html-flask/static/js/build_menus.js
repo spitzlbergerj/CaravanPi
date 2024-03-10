@@ -19,7 +19,8 @@ var links_main = [
 	{ text: "Grafana Website", url: 'http://' + host + ':3000', isExternal: true, addSeparator: false, header: "MariaDB"  },
 	{ text: "phpMyAdmin", url: 'http://' + host + '/phpmyadmin/', isExternal: true, addSeparator: true  },
 	{ text: "Config anzeigen", url: 'http://' + host + ':5000/show_config', isExternal: true, addSeparator: false, header: "Anzeigen"  },
-	{ text: "LOGs anzeigen", url: 'http://' + host + ':5000/list_logs', isExternal: true, addSeparator: true  },
+	{ text: "LOGs anzeigen", url: 'http://' + host + ':5000/list_logs', isExternal: true, addSeparator: false  },
+	{ text: "i2c Bus", url: 'http://' + host + ':5000/i2cdetect', isExternal: true, addSeparator: true  },
 	{ text: "RPi neu starten", url: 'http://' + host + ':5000/reboot', isExternal: true, addSeparator: false, header: "Raspberry Pi"   },
 	{ text: "RPi ausschalten", url: 'http://' + host + ':5000/shutdown', isExternal: false, addSeparator: false  },
 ];
@@ -49,9 +50,8 @@ var links_aktoren = [
 	{ text: "230V Alarm", url: 'http://' + host + ':5000/aktor/alarm_230v_aus', isExternal: false, addSeparator: false, header: "Alarme aus" },
 	{ text: "12V Bord Alarm", url: 'http://' + host + ':5000/aktor/alarm_12v_bord_aus', isExternal: false, addSeparator: false },
 	{ text: "12V Car Alarm", url: 'http://' + host + ':5000/aktor/alarm_12v_car_aus', isExternal: false, addSeparator: false },
-	{ text: "Bad", url: 'http://' + host + ':5000/checks', isExternal: false, addSeparator: false, header: "Licht ein/aus"  },
-	{ text: "Küche", url: 'http://' + host + ':5000/checks', isExternal: false, addSeparator: false  },
-	{ text: "alle", url: 'http://' + host + ':5000/checks', isExternal: false, addSeparator: false  },
+	{ text: "LED an", url: 'http://' + host + ':5000/actors/LED?LED_status=on', isExternal: false, addSeparator: false, header: "ESP82-1"  },
+	{ text: "LED aus", url: 'http://' + host + ':5000/actors/LED?LED_status=off', isExternal: false, addSeparator: false  },
 ];
 
 // Funktion zum Erzeugen des Hauptmenü als Buttons aus der gemeinsamen Liste

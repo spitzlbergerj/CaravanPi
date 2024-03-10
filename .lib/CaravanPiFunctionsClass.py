@@ -22,6 +22,9 @@ class CaravanPiFunctions:
 	# global variables
 	# -----------------------------------------------
 
+	# -----------------------------------------------
+	# Initialisieren
+	# -----------------------------------------------
 
 	def __init__(self):
 		# nichts zu tun
@@ -94,16 +97,21 @@ class CaravanPiFunctions:
 	# Spiele Alarmtöne
 	# -----------------------------------------------
 	def play_alarm_single(self, gpio, buzzer_pin, alarmnr):
+		ton_kurz = 0.05
+		ton_lang = 0.5
+		dauer_kurz = 0.2
+		dauer_lang = 0.4
+
 		gpio.setmode(gpio.BCM)
 		gpio.setup(buzzer_pin, gpio.OUT)
 
 		# Muster für die verschiedenen Alarme als Liste von (Tonlänge, Pausenlänge)-Tupeln (jeweils in Sekunden)
 		# Wartezeit beim letzten Eintrag immer 0.1, damit die Alarmausgabe keine zusätzlcihe Wartezeit verursacht, die bei Abschalten des Alarms über Config dann fehlt
 		patterns = {
-			0: [(0.05, 0.1), (0.5, 0.1)],  # Standardmuster für andere Alarme
-			1: [(0.05, 0.1), (0.05, 0.1), (0.5, 0.1)],  # Alarm 1
-			2: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 0.1)],  # Alarm 2
-			3: [(0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.05, 0.1), (0.5, 0.1)],  # Alarm 2
+			0: [(ton_kurz, dauer_kurz), (ton_lang, dauer_kurz)],  # Standardmuster für andere Alarme
+			1: [(ton_kurz, dauer_kurz), (ton_kurz, dauer_kurz), (ton_lang, dauer_kurz)],  # Alarm 1
+			2: [(ton_kurz, dauer_kurz), (ton_kurz, dauer_kurz), (ton_kurz, dauer_kurz), (ton_lang, dauer_kurz)],  # Alarm 2
+			3: [(ton_kurz, dauer_kurz), (ton_kurz, dauer_kurz), (ton_kurz, dauer_kurz), (ton_kurz, dauer_kurz), (ton_lang, dauer_kurz)],  # Alarm 2
 		}
 
 		# Muster basierend auf alarmnrsetzen

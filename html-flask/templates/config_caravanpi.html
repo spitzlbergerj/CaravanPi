@@ -304,6 +304,11 @@
 					</div>
 				</div>
 
+				<h2>Sensoren, die einen aktustischen Alarm auslösen</h2>
+				<p>Nachfolgende Sensoren können bei entsprechenden Fehlerzuständen einen akustischen Alarm auslösen </br>
+				Dieser Alarm kann über die CaravanPi Website ausgeschaltet werden, falls der Zustand länger andauern sollte.</br>
+				Der Alarm kann automatisch wieder eingeschaltet werden, sobald der Fehlerzustand überwunden ist.</br>
+				Dies empfiehlt sich insbesondere beim Gassensor.</p>
 
 
 				<br/><br/>
@@ -338,10 +343,18 @@
 				</div>
 				<div class="row">
 					<div class="col-75">
-						<label for="gassensorAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
+						<label for="gassensorAlarmActive">Akustischen Alarm auslösen?</label>  
 					</div>
 					<div class="col-25">
 						<input name="gassensorAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorAlarmActive', False) else '' }}>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="gassensorAlarmResume">Akustischen Alarm reaktivieren?</label>  
+					</div>
+					<div class="col-25">
+						<input name="gassensorAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorAlarmResume', False) else '' }}>
 					</div>
 				</div>
 
@@ -370,10 +383,18 @@
 				</div>
 				<div class="row">
 					<div class="col-75">
-						<label for="v230CheckAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
+						<label for="v230CheckAlarmActive">Akustischen Alarm auslösen?</label>  
 					</div>
 					<div class="col-25">
 						<input name="v230CheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckAlarmActive', False) else '' }}>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v230CheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v230CheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckAlarmResume', False) else '' }}>
 					</div>
 				</div>
 
@@ -402,15 +423,6 @@
 				</div>
 				<div class="row">
 					<div class="col-75">
-						<label for="v12BatteryCheckAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v12BatteryCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmActive', False) else '' }}>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-75">
 						<label for="v12BatteryR1">Spannungsteiler Widerstand R1 (an V-in)</label>  
 					</div>
 					<div class="col-25">
@@ -425,6 +437,23 @@
 						<input name="v12BatteryR2" type="char" value="{{ caravanpiDefaults.get('v12BatteryR2', '')}}" >
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v12BatteryCheckAlarmActive">Akustischen Alarm auslösen?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12BatteryCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmActive', False) else '' }}>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v12BatteryCheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12BatteryCheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmResume', False) else '' }}>
+					</div>
+				</div>
+
 
 
 
@@ -451,15 +480,6 @@
 				</div>
 				<div class="row">
 					<div class="col-75">
-						<label for="v12CarCheckAlarmActive">soll akustischer Alarm ausgelöst werden?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v12CarCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmActive', False) else '' }}>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-75">
 						<label for="v12CarR1">Spannungsteiler Widerstand R1 (an V-in)</label>  
 					</div>
 					<div class="col-25">
@@ -474,6 +494,23 @@
 						<input name="v12CarR2" type="char" value="{{ caravanpiDefaults.get('v12CarR2', '')}}" >
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v12CarCheckAlarmActive">Akustischen Alarm auslösen?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12CarCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmActive', False) else '' }}>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-75">
+						<label for="v12CarCheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
+					</div>
+					<div class="col-25">
+						<input name="v12CarCheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmResume', False) else '' }}>
+					</div>
+				</div>
+
 
 
 				<br/><br/>

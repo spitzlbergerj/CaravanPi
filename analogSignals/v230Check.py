@@ -59,6 +59,7 @@ def main():
 	v230CheckInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled") is not None else False
 	v230CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckADCPin") is not None else -1
 	v230CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive") is not None else False
+	v230CheckAlarmResume = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmResume"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmResume") is not None else False
 						  
 	print(f"ADC Pin: {v230CheckADCPin}, Alarm aktiv: {v230CheckAlarmActive}, Delay: {delay} Sekunden")
 
@@ -138,7 +139,7 @@ def main():
 					# 230 Volt liegen an
 					v230DropDetected = False
 					
-					if not v230CheckAlarmActive:
+					if not v230CheckAlarmActive and v230CheckAlarmResume:
 						# Alarm wieder einschalten
 						print("Alarm in Config einschalten")
 						cplib.writeCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive", 1)

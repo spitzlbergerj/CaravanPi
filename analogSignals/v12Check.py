@@ -84,6 +84,7 @@ def main():
 		v12CheckInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckInstalled") is not None else False
 		v12CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckADCPin") is not None else -1
 		v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmActive") is not None else False
+		v12CheckAlarmResume = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmResume"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryCheckAlarmResume") is not None else False
 		v12xmlItemAlarm = "v12BatteryCheckAlarmActive"
 		v12R1 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR1")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR1") is not None else 0
 		v12R2 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR2")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12BatteryR2") is not None else 0
@@ -92,6 +93,7 @@ def main():
 		v12CheckInstalled = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckInstalled"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckInstalled") is not None else False
 		v12CheckADCPin = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckADCPin")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckADCPin") is not None else -1
 		v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmActive") is not None else False
+		v12CheckAlarmResume = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmResume"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarCheckAlarmResume") is not None else False
 		v12xmlItemAlarm = "v12CarCheckAlarmActive"
 		v12R1 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR1")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR1") is not None else 0
 		v12R2 = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR2")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/v12CarR2") is not None else 0
@@ -203,7 +205,7 @@ def main():
 						cpfunc.play_alarm_single(GPIO, buzzer_pin, 3)
 					
 				if channel.voltage > v12Level1 and channel.voltage <= v12Level3:
-					if not v12CheckAlarmActive:
+					if not v12CheckAlarmActive and v12CheckAlarmResume:
 						# Alarm wieder einschalten
 						print("Alarm in Config einschalten")
 						cplib.writeCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}", 1)

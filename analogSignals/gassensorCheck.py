@@ -56,6 +56,7 @@ def main():
 	gassensorDigitalIn = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorDigitalIn")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorDigitalIn") is not None else -1
 	gassensorAnalogIn = int(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAnalogIn")) if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAnalogIn") is not None else -1
 	gassensorAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive") is not None else False
+	gassensorAlarmResume = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmResume"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmResume") is not None else False
 						  
 	print(f"Digital: {gassensorDigitalIn} , Analog: {gassensorAnalogIn}, Alarm aktiv: {gassensorAlarmActive}, Delay: {delay} Sekunden")
 
@@ -133,8 +134,8 @@ def main():
 					# kein Gas detektiert
 					gasDetected = False
 
-					if not gassensorAlarmActive:
-						# Alarm wieder einschalten
+					if not gassensorAlarmActive and gassensorAlarmResume:
+						print("Alarm wieder einschalten")
 						cplib.writeCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive", 1)
 						gassensorAlarmActive = True
 					

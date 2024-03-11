@@ -12,7 +12,7 @@
     <MariaDBdatabase>CaravanPiValues</MariaDBdatabase>
     <MQTTbroker>MQTTBrokerWebAdresse</MQTTbroker>
     <MQTTport>8883</MQTTport>
-    <MQTTuser>NodeRED-MQTT</MQTTuser>
+    <MQTTuser>CaravanPiMQTT</MQTTuser>
     <MQTTpassword>dasGeheimePasswort</MQTTpassword>
     <countClimateSensors>1</countClimateSensors>
     <stromPiInstalled>0</stromPiInstalled>
@@ -33,7 +33,7 @@
     <v12BatteryCheckInstalled>1</v12BatteryCheckInstalled>
     <v12BatteryCheckADCPin>2</v12BatteryCheckADCPin>
     <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>
-    <v12CarCheckInstalled>0</v12CarCheckInstalled>
+    <v12CarCheckInstalled>1</v12CarCheckInstalled>
     <v12CarCheckADCPin>3</v12CarCheckADCPin>
     <v12CarCheckAlarmActive>0</v12CarCheckAlarmActive>
     <BuzzerGPIOPin>26</BuzzerGPIOPin>
@@ -41,6 +41,10 @@
     <v12BatteryR2>150</v12BatteryR2>
     <v12CarR1>560</v12CarR1>
     <v12CarR2>150</v12CarR2>
+    <gassensorAlarmResume>True</gassensorAlarmResume>
+    <v230CheckAlarmResume>True</v230CheckAlarmResume>
+    <v12BatteryCheckAlarmResume>True</v12BatteryCheckAlarmResume>
+    <v12CarCheckAlarmResume>True</v12CarCheckAlarmResume>
     </caravanpiDefaults>
   <adjustmentPosition>
     <adjustX>-0.0392266</adjustX>

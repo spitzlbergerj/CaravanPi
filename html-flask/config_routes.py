@@ -63,20 +63,24 @@ def register_config_routes(app):
 				gassensorDigitalIn = request.form.get('gassensorDigitalIn')
 				gassensorAnalogIn = request.form.get('gassensorAnalogIn')
 				gassensorAlarmActive = request.form.get('gassensorAlarmActive')
+				gassensorAlarmResume = request.form.get('gassensorAlarmResume')
 
 				v230CheckInstalled = request.form.get('v230CheckInstalled')
 				v230CheckADCPin = request.form.get('v230CheckADCPin')
 				v230CheckAlarmActive = request.form.get('v230CheckAlarmActive')
+				v230CheckAlarmResume = request.form.get('v230CheckAlarmResume')
 
 				v12BatteryCheckInstalled = request.form.get('v12BatteryCheckInstalled')
 				v12BatteryCheckADCPin = request.form.get('v12BatteryCheckADCPin')
 				v12BatteryCheckAlarmActive = request.form.get('v12BatteryCheckAlarmActive')
+				v12BatteryCheckAlarmResume = request.form.get('v12BatteryCheckAlarmResume')
 				v12BatteryR1 = request.form.get('v12BatteryR1')
 				v12BatteryR2 = request.form.get('v12BatteryR2')
 
 				v12CarCheckInstalled = request.form.get('v12CarCheckInstalled')
 				v12CarCheckADCPin = request.form.get('v12CarCheckADCPin')
 				v12CarCheckAlarmActive = request.form.get('v12CarCheckAlarmActive')
+				v12CarCheckAlarmResume = request.form.get('v12CarCheckAlarmResume')
 				v12CarR1 = request.form.get('v12CarR1')
 				v12CarR2 = request.form.get('v12CarR2')
 
@@ -117,20 +121,24 @@ def register_config_routes(app):
 						'gassensorDigitalIn': int(gassensorDigitalIn) if gassensorDigitalIn and 0 <= int(gassensorDigitalIn) <= 40 else None,
 						'gassensorAnalogIn': int(gassensorAnalogIn) if gassensorAnalogIn and 0 <= int(gassensorAnalogIn) <= 3 else None,
 						'gassensorAlarmActive': bool(gassensorAlarmActive) if gassensorAlarmActive is not None else None,
+						'gassensorAlarmResume': bool(gassensorAlarmResume) if gassensorAlarmResume is not None else None,
 
 						'v230CheckInstalled': bool(v230CheckInstalled) if v230CheckInstalled is not None else None,
 						'v230CheckADCPin': int(v230CheckADCPin) if v230CheckADCPin and 0 <= int(v230CheckADCPin) <= 40 else None,
 						'v230CheckAlarmActive': bool(v230CheckAlarmActive) if v230CheckAlarmActive is not None else None,
+						'v230CheckAlarmResume': bool(v230CheckAlarmResume) if v230CheckAlarmResume is not None else None,
 
 						'v12BatteryCheckInstalled': bool(v12BatteryCheckInstalled) if v12BatteryCheckInstalled is not None else None,
 						'v12BatteryCheckADCPin': int(v12BatteryCheckADCPin) if v12BatteryCheckADCPin and 0 <= int(v12BatteryCheckADCPin) <= 40 else None,
 						'v12BatteryCheckAlarmActive': bool(v12BatteryCheckAlarmActive) if v12BatteryCheckAlarmActive is not None else None,
+						'v12BatteryCheckAlarmResume': bool(v12BatteryCheckAlarmResume) if v12BatteryCheckAlarmResume is not None else None,
 						'v12BatteryR1': int(v12BatteryR1) if v12BatteryR1 and 0 <= int(v12BatteryR1) <= 10000000 else None,
 						'v12BatteryR2': int(v12BatteryR2) if v12BatteryR2 and 0 <= int(v12BatteryR2) <= 10000000 else None,
 
 						'v12CarCheckInstalled': bool(v12CarCheckInstalled) if v12CarCheckInstalled is not None else None,
 						'v12CarCheckADCPin': int(v12CarCheckADCPin) if v12CarCheckADCPin and 0 <= int(v12CarCheckADCPin) <= 40 else None,
 						'v12CarCheckAlarmActive': bool(v12CarCheckAlarmActive) if v12CarCheckAlarmActive is not None else None,
+						'v12CarCheckAlarmResume': bool(v12CarCheckAlarmResume) if v12CarCheckAlarmResume is not None else None,
 						'v12CarR1': int(v12CarR1) if v12CarR1 and 0 <= int(v12CarR1) <= 10000000 else None,
 						'v12CarR2': int(v12CarR2) if v12CarR2 and 0 <= int(v12CarR2) <= 10000000 else None,
 

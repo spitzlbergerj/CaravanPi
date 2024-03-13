@@ -751,7 +751,7 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	echo " ... MMM-GrafanaEmbedded zum Anzeigen der Grafana Grafen"
 	run_cmd "git clone https://github.com/eirikaho/MMM-GrafanaEmbedded.git"
 
-	echo "Kopieren der CaravanPi config.Josef Spitzlberger und der custom.css ..."
+	echo "Kopieren der CaravanPi config.js und der custom.css ..."
 	run_cmd "cp -f $HOME/CaravanPi/MagicMirror/config/config.js $HOME/MagicMirror/config"
 	run_cmd "cp -f $HOME/CaravanPi/MagicMirror/css/custom.css $HOME/MagicMirror/css"
 

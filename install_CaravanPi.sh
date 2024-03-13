@@ -382,7 +382,7 @@ install_magicmirror() {
 
 install_apache() {
 	echo "Apache installieren ...."
-	run_cmd "sudo apt install apache2 -y"
+	run_cmd "sudo apt-get install apache2 -y"
 
 	echo "Starte Apache2 und aktiviere den Autostart..."
 	run_cmd "sudo systemctl start apache2"
@@ -400,16 +400,13 @@ install_mariadb() {
 	echo "MariaDB Server installieren ...."
 	run_cmd "sudo apt-get install -y mariadb-server"
 
-	echo "Installation absichern ... "
-	echo "    Bitte folgen Sie den Anweisungen auf dem Bildschirm, um MariaDB und den root-Benutzer abzusichern."
-	echo "    Vergeben Sie ein starkes Passwort für den MariaDB root-Benutzer und merken Sie sich dieses."
-	echo "    Entfernen Sie anonyme Benutzer und deaktivieren Sie den Root-Login aus der Ferne."
-	echo "    Löschen Sie die Testdatenbanken."
-	run_cmd "sudo mysql_secure_installation"
-
+	echo
+	echo
 	echo "Benutzer CaravanPi anlegen ... "
+	echo "-------------------------------"
 	read -sp "    Bitte geben Sie ein Passwort für den 'caravanpi' MariaDB Benutzer ein: " caravanpi_password
 
+	echo
 	echo "    Benutzer wird angelegt ..."
 	run_cmd "sudo mysql -e \"CREATE USER 'caravanpi'@'localhost' IDENTIFIED BY '$caravanpi_password';\""
 
@@ -420,13 +417,44 @@ install_mariadb() {
 
 	echo "   Datenbanktabellen werden angelegt ..."
 	run_cmd "sudo mysql CaravanPiValues < $CARAVANPI_MARIADB_CREATE_TABLES"
+
+	echo
+	echo
+	echo "Installation absichern ... "
+
+	# wir ersetzen hier sudo mysql_secure_installation durch eine Reihe von Einzelbefehlen, da 
+	# mysql_secure_installation micht gut innerhalb eines Skriptes ausführbar ist
+
+	root_password=""
+	while [ -z "$root_password" ]; do
+		echo "Bitte geben Sie ein starkes Passwort für den MariaDB root User ein:"
+		read -s root_password
+		if [ -z "$root_password" ]; then
+			echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+		fi
+	done
+
+	# SQL-Befehle, um die MariaDB-Sicherheitseinstellungen anzupassen
+	sql_commands="
+	ALTER USER 'root'@'localhost' IDENTIFIED BY '${root_password}';
+	DELETE FROM mysql.user WHERE User='';
+	DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+	DROP DATABASE IF EXISTS test;
+	DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+	FLUSH PRIVILEGES;
+	"
+
+	run_cmd "mysql -u root -e \"$sql_commands\""
 }
 
 
 # Installation phpmyadmin
 install_phpmyadmin() {
 	echo "phpmyadmin installieren ...."
-	run_cmd "sudo apt install phpmyadmin"
+	echo
+	echo -e "${red}Achtung: die Frage ob dbconfig-common ausgeführt werden soll, bitte mit NEIN beantworten!${nc}"
+	echo 
+	run_cmd "sudo apt-get install phpmyadmin"
 
 	echo "Konfiguriere Apache2 für phpMyAdmin..."
 	run_cmd "sudo phpenmod mbstring"
@@ -437,19 +465,20 @@ install_phpmyadmin() {
 install_grafana() {
 	# Füge das Grafana GPG Schlüssel hinzu
 	echo "Füge Grafana GPG Schlüssel hinzu..."
-	run_cmd "curl https://packages.grafana.com/gpg.key | sudo apt-key add -"
+	run_cmd "curl https://packages.grafana.com/gpg.key -o /tmp/grafana.gpg" 
+	rum_cmd "sudo mv /tmp/grafana.gpg /etc/apt/trusted.gpg.d/"
 
 	# Füge das Grafana Repository hinzu
 	echo "Füge das Grafana Repository hinzu..."
 	run_cmd "echo \"deb https://packages.grafana.com/oss/deb stable main\" | sudo tee -a /etc/apt/sources.list.d/grafana.list"
 
-	# Aktualisiere die Paketliste
+	# Paketliste nochmal aktualisieren
 	echo "Aktualisiere Paketlisten..."
-	run_cmd "sudo apt update"
+	run_cmd "sudo apt-get update"
 
 	# Installiere Grafana
 	echo "Installiere Grafana..."
-	run_cmd "sudo apt install grafana -y"
+	run_cmd "sudo apt-get install grafana -y"
 
 	# Starte den Grafana-Service und stelle sicher, dass er beim Booten läuft
 	echo "Starte Grafana und aktiviere den Autostart..."
@@ -679,10 +708,6 @@ fi
 
 cd "$HOME"
 
-echo "Test Ende !!!"
-exit
-
-
 # --------------------------------------------------------------------------
 # Apache Webserver installieren
 # --------------------------------------------------------------------------
@@ -732,6 +757,12 @@ fi
 
 cd "$HOME"
 
+
+echo "Test Ende !!!"
+exit
+
+
+
 # --------------------------------------------------------------------------
 # Python Module installieren
 # --------------------------------------------------------------------------
@@ -745,13 +776,40 @@ fi
 cd "$HOME"
 
 # --------------------------------------------------------------------------
-# Python Module installieren
+# Geräte Libraries installieren
 # --------------------------------------------------------------------------
-note "Installation Python Module"
+note "Installation Geräte Libraries"
 
 read -p "Möchten Sie die Geräte Libraries installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_libraries
+fi
+
+cd "$HOME"
+
+# --------------------------------------------------------------------------
+# Einträge in den Crontabs vornehmen 
+# --------------------------------------------------------------------------
+
+# Bewegunsmelder
+# Taster 
+# Flask
+
+
+# --------------------------------------------------------------------------
+# Bewegungsssensor aktivieren
+# --------------------------------------------------------------------------
+note "Bewegungssernsor aktivieren"
+
+read -p "Möchten Sie den Bewegungssensor aktivieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+
+	# in root Crontab aufnehmen
+	# beim Neustart Skript fuer Sensor starten
+	# @reboot python3 /home/pi/CaravanPi/pir/pir.py 120 1
+
+	echo
+
 fi
 
 cd "$HOME"

@@ -184,6 +184,10 @@ update_raspberry_os() {
 
 # Funktion zum Konfigurieren des Raspberry OS
 config_raspberry_os() {
+	echo -e "${red}Achtung: Das setzen der Sprache wird erst nach eine Rebbot fehlerfrei sein.${nc}"
+	echo "Ignorieren Sie daher eventuell auftretende Fehler zur Spracheinstellung."
+	echo "Führen Sie jedoch nach diesem Kapitel einen rebbot durch"
+	echo
 	echo "Land, Sprache und Zeitzone einstellen"
 	run_cmd "sudo raspi-config nonint do_change_locale de_DE.UTF-8"
 	run_cmd "sudo raspi-config nonint do_change_timezone Europe/Berlin"
@@ -218,26 +222,36 @@ config_wifi() {
 		run_cmd "echo \"$WIFI_BASIC_CONFIG\" | sudo tee \"$WIFI_CONFIG_FILE\" > /dev/null"
 	fi
 
-	# Eingabe der WIFI Daten
-	echo
-	echo "Geben Sie die notwendigen Daten ein"
-	read -p "SSID: " ssid
-	read -p "Passwort: " password
-	echo
+	while true; do
+		echo
+		list_configured_ssids
+		echo
 
-	# Überprüfen, ob SSID bereits konfiguriert ist
-	if sudo grep -q "ssid=\"$ssid\"" "$WIFI_CONFIG_FILE"; then
-		echo "Eine Konfiguration für SSID $ssid existiert bereits. Nichts zu tun!"
-	else
-		# Wenn die SSID noch nicht konfiguriert ist, hinzufügen
-		run_cmd "wpa_passphrase \"$ssid\" \"$password\" | sudo tee -a \"$WIFI_CONFIG_FILE\" > /dev/null"
-		echo "Neue Konfiguration für $ssid hinzugefügt."
-		
-		# WLAN-Dienst neu starten, um die neue Konfiguration zu übernehmen
-		run_cmd "sudo systemctl restart wpa_supplicant"
-		
-		echo "WLAN-Konfiguration aktualisiert."
-	fi
+		read -p "Möchten Sie die Wifi-Konfiguration ergänzen? (j/N): " answer
+		if ! [[ "$answer" =~ ^[Jj]$ ]]; then
+			break
+
+		# Eingabe der WIFI Daten
+		echo
+		echo "Geben Sie die notwendigen Daten ein"
+		read -p "SSID: " ssid
+		read -p "Passwort: " password
+		echo
+
+		# Überprüfen, ob SSID bereits konfiguriert ist
+		if sudo grep -q "ssid=\"$ssid\"" "$WIFI_CONFIG_FILE"; then
+			echo "Eine Konfiguration für SSID $ssid existiert bereits. Nichts zu tun!"
+		else
+			# Wenn die SSID noch nicht konfiguriert ist, hinzufügen
+			run_cmd "wpa_passphrase \"$ssid\" \"$password\" | sudo tee -a \"$WIFI_CONFIG_FILE\" > /dev/null"
+			echo "Neue Konfiguration für $ssid hinzugefügt."
+			
+			# WLAN-Dienst neu starten, um die neue Konfiguration zu übernehmen
+			run_cmd "sudo systemctl restart wpa_supplicant"
+			
+			echo "WLAN-Konfiguration aktualisiert."
+		fi
+	done
 }
 
 
@@ -601,17 +615,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Konfiguration Wifi"
 
-echo
-list_configured_ssids
-echo
-
-read -p "Möchten Sie die Wifi-Konfiguration ergänzen? (j/N): " answer
-if [[ "$answer" =~ ^[Jj]$ ]]; then
-	config_wifi
-	echo
-	list_configured_ssids
-	echo
-fi
+config_wifi
 
 cd "$HOME"
 

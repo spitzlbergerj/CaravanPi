@@ -18,16 +18,45 @@ echo '                                                                          
 echo -e "\e[0m"
 
 
-# Überprüfen, ob das Skript mit dem Parameter -force aufgerufen wird
+
+# ------------------------------------------------------------------
+# parameter Verarbeitung
+# ------------------------------------------------------------------
+
+# Überprüfen, ob das Skript mit dem Parameter "apply" aufgerufen wird
 # Nur dann werden die Installations Kommandos tatsächlich ausgeführt
 
 SIMULATE=true
-for arg in "$@"; do
-	if [ "$arg" == "-force" ]; then
-		SIMULATE=false
-		break
-	fi
-done
+
+# Überprüfen, wie das Skript gestartet wurde
+# Das Skript kann auf dem Raspberry direkt aufgerufen worden sein (CaravanPi Repository wurde vorher schon geklont) oder
+# das Skript wird über "bash -c ... curl ..." aufgerufen, also ohne vorheriges Klonen.
+# entprechend muss der Parameter apply anders erkannt werden
+
+echo "$0 - $1"
+
+p0=$0
+
+# start ohne "bash -c" und es gibt einen Parameter
+if [ $0 != 'bash' -a "$1." != "." ]; then
+	# wird lokal ausgeführt
+	# $1 enthält den Parameter
+	p0=$1
+fi
+
+echo "$p0"
+
+# Den Parameter in Kleinbuchstaben umwandeln
+p0=$(echo $p0 | awk '{print tolower($0)}')
+
+# Entsprechend dem Parameter handeln
+if [ "$p0" == "apply" ]; then
+    SIMULATE=false
+fi
+
+# ------------------------------------------------------------------
+# Variable definieren
+# ------------------------------------------------------------------
 
 BOOT_CONFIG_FILE_OLD="/boot/config.txt"
 BOOT_CONFIG_FILE_NEW="/boot/firmware/config.txt"
@@ -510,15 +539,6 @@ note "Konfiguration benötigter Kommunikationsprotokolle"
 read -p "Möchten Sie die benötigten Kommunikationsprotokolle aktivieren (i2c, 1-wire, ...)? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	config_protocolls
-
-	echo "Überprüfe, ob ein Neustart erforderlich ist..."
-	if [ -f /var/run/reboot-required ]; then
-		echo "Ein Neustart ist erforderlich, um die Aktualisierungen zu vervollständigen."
-		echo "Bitte führen Sie 'sudo reboot' aus."
-		exit
-	else
-		echo "Kein Neustart erforderlich."
-	fi
 fi
 
 

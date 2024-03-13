@@ -135,6 +135,14 @@ note() {
 		echo -e "${red}"
 	elif [ "$color" == "green" ]; then
 		echo -e "${green}"
+	elif [ "$color" == "yellow" ]; then
+		echo -e "${yellow}"
+	elif [ "$color" == "blue" ]; then
+		echo -e "${blue}"
+	elif [ "$color" == "magenta" ]; then
+		echo -e "${magenta}"
+	elif [ "$color" == "cyan" ]; then
+		echo -e "${cyan}"
 	else
 		echo -e "${nc}"
 	fi
@@ -412,9 +420,9 @@ install_magicmirror() {
 		# daher hier direkt abgefragt
 
 		if [ "$SIMULATE" = true ]; then
-			echo "Simuliere: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
+			echo -e "${red}Simuliere: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\"${nc}"
 		else
-			echo "Führe aus: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
+			echo -e "${red}Führe aus: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\"${nc}"
 
 			# zunächst wird das Skript heruntergeladen und zwiwchengespeichert
 			curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh > /tmp/raspberry.sh
@@ -510,7 +518,7 @@ install_grafana() {
 	# Füge das Grafana GPG Schlüssel hinzu
 	echo "Füge Grafana GPG Schlüssel hinzu..."
 	run_cmd "curl https://packages.grafana.com/gpg.key -o /tmp/grafana.gpg" 
-	rum_cmd "sudo mv /tmp/grafana.gpg /etc/apt/trusted.gpg.d/"
+	run_cmd "sudo mv /tmp/grafana.gpg /etc/apt/trusted.gpg.d/"
 
 	# Füge das Grafana Repository hinzu
 	echo "Füge das Grafana Repository hinzu..."
@@ -599,7 +607,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Raspberry OS updaten
 # --------------------------------------------------------------------------
-note "Update Raspberry OS"
+note "Update Raspberry OS" "cyan"
 
 read_colored "cyan" "Möchten Sie Raspberry OS zunächst updaten? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -620,7 +628,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Raspberry OS konfigurieren
 # --------------------------------------------------------------------------
-note "Konfiguration Raspberry OS"
+note "Konfiguration Raspberry OS" "cyan"
 
 echo "Die nachfolgenden Konfigurationen werden in der Regel vom Raspberry Pi Imager bereits vorgenommen."
 echo
@@ -643,7 +651,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # WLAN konfigurieren
 # --------------------------------------------------------------------------
-note "Konfiguration Wifi"
+note "Konfiguration Wifi" "cyan"
 
 config_wifi
 
@@ -652,7 +660,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Raspberry OS erweitern
 # --------------------------------------------------------------------------
-note "Konfiguration benötigter Kommunikationsprotokolle"
+note "Konfiguration benötigter Kommunikationsprotokolle" "cyan"
 
 read_colored "cyan" "Möchten Sie die benötigten Kommunikationsprotokolle aktivieren (i2c, 1-wire, ...)? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -664,7 +672,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # CaravanPi Repository installieren
 # --------------------------------------------------------------------------
-note "Installation CaravanPi Repository"
+note "Installation CaravanPi Repository" "cyan"
 
 read_colored "cyan" "Möchten Sie das CaravanPi Repository von GitHub klonen? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -676,7 +684,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # MagicMirror installieren
 # --------------------------------------------------------------------------
-note "Installation MagicMirror" 
+note "Installation MagicMirror"  "cyan"
 
 read_colored "cyan" "Möchten Sie MagicMirror installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -692,13 +700,27 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	cd "$HOME/MagicMirror/modules"
 	echo " ... MMM-SimpleLogo für das CaravanPi Logo"
 	run_cmd "git clone https://github.com/frdteknikelektro/MMM-SimpleLogo.git"
+	cd MMM-SimpleLogo
+	run_cmd "npm install"
 	run_cmd "cp $HOME/CaravanPi/images/CaravanPi-Logo-weiss.png ~/MagicMirror/modules/MMM-SimpleLogo/public/CaravanPi-Logo-weiss.png"
 
 	cd "$HOME/MagicMirror/modules"
 	echo " ... MMM-Remote-Control um den MagicMirror per Website konfigurieren zu können"
 	run_cmd "git clone https://github.com/Jopyth/MMM-Remote-Control"
 	cd MMM-Remote-Control
-	rum_cmd "npm install"
+	run_cmd "npm install"
+
+	cd "$HOME/MagicMirror/modules"
+	echo " ... MMM-MarineWeather als Wetteranzeige"
+	run_cmd "git clone https://github.com/grenagit/MMM-MarineWeather"
+	cd MMM-MarineWeather
+	run_cmd "npm install"
+
+	cd "$HOME/MagicMirror/modules"
+	echo " ... MMM-Sunrise-Sunset"
+	run_cmd "git clone https://github.com/prydonian/MMM-Sunrise-Sunset"
+	cd MMM-Sunrise-Sunset
+	run_cmd "npm install"
 
 	cd "$HOME/MagicMirror/modules"
 	echo " ... MMM-CaravanPi Module"
@@ -711,19 +733,19 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	echo "     ... MMM-CaravanPiGasWeight"
 	run_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiGasWeight"
 	cd MMM-CaravanPiGasWeight
-	rum_cmd "npm install"
+	run_cmd "npm install"
 
 	cd "$HOME/MagicMirror/modules"
 	echo "     ... MMM-CaravanPiClimate"
 	run_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiClimate"
 	cd MMM-CaravanPiClimate
-	rum_cmd "npm install"
+	run_cmd "npm install"
 
 	cd "$HOME/MagicMirror/modules"
 	echo "     ... MMM-CaravanPiPosition"
-	rum_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiPosition"
+	run_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiPosition"
 	cd MMM-CaravanPiPosition
-	rum_cmd "npm install"
+	run_cmd "npm install"
 
 	cd "$HOME/MagicMirror/modules"
 	echo " ... MMM-GrafanaEmbedded zum Anzeigen der Grafana Grafen"
@@ -745,7 +767,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Apache Webserver installieren
 # --------------------------------------------------------------------------
-note "Installation Apache Webserver" 
+note "Installation Apache Webserver"  "cyan"
 
 read_colored "cyan" "Möchten Sie den Apache Webserver installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -757,7 +779,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # MariaDB installieren
 # --------------------------------------------------------------------------
-note "Installation MariaDB"
+note "Installation MariaDB" "cyan"
 
 read_colored "cyan" "Möchten Sie MariaDB installieren und alle Tabellen anlegen? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -770,7 +792,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # phpmyadmin installieren
 # --------------------------------------------------------------------------
-note "Installation phpmyadmin"
+note "Installation phpmyadmin" "cyan"
 
 read_colored "cyan" "Möchten Sie phpmyadmin installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -782,7 +804,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Grafana installieren
 # --------------------------------------------------------------------------
-note "Installation Grafana"
+note "Installation Grafana" "cyan"
 
 read_colored "cyan" "Möchten Sie Grafana installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -800,7 +822,7 @@ exit
 # --------------------------------------------------------------------------
 # Python Module installieren
 # --------------------------------------------------------------------------
-note "Installation Python Module"
+note "Installation Python Module" "cyan"
 
 read_colored "cyan" "Möchten Sie die Python Module installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -812,7 +834,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Geräte Libraries installieren
 # --------------------------------------------------------------------------
-note "Installation Geräte Libraries"
+note "Installation Geräte Libraries" "cyan"
 
 read_colored "cyan" "Möchten Sie die Geräte Libraries installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -833,7 +855,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Bewegungsssensor aktivieren
 # --------------------------------------------------------------------------
-note "Bewegungssernsor aktivieren"
+note "Bewegungssernsor aktivieren" "cyan"
 
 read_colored "cyan" "Möchten Sie den Bewegungssensor aktivieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then

@@ -29,6 +29,16 @@ for arg in "$@"; do
 	fi
 done
 
+BOOT_CONFIG_FILE_OLD="/boot/config.txt"
+BOOT_CONFIG_FILE_NEW="/boot/firmware/config.txt"
+
+STD_HOSTNAME="CaravanPi"
+
+WIFI_CONFIG_FILE="/etc/wpa_supplicant/wpa_supplicant.conf"
+WIFI_BASIC_CONFIG="ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=DE"
+
 CARAVANPI_DIR="$HOME/CaravanPi"
 CARAVANPI_LOCAL_BACKUP="$HOME/CaravanPilocalBackup"
 CARAVANPI_MARIADB_CREATE_TABLES="$CARAVANPI_DIR/installation/CaravanPiValues.sql"
@@ -70,7 +80,19 @@ run_cmd() {
 	if [ "$SIMULATE" = true ]; then
 		echo -e "${red}Simuliere:${nc} $@"
 	else
+		echo -e "${red}Führe aus:${nc} $@"
 		eval "$@"
+	fi
+}
+
+# Funktion zur Überprüfung der Installation
+check_installed() {
+	dpkg -s $1 &> /dev/null
+
+	if [ $? -eq 0 ]; then
+		return 0 # Installiert
+	else
+		return 1 # Nicht installiert
 	fi
 }
 
@@ -84,6 +106,18 @@ backup_caravanpi() {
 	else
 		echo "Backup-Skript nicht gefunden: $backup_script"
 	fi
+}
+
+list_configured_ssids() {
+	# Überprüfen, ob die Konfigurationsdatei existiert
+	if [ ! -f "$WIFI_CONFIG_FILE" ]; then
+		echo "keine Wifi SSIDs konfiguriert"
+		return 1
+	fi
+	
+	echo "aktuell konfigurierte SSIDs:"
+	# Extrahieren und auflisten aller SSIDs
+	sudo grep 'ssid=' "$WIFI_CONFIG_FILE" | sed -e 's/.*ssid="\([^"]*\)".*/\1/'
 }
 
 #m Funktion zum Updaten des Raspberry OS
@@ -100,23 +134,116 @@ update_raspberry_os() {
 	echo "Bereinige nicht mehr benötigte Pakete..."
 	run_cmd "sudo apt-get autoremove -y"
 	
-	echo "Überprüfe, ob ein Neustart erforderlich ist..."
-	if [ -f /var/run/reboot-required ]; then
-		echo "Ein Neustart ist erforderlich, um die Aktualisierungen zu vervollständigen."
-		echo "Bitte führen Sie 'sudo reboot' aus."
+}
+
+# Funktion zum Konfigurieren des Raspberry OS
+config_raspberry_os() {
+	echo "Land, Sprache und Zeitzone einstellen"
+	run_cmd "sudo raspi-config nonint do_change_locale de_DE.UTF-8"
+	run_cmd "sudo raspi-config nonint do_change_timezone Europe/Berlin"
+
+	echo "Booten zum Desktop einstellen"	
+	run_cmd "sudo raspi-config nonint do_boot_behaviour B4"
+	
+	echo "Overscan (schwarzer Bildschirmrand) deaktivieren"
+	run_cmd "sudo raspi-config nonint do_overscan 1"
+
+	echo "Hostnamen setzen"
+	read -p "Geben Sie den neuen Hostnamen ein (Default: $STD_HOSTNAME): " answer
+	if [[ -z $answer ]]; then
+		answer=$STD_HOSTNAME
+	fi
+	run_cmd "sudo raspi-config nonint do_hostname $answer"
+	
+	echo "SSH aktivieren"
+	run_cmd "sudo raspi-config nonint do_ssh 0"
+
+	# Reboot anfordern
+	# es ist noch zu prüfen, ob das immer gemacht werden muss
+	#
+	sudo touch /var/run/reboot-required
+}
+
+# Funktion zum Konfigurieren des WLAN
+config_wifi() {
+	# Überprüfen, ob die Konfigurationsdatei existiert
+	if [ ! -f "$WIFI_CONFIG_FILE" ]; then
+		echo "Konfigurationsdatei nicht gefunden. Erstelle eine neue mit Grundkonfiguration."
+		run_cmd "echo \"$WIFI_BASIC_CONFIG\" | sudo tee \"$WIFI_CONFIG_FILE\" > /dev/null"
+	fi
+
+	# Eingabe der WIFI Daten
+	echo
+	echo "Geben Sie die notwendigen Daten ein"
+	read -p "SSID: " ssid
+	read -p "Passwort: " password
+	echo
+
+	# Überprüfen, ob SSID bereits konfiguriert ist
+	if sudo grep -q "ssid=\"$ssid\"" "$WIFI_CONFIG_FILE"; then
+		echo "Eine Konfiguration für SSID $ssid existiert bereits. Nichts zu tun!"
 	else
-		echo "Kein Neustart erforderlich."
+		# Wenn die SSID noch nicht konfiguriert ist, hinzufügen
+		run_cmd "wpa_passphrase \"$ssid\" \"$password\" | sudo tee -a \"$WIFI_CONFIG_FILE\" > /dev/null"
+		echo "Neue Konfiguration für $ssid hinzugefügt."
+		
+		# WLAN-Dienst neu starten, um die neue Konfiguration zu übernehmen
+		run_cmd "sudo systemctl restart wpa_supplicant"
+		
+		echo "WLAN-Konfiguration aktualisiert."
 	fi
 }
 
-# Funktion zur Überprüfung der Installation
-check_installed() {
-	dpkg -s $1 &> /dev/null
 
-	if [ $? -eq 0 ]; then
-		return 0 # Installiert
+# Funktion zum Kponfigurieren des Raspberry OS
+config_protocolls() {
+	echo "I2C aktivieren"
+	run_cmd "sudo raspi-config nonint do_i2c 0"
+	echo "erkannte Devices am I2C:"
+	run_cmd "i2cdetect -y 1"
+
+	echo "1-Wire aktivieren"
+	run_cmd "sudo raspi-config nonint do_onewire 0"
+
+	echo "1-Wire konfigurieren"
+	run_cmd "sudo modprobe wire"
+	run_cmd "sudo modprobe w1-gpio"
+	run_cmd "sudo modprobe w1-therm"
+
+	echo "1-Wire in /etc/modules aufnehmen ..."
+	if ! grep -q '^wire$' /etc/modules; then
+		run_cmd "echo \"wire\" | sudo tee -a /etc/modules > /dev/null"
+	fi
+	if ! grep -q '^w1-gpio$' /etc/modules; then
+		run_cmd "echo \"w1-gpio\" | sudo tee -a /etc/modules > /dev/null"
+	fi
+	if ! grep -q '^w1-therm$' /etc/modules; then
+		run_cmd "echo \"w1-therm\" | sudo tee -a /etc/modules > /dev/null"
+	fi
+
+	# Konfiguration von 1-Wire auf GPIO Pin 18 in /boot/config.txt bzw. /boot/firmware/config.txt, falls noch nicht vorhanden
+	BOOT_CONFIG_FILE="$BOOT_CONFIG_FILE_OLD"
+	if [ -f "$BOOT_CONFIG_FILE_NEW" ]; then
+		BOOT_CONFIG_FILE="$BOOT_CONFIG_FILE_NEW"
+	fi
+
+	echo "Lege 1-Wire auf GPIO Pin 18 (CaravanPi Platine) ..."
+
+	# Prüfen, ob ein Eintrag für dtoverlay=w1-gpio vorhanden ist
+	if grep -q '^dtoverlay=w1-gpio' "$BOOT_CONFIG_FILE"; then
+		# Prüfen, ob der spezifische Eintrag mit gpiopin=18 existiert
+		if ! grep -q '^dtoverlay=w1-gpio,gpiopin=18$' "$BOOT_CONFIG_FILE"; then
+			# Wenn dtoverlay=w1-gpio vorhanden, aber nicht mit gpiopin=18, dann vorhandenes auskommentieren und neues ergänzen
+			run_cmd "sed -i '/^dtoverlay=w1-gpio/c\# Alten dtoverlay=w1-gpio Eintrag auskommentiert, da nicht gpiopin=18\n# dtoverlay=w1-gpio,gpiopin=18' \"$BOOT_CONFIG_FILE\""
+			run_cmd "echo \"# CaravanPi Temperatur Sensoren über 1-Wire auf GPIO Pin 18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
+			run_cmd "echo \"dtoverlay=w1-gpio,gpiopin=18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
+		else
+			echo "Eintrag für dtoverlay=w1-gpio,gpiopin=18 ist bereits vorhanden. Keine Änderung notwendig."
+		fi
 	else
-		return 1 # Nicht installiert
+		# Wenn kein Eintrag für dtoverlay=w1-gpio vorhanden ist, dann hinzufügen
+		run_cmd "echo \"# CaravanPi Temperatur Sensoren über 1-Wire auf GPIO Pin 18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
+		run_cmd "echo \"dtoverlay=w1-gpio,gpiopin=18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
 	fi
 }
 
@@ -158,220 +285,158 @@ install_update_caravanpi() {
 	run_cmd "sudo cp /home/pi/CaravanPi/pishutdown/pishutdown.service /etc/systemd/system"
 	run_cmd "sudo systemctl enable pishutdown"
 	run_cmd "sudo systemctl start pishutdown"
-
-	echo "1-Wire installieren"
-	run_cmd "sudo modprobe wire"
-	run_cmd "sudo modprobe w1-gpio"
-	run_cmd "sudo modprobe w1-therm"
-
-    echo "Konfiguriere 1-Wire Module..."
-    if ! grep -q '^wire$' /etc/modules; then
-        run_cmd "echo \"wire\" | sudo tee -a /etc/modules > /dev/null"
-    fi
-    if ! grep -q '^w1-gpio$' /etc/modules; then
-        run_cmd "echo \"w1-gpio\" | sudo tee -a /etc/modules > /dev/null"
-    fi
-    if ! grep -q '^w1-therm$' /etc/modules; then
-        run_cmd "echo \"w1-therm\" | sudo tee -a /etc/modules > /dev/null"
-    fi
-
-    # Konfiguration von 1-Wire auf GPIO Pin 18 in /boot/config.txt, falls noch nicht vorhanden
-    echo "Lege 1-Wire auf GPIO Pin 18..."
-    if ! grep -q '^dtoverlay=w1-gpio,gpiopin=18$' /boot/config.txt; then
-        run_cmd "echo \"# Temperature sensor on 1-Wire\" | sudo tee -a /boot/config.txt > /dev/null"
-        run_cmd "echo \"dtoverlay=w1-gpio,gpiopin=18\" | sudo tee -a /boot/config.txt > /dev/null"
-    fi
-
 }
 
 
 # Installation MagicMirror
 install_magicmirror() {
-	read -p "Möchten Sie MagicMirror installieren? (j/N): " answer
-	if [[ "$answer" =~ ^[Jj]$ ]]; then
-		# Pfad zu MagicMirror
-		MAGICMIRROR_DIR="$HOME/MagicMirror"
+	# Pfad zu MagicMirror
+	MAGICMIRROR_DIR="$HOME/MagicMirror"
 
-		# Überprüfen, ob MagicMirror bereits geklont wurde
-		if [ -d "$MAGICMIRROR_DIR" ]; then
-			echo "MagicMirror scheint bereits installiert zu sein. Überspringe das Installieren..."
-		else
-			echo "MagicMirror Repository wird heruntergeladen..."
-			cd $HOME
-			run_cmd "bash -c  \"$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
-		fi
+	# Überprüfen, ob MagicMirror bereits geklont wurde
+	if [ -d "$MAGICMIRROR_DIR" ]; then
+		echo "MagicMirror scheint bereits installiert zu sein. Überspringe das Installieren..."
 	else
-		echo "Installation von MagicMirror übersprungen."
+		echo "MagicMirror Repository wird heruntergeladen..."
+		cd $HOME
+		run_cmd "bash -c  \"$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
 	fi
 }
 
 install_apache() {
-	read -p "Möchten Sie den Apache Webserver installieren? (j/N): " answer
-	if [[ "$answer" =~ ^[Jj]$ ]]; then
-		echo "Apache installieren ...."
-		run_cmd "sudo apt install apache2 -y"
+	echo "Apache installieren ...."
+	run_cmd "sudo apt install apache2 -y"
 
-		echo "Starte Apache2 und aktiviere den Autostart..."
-		run_cmd "sudo systemctl start apache2"
-		run_cmd "sudo systemctl enable apache2"
+	echo "Starte Apache2 und aktiviere den Autostart..."
+	run_cmd "sudo systemctl start apache2"
+	run_cmd "sudo systemctl enable apache2"
 
-		# Überprüfe den Status des Apache2-Service
-		echo "Überprüfe den Status des Apache2-Dienstes..."
-		run_cmd "sudo systemctl status apache2"
+	# Überprüfe den Status des Apache2-Service
+	echo "Überprüfe den Status des Apache2-Dienstes..."
+	run_cmd "sudo systemctl status apache2"
 
-		echo "Apache2 wurde erfolgreich installiert und läuft."
-	else
-		echo "Installation von Apache übersprungen."
-	fi
+	echo "Apache2 wurde erfolgreich installiert und läuft."
 }
 
 # Installation MariaDB
 install_mariadb() {
-	read -p "Möchten Sie MariaDB installieren und alle Tabellen anlegen? (j/N): " answer
-	if [[ "$answer" =~ ^[Jj]$ ]]; then
-		echo "MariaDB Server installieren ...."
-		run_cmd "sudo apt-get install -y mariadb-server"
+	echo "MariaDB Server installieren ...."
+	run_cmd "sudo apt-get install -y mariadb-server"
 
-		echo "Installation absichern ... "
-		echo "    Bitte folgen Sie den Anweisungen auf dem Bildschirm, um MariaDB und den root-Benutzer abzusichern."
-		echo "    Vergeben Sie ein starkes Passwort für den MariaDB root-Benutzer und merken Sie sich dieses."
-		echo "    Entfernen Sie anonyme Benutzer und deaktivieren Sie den Root-Login aus der Ferne."
-		echo "    Löschen Sie die Testdatenbanken."
-		run_cmd "sudo mysql_secure_installation"
+	echo "Installation absichern ... "
+	echo "    Bitte folgen Sie den Anweisungen auf dem Bildschirm, um MariaDB und den root-Benutzer abzusichern."
+	echo "    Vergeben Sie ein starkes Passwort für den MariaDB root-Benutzer und merken Sie sich dieses."
+	echo "    Entfernen Sie anonyme Benutzer und deaktivieren Sie den Root-Login aus der Ferne."
+	echo "    Löschen Sie die Testdatenbanken."
+	run_cmd "sudo mysql_secure_installation"
 
-		echo "Benutzer CaravanPi anlegen ... "
-		read -sp "    Bitte geben Sie ein Passwort für den 'caravanpi' MariaDB Benutzer ein: " caravanpi_password
+	echo "Benutzer CaravanPi anlegen ... "
+	read -sp "    Bitte geben Sie ein Passwort für den 'caravanpi' MariaDB Benutzer ein: " caravanpi_password
 
-		echo "    Benutzer wird angelegt ..."
-		run_cmd "sudo mysql -e \"CREATE USER 'caravanpi'@'localhost' IDENTIFIED BY '$caravanpi_password';\""
+	echo "    Benutzer wird angelegt ..."
+	run_cmd "sudo mysql -e \"CREATE USER 'caravanpi'@'localhost' IDENTIFIED BY '$caravanpi_password';\""
 
-		echo "    Datenbank wird angelegt ..."
-		run_cmd "sudo mysql -e \"CREATE DATABASE CaravanPiValues;\""
-		run_cmd "sudo mysql -e \"GRANT ALL PRIVILEGES ON CaravanPiValues.* TO 'caravanpi'@'localhost';\""
-		run_cmd "sudo mysql -e \"FLUSH PRIVILEGES;\""
+	echo "    Datenbank wird angelegt ..."
+	run_cmd "sudo mysql -e \"CREATE DATABASE CaravanPiValues;\""
+	run_cmd "sudo mysql -e \"GRANT ALL PRIVILEGES ON CaravanPiValues.* TO 'caravanpi'@'localhost';\""
+	run_cmd "sudo mysql -e \"FLUSH PRIVILEGES;\""
 
-		echo "   Datenbanktabellen werden angelegt ..."
-		run_cmd "sudo mysql CaravanPiValues < $CARAVANPI_MARIADB_CREATE_TABLES"
-
-	else
-		echo "Installation von MariaDB übersprungen."
-	fi
+	echo "   Datenbanktabellen werden angelegt ..."
+	run_cmd "sudo mysql CaravanPiValues < $CARAVANPI_MARIADB_CREATE_TABLES"
 }
 
 
 # Installation phpmyadmin
 install_phpmyadmin() {
-	read -p "Möchten Sie phpmyadmin installieren? (j/N): " answer
-	if [[ "$answer" =~ ^[Jj]$ ]]; then
-		echo "phpmyadmin installieren ...."
-		run_cmd "sudo apt install phpmyadmin"
+	echo "phpmyadmin installieren ...."
+	run_cmd "sudo apt install phpmyadmin"
 
-		echo "Konfiguriere Apache2 für phpMyAdmin..."
-		run_cmd "sudo phpenmod mbstring"
-		run_cmd "sudo systemctl restart apache2"
-	else
-		echo "Installation von phpmyadmin übersprungen."
-	fi
+	echo "Konfiguriere Apache2 für phpMyAdmin..."
+	run_cmd "sudo phpenmod mbstring"
+	run_cmd "sudo systemctl restart apache2"
 }
 
 # Installation Grafana
 install_grafana() {
-	read -p "Möchten Sie Grafana installieren? (j/N): " answer
-	if [[ "$answer" =~ ^[Jj]$ ]]; then
-		# Füge das Grafana GPG Schlüssel hinzu
-		echo "Füge Grafana GPG Schlüssel hinzu..."
-		run_cmd "curl https://packages.grafana.com/gpg.key | sudo apt-key add -"
+	# Füge das Grafana GPG Schlüssel hinzu
+	echo "Füge Grafana GPG Schlüssel hinzu..."
+	run_cmd "curl https://packages.grafana.com/gpg.key | sudo apt-key add -"
 
-		# Füge das Grafana Repository hinzu
-		echo "Füge das Grafana Repository hinzu..."
-		run_cmd "echo \"deb https://packages.grafana.com/oss/deb stable main\" | sudo tee -a /etc/apt/sources.list.d/grafana.list"
+	# Füge das Grafana Repository hinzu
+	echo "Füge das Grafana Repository hinzu..."
+	run_cmd "echo \"deb https://packages.grafana.com/oss/deb stable main\" | sudo tee -a /etc/apt/sources.list.d/grafana.list"
 
-		# Aktualisiere die Paketliste
-		echo "Aktualisiere Paketlisten..."
-		run_cmd "sudo apt update"
+	# Aktualisiere die Paketliste
+	echo "Aktualisiere Paketlisten..."
+	run_cmd "sudo apt update"
 
-		# Installiere Grafana
-		echo "Installiere Grafana..."
-		run_cmd "sudo apt install grafana -y"
+	# Installiere Grafana
+	echo "Installiere Grafana..."
+	run_cmd "sudo apt install grafana -y"
 
-		# Starte den Grafana-Service und stelle sicher, dass er beim Booten läuft
-		echo "Starte Grafana und aktiviere den Autostart..."
-		run_cmd "sudo systemctl start grafana-server"
-		run_cmd "sudo systemctl enable grafana-server"
+	# Starte den Grafana-Service und stelle sicher, dass er beim Booten läuft
+	echo "Starte Grafana und aktiviere den Autostart..."
+	run_cmd "sudo systemctl start grafana-server"
+	run_cmd "sudo systemctl enable grafana-server"
 
-		# Sichere die originale grafana.ini Datei
-		run_cmd "sudo cp $GRAFANA_INI \"${GRAFANA_INI}.bak\""
+	# Sichere die originale grafana.ini Datei
+	run_cmd "sudo cp $GRAFANA_INI \"${GRAFANA_INI}.bak\""
 
-		# Aktualisiere die Konfiguration für den anonymen Zugriff
-		echo "Aktualisiere Grafana-Konfiguration für anonymen Zugriff..."
-		run_cmd "sudo sed -i '/\[auth.anonymous\]/!b;n;c\enabled = true' $GRAFANA_INI"
-		run_cmd "sudo sed -i '/\[auth.anonymous\]/!b;n;n;c\org_role = Viewer' $GRAFANA_INI"
+	# Aktualisiere die Konfiguration für den anonymen Zugriff
+	echo "Aktualisiere Grafana-Konfiguration für anonymen Zugriff..."
+	run_cmd "sudo sed -i '/\[auth.anonymous\]/!b;n;c\enabled = true' $GRAFANA_INI"
+	run_cmd "sudo sed -i '/\[auth.anonymous\]/!b;n;n;c\org_role = Viewer' $GRAFANA_INI"
 
-		# Aktualisiere Sicherheitseinstellungen zur Einbettung
-		echo "Erlaube das Einbetten von Grafana-Dashboards..."
-		run_cmd "sudo sed -i '/\[security\]/!b;n;c\allow_embedding = true' $GRAFANA_INI"
+	# Aktualisiere Sicherheitseinstellungen zur Einbettung
+	echo "Erlaube das Einbetten von Grafana-Dashboards..."
+	run_cmd "sudo sed -i '/\[security\]/!b;n;c\allow_embedding = true' $GRAFANA_INI"
 
-		# Starte den Grafana-Dienst neu, um die Konfigurationsänderungen zu übernehmen
-		echo "Starte Grafana-Dienst neu..."
-		run_cmd "sudo systemctl restart grafana-server"	
+	# Starte den Grafana-Dienst neu, um die Konfigurationsänderungen zu übernehmen
+	echo "Starte Grafana-Dienst neu..."
+	run_cmd "sudo systemctl restart grafana-server"	
 
-		# Überprüfe den Status des Grafana-Dienstes
-		echo "Überprüfe den Status des Grafana-Dienstes..."
-		run_cmd "sudo systemctl status grafana-server"
+	# Überprüfe den Status des Grafana-Dienstes
+	echo "Überprüfe den Status des Grafana-Dienstes..."
+	run_cmd "sudo systemctl status grafana-server"
 
-		echo "Grafana wurde erfolgreich installiert und läuft."
-	else
-		echo "Installation von Grafana übersprungen."
-	fi
+	echo "Grafana wurde erfolgreich installiert und läuft."
 }
 
 # Installation Python Module
 install_python_modules() {
-	read -p "Möchten Sie die Python Module installieren? (j/N): " answer
-	if [[ "$answer" =~ ^[Jj]$ ]]; then
-		echo "Python Module installieren ...."
+	echo "Python Module installieren ...."
 
-		run_cmd "sudo apt-get install i2c-tools"
+	run_cmd "sudo apt-get install i2c-tools"
 
 
-		run_cmd "pip install Flask"
-		run_cmd "pip install mysql-connector-python"
-
-	else
-		echo "Installation von Python Module übersprungen."
-	fi
+	run_cmd "pip install Flask"
+	run_cmd "pip install mysql-connector-python"
 }
 
 # Installation Geräte Librarys
 install_libraries() {
-	read -p "Möchten Sie die Geräte Libraries installieren? (j/N): " answer
-	if [[ "$answer" =~ ^[Jj]$ ]]; then
-		echo "Libraries installieren ...."
+	echo "Libraries installieren ...."
 
-		run_cmd "sudo apt-get install build-essential python-dev python-smbus git"
-		
-		run_cmd "git clone https://github.com/adafruit/Adafruit_Python_ADS1x15"
-		run_cmd "cd Adafruit_Python_ADS1x15; sudo python3 setup.py install"
+	run_cmd "sudo apt-get install build-essential python-dev python-smbus git"
+	
+	run_cmd "git clone https://github.com/adafruit/Adafruit_Python_ADS1x15"
+	run_cmd "cd Adafruit_Python_ADS1x15; sudo python3 setup.py install"
 
 
-		run_cmd "pip3 install adafruit-circuitpython-lis3dh"
-		run_cmd "pip3 install adafruit-circuitpython-busdevice"
-		run_cmd "pip3 install adafruit-circuitpython-adxl34x"
+	run_cmd "pip3 install adafruit-circuitpython-lis3dh"
+	run_cmd "pip3 install adafruit-circuitpython-busdevice"
+	run_cmd "pip3 install adafruit-circuitpython-adxl34x"
 
-		run_cmd "sudo pip3 install adafruit-circuitpython-mcp230xx"
-
-	else
-		echo "Installation von Libraries übersprungen."
-	fi
+	run_cmd "sudo pip3 install adafruit-circuitpython-mcp230xx"
 }
 
-# --------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------
-# 
-# Skriptanfang
-#
-# --------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------
+# ########################################################################################
+# ########################################################################################
+# ##                                                                                    ##
+# ##                                     Skriptanfang                                   ##
+# ##                                                                                    ##
+# ########################################################################################
+# ########################################################################################
 
 if [ "$SIMULATE" = true ]; then
 	note "Kommandos werden NICHT ausgeführt, lediglich Simulation" "red"
@@ -387,61 +452,158 @@ note "Update Raspberry OS"
 read -p "Möchten Sie Raspberry OS zunächst updaten? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	update_raspberry_os
+
+	echo "Überprüfe, ob ein Neustart erforderlich ist..."
 	if [ -f /var/run/reboot-required ]; then
-		echo "Installationsskript wird beendet"
+		echo "Ein Neustart ist erforderlich, um die Aktualisierungen zu vervollständigen."
+		echo "Bitte führen Sie 'sudo reboot' aus."
+		exit
+	else
+		echo "Kein Neustart erforderlich."
 	fi
-else
-	echo "Update Raspberry OS übersprungen."
 fi
+
+# --------------------------------------------------------------------------
+# Raspberry OS konfigurieren
+# --------------------------------------------------------------------------
+note "Konfiguration Raspberry OS"
+
+echo "Die nachfolgenden Konfigurationen werden in der Regel vom Raspberry Pi Imager bereits vorgenommen."
+echo
+read -p "Möchten Sie Raspberry OS konfigurieren (Sprache, Zeitzone, Hostname, SSH, ...)? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	config_raspberry_os
+
+	echo "Überprüfe, ob ein Neustart erforderlich ist..."
+	if [ -f /var/run/reboot-required ]; then
+		echo "Ein Neustart ist erforderlich, um die Aktualisierungen zu vervollständigen."
+		echo "Bitte führen Sie 'sudo reboot' aus."
+		exit
+	else
+		echo "Kein Neustart erforderlich."
+	fi
+fi
+
+# --------------------------------------------------------------------------
+# WLAN konfigurieren
+# --------------------------------------------------------------------------
+note "Konfiguration Wifi"
+
+echo
+list_configured_ssids
+echo
+
+read -p "Möchten Sie die Wifi-Konfiguration ergänzen? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	config_wifi
+	echo
+	list_configured_ssids
+	echo
+fi
+
+
+# --------------------------------------------------------------------------
+# Raspberry OS erweitern
+# --------------------------------------------------------------------------
+note "Konfiguration benötigter Kommunikationsprotokolle"
+
+read -p "Möchten Sie die benötigten Kommunikationsprotokolle aktivieren (i2c, 1-wire, ...)? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	config_protocolls
+
+	echo "Überprüfe, ob ein Neustart erforderlich ist..."
+	if [ -f /var/run/reboot-required ]; then
+		echo "Ein Neustart ist erforderlich, um die Aktualisierungen zu vervollständigen."
+		echo "Bitte führen Sie 'sudo reboot' aus."
+		exit
+	else
+		echo "Kein Neustart erforderlich."
+	fi
+fi
+
 
 # --------------------------------------------------------------------------
 # CaravanPi Repository installieren
 # --------------------------------------------------------------------------
 note "Installation CaravanPi Repository"
 
-install_update_caravanpi
+read -p "Möchten Sie das CaravanPi Repository von GitHub klonen? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_update_caravanpi
+fi
+
+echo "Test Ende !!!"
+exit
 
 # --------------------------------------------------------------------------
 # MagicMirror installieren
 # --------------------------------------------------------------------------
 note "Installation MagicMirror" 
 
-install_magicmirror
+read -p "Möchten Sie MagicMirror installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_magicmirror
+fi
 
 # --------------------------------------------------------------------------
 # Apache Webserver installieren
 # --------------------------------------------------------------------------
 note "Installation Apache Webserver" 
 
-install_apache
+read -p "Möchten Sie den Apache Webserver installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_apache
+fi
 
 # --------------------------------------------------------------------------
 # MariaDB installieren
 # --------------------------------------------------------------------------
 note "Installation MariaDB"
 
-install_mariadb
+read -p "Möchten Sie MariaDB installieren und alle Tabellen anlegen? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_mariadb
+fi
 
 # --------------------------------------------------------------------------
 # phpmyadmin installieren
 # --------------------------------------------------------------------------
 note "Installation phpmyadmin"
 
-install_phpmyadmin
+read -p "Möchten Sie phpmyadmin installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_phpmyadmin
+fi
 
 # --------------------------------------------------------------------------
 # Grafana installieren
 # --------------------------------------------------------------------------
 note "Installation Grafana"
 
-install_grafana
+read -p "Möchten Sie Grafana installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_grafana
+fi
 
 # --------------------------------------------------------------------------
 # Python Module installieren
 # --------------------------------------------------------------------------
 note "Installation Python Module"
 
-install_python_modules
+read -p "Möchten Sie die Python Module installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_python_modules
+fi
+
+# --------------------------------------------------------------------------
+# Python Module installieren
+# --------------------------------------------------------------------------
+note "Installation Python Module"
+
+read -p "Möchten Sie die Geräte Libraries installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_libraries
+fi
 
 # --------------------------------------------------------------------------
 # CaravanPi Config Lib initialisieren und damit ggf. defaults konvertieren

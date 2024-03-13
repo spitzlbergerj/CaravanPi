@@ -90,9 +90,38 @@ MAGICMIRROR_DIR="$HOME/MagicMirror"
 
 GRAFANA_INI="/etc/grafana/grafana.ini"
 
+# ANSI Farbcodes
+no_color='\033[0m' # Keine Farbe
+nc="$no_color"
+
 red='\033[0;31m'
 green='\033[0;32m'
-nc='\033[0m' # No Color
+yellow='\033[0;33m'
+blue='\033[0;34m'
+magenta='\033[0;35m'
+cyan='\033[0;36m'
+
+read_colored() {
+	local color_code="$1"
+	local prompt="$2"
+	local var_name="$3"
+	
+	# Wähle die Farbe basierend auf dem Parameter
+	case "$color_code" in
+		red) color=$red ;;
+		green) color=$green ;;
+		yellow) color=$yellow ;;
+		blue) color=$blue ;;
+		magenta) color=$magenta ;;
+		cyan) color=$cyan ;;
+		*) color=$no_color ;; # Standardfarbe, falls keine Übereinstimmung gefunden wurde
+	esac
+
+	# Zeige den farbigen Prompt an und lese die Eingabe
+	echo -en "${color}${prompt}${no_color}"
+	read -r "$var_name"
+}
+
 
 note() {
 	# Paramter $1 enthält die Beschreibung des nächsten Schrittes
@@ -199,7 +228,7 @@ config_raspberry_os() {
 	run_cmd "sudo raspi-config nonint do_overscan 1"
 
 	echo "Hostnamen setzen"
-	read -p "Geben Sie den neuen Hostnamen ein (Default: $STD_HOSTNAME): " answer
+	read_colored "cyan" "Geben Sie den neuen Hostnamen ein (Default: $STD_HOSTNAME): " answer
 	if [[ -z $answer ]]; then
 		answer=$STD_HOSTNAME
 	fi
@@ -227,7 +256,7 @@ config_wifi() {
 		list_configured_ssids
 		echo
 
-		read -p "Möchten Sie die Wifi-Konfiguration ergänzen? (j/N): " answer
+		read_colored "cyan" "Möchten Sie die Wifi-Konfiguration ergänzen? (j/N): " answer
 		if ! [[ "$answer" =~ ^[Jj]$ ]]; then
 			break
    		fi
@@ -235,8 +264,8 @@ config_wifi() {
 		# Eingabe der WIFI Daten
 		echo
 		echo "Geben Sie die notwendigen Daten ein"
-		read -p "SSID: " ssid
-		read -p "Passwort: " password
+		read_colored "cyan" "SSID: " ssid
+		read_colored "cyan" "Passwort: " password
 		echo
 
 		# Überprüfen, ob SSID bereits konfiguriert ist
@@ -320,7 +349,7 @@ install_update_caravanpi() {
 		echo "CaravanPi Repository ist bereits auf diesem Gerät vorhanden."
 		echo "Lokal wird der Branch - $current_branch - benutzt. Dieser wird mit dem entsprechenden Branch auf github verglichen"
 		echo
-		read -p "Möchten Sie das Repository aktualisieren? (j/N): " answer
+		read_colored "cyan" "Möchten Sie das Repository aktualisieren? (j/N): " answer
 		if [[ "$answer" =~ ^[Jj]$ ]]; then
 			cd "$CARAVANPI_DIR"
 			echo "Prüfe Änderungen..."
@@ -337,7 +366,7 @@ install_update_caravanpi() {
 				"Änderungen verfügbar auf $target_branch Branch:"
 				git diff --stat HEAD..origin/$target_branch
 				echo
-				read -p "Möchten Sie diese Änderungen anwenden? (j/n): " apply_changes
+				read_colored "cyan" "Möchten Sie diese Änderungen anwenden? (j/n): " apply_changes
 				if [[ "$apply_changes" =~ ^[Jj]$ ]]; then
 					echo "Backup der bisherigen Konfigurationen wird ausgeführt"
 					backup_caravanpi
@@ -572,7 +601,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Update Raspberry OS"
 
-read -p "Möchten Sie Raspberry OS zunächst updaten? (j/N): " answer
+read_colored "cyan" "Möchten Sie Raspberry OS zunächst updaten? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	update_raspberry_os
 
@@ -595,7 +624,7 @@ note "Konfiguration Raspberry OS"
 
 echo "Die nachfolgenden Konfigurationen werden in der Regel vom Raspberry Pi Imager bereits vorgenommen."
 echo
-read -p "Möchten Sie Raspberry OS konfigurieren (Sprache, Zeitzone, Hostname, SSH, ...)? (j/N): " answer
+read_colored "cyan" "Möchten Sie Raspberry OS konfigurieren (Sprache, Zeitzone, Hostname, SSH, ...)? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	config_raspberry_os
 
@@ -625,7 +654,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Konfiguration benötigter Kommunikationsprotokolle"
 
-read -p "Möchten Sie die benötigten Kommunikationsprotokolle aktivieren (i2c, 1-wire, ...)? (j/N): " answer
+read_colored "cyan" "Möchten Sie die benötigten Kommunikationsprotokolle aktivieren (i2c, 1-wire, ...)? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	config_protocolls
 fi
@@ -637,7 +666,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Installation CaravanPi Repository"
 
-read -p "Möchten Sie das CaravanPi Repository von GitHub klonen? (j/N): " answer
+read_colored "cyan" "Möchten Sie das CaravanPi Repository von GitHub klonen? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_update_caravanpi
 fi
@@ -649,7 +678,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Installation MagicMirror" 
 
-read -p "Möchten Sie MagicMirror installieren? (j/N): " answer
+read_colored "cyan" "Möchten Sie MagicMirror installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_magicmirror
 
@@ -718,7 +747,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Installation Apache Webserver" 
 
-read -p "Möchten Sie den Apache Webserver installieren? (j/N): " answer
+read_colored "cyan" "Möchten Sie den Apache Webserver installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_apache
 fi
@@ -730,7 +759,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Installation MariaDB"
 
-read -p "Möchten Sie MariaDB installieren und alle Tabellen anlegen? (j/N): " answer
+read_colored "cyan" "Möchten Sie MariaDB installieren und alle Tabellen anlegen? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_mariadb
 fi
@@ -743,7 +772,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Installation phpmyadmin"
 
-read -p "Möchten Sie phpmyadmin installieren? (j/N): " answer
+read_colored "cyan" "Möchten Sie phpmyadmin installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_phpmyadmin
 fi
@@ -755,7 +784,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Installation Grafana"
 
-read -p "Möchten Sie Grafana installieren? (j/N): " answer
+read_colored "cyan" "Möchten Sie Grafana installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_grafana
 fi
@@ -773,7 +802,7 @@ exit
 # --------------------------------------------------------------------------
 note "Installation Python Module"
 
-read -p "Möchten Sie die Python Module installieren? (j/N): " answer
+read_colored "cyan" "Möchten Sie die Python Module installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_python_modules
 fi
@@ -785,7 +814,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Installation Geräte Libraries"
 
-read -p "Möchten Sie die Geräte Libraries installieren? (j/N): " answer
+read_colored "cyan" "Möchten Sie die Geräte Libraries installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_libraries
 fi
@@ -806,7 +835,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 note "Bewegungssernsor aktivieren"
 
-read -p "Möchten Sie den Bewegungssensor aktivieren? (j/N): " answer
+read_colored "cyan" "Möchten Sie den Bewegungssensor aktivieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 
 	# in root Crontab aufnehmen

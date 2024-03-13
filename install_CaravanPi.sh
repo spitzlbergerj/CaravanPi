@@ -230,6 +230,7 @@ config_wifi() {
 		read -p "Möchten Sie die Wifi-Konfiguration ergänzen? (j/N): " answer
 		if ! [[ "$answer" =~ ^[Jj]$ ]]; then
 			break
+   		fi
 
 		# Eingabe der WIFI Daten
 		echo

@@ -3,20 +3,39 @@
 # Installieren des CaravanPi
 #
 
-# Titelbild ausgeben
-echo -e "\e[0m"
-echo '                                                                                                        '                                                                                                          
-echo '  ,ad8888ba,                                                                             88888888ba   88'
-echo ' d8""    `"8b                                                                            88      "8b  ""'
-echo 'd8"                                                                                      88      ,8P    '
-echo '88             ,adPPYYba,  8b,dPPYba,  ,adPPYYba,  8b       d8  ,adPPYYba,  8b,dPPYba,   88aaaaaa8P"  88'
-echo '88             ""     `Y8  88P"   "Y8  ""     `Y8  `8b     d8"  ""     `Y8  88P"   `"8a  88"""""""    88'
-echo 'Y8,            ,adPPPPP88  88          ,adPPPPP88   `8b   d8"   ,adPPPPP88  88       88  88           88'
-echo ' Y8a.    .a8P  88,    ,88  88          88,    ,88    `8b,d8"    88,    ,88  88       88  88           88'
-echo '  `"Y8888Y""   `"8bbdP"Y8  88          `"8bbdP"Y8      "8"      `"8bbdP"Y8  88       88  88           88'
-echo '                                                                                                        '                                                                                                          
-echo -e "\e[0m"
+# Alle Ausgaben zusätzlich in ein Logfile schreiben
+LOG_FILE="$HOME/install_CaravanPi.log"
+exec > >(tee "$LOG_FILE") 2>&1
 
+# Titelbild ausgeben
+# echo -e "\e[0m"
+# echo '                                                                                                        '                                                                                                          
+# echo '  ,ad8888ba,                                                                             88888888ba   88'
+# echo ' d8""    `"8b                                                                            88      "8b  ""'
+# echo 'd8"                                                                                      88      ,8P    '
+# echo '88             ,adPPYYba,  8b,dPPYba,  ,adPPYYba,  8b       d8  ,adPPYYba,  8b,dPPYba,   88aaaaaa8P"  88'
+# echo '88             ""     `Y8  88P"   "Y8  ""     `Y8  `8b     d8"  ""     `Y8  88P"   `"8a  88"""""""    88'
+# echo 'Y8,            ,adPPPPP88  88          ,adPPPPP88   `8b   d8"   ,adPPPPP88  88       88  88           88'
+# echo ' Y8a.    .a8P  88,    ,88  88          88,    ,88    `8b,d8"    88,    ,88  88       88  88           88'
+# echo '  `"Y8888Y""   `"8bbdP"Y8  88          `"8bbdP"Y8      "8"      `"8bbdP"Y8  88       88  88           88'
+# echo '                                                                                                        '                                                                                                          
+# echo -e "\e[0m"
+
+echo -e "\e[0m"
+echo '                                                                                     '
+echo '  $$$$$$\                                                            $$$$$$$\  $$\   '
+echo ' $$  __$$\                                                           $$  __$$\ \__|  '
+echo ' $$ /  \__| $$$$$$\   $$$$$$\  $$$$$$\ $$\    $$\ $$$$$$\  $$$$$$$\  $$ |  $$ |$$\   '
+echo ' $$ |       \____$$\ $$  __$$\ \____$$\\$$\  $$  |\____$$\ $$  __$$\ $$$$$$$  |$$ |  '
+echo ' $$ |       $$$$$$$ |$$ |  \__|$$$$$$$ |\$$\$$  / $$$$$$$ |$$ |  $$ |$$  ____/ $$ |  '
+echo ' $$ |  $$\ $$  __$$ |$$ |     $$  __$$ | \$$$  / $$  __$$ |$$ |  $$ |$$ |      $$ |  '
+echo ' \$$$$$$  |\$$$$$$$ |$$ |     \$$$$$$$ |  \$  /  \$$$$$$$ |$$ |  $$ |$$ |      $$ |  '
+echo '  \______/  \_______|\__|      \_______|   \_/    \_______|\__|  \__|\__|      \__|  '
+echo '                                                                                     '                                                                                                          
+echo -e "\e[0m"
+                                                                                 
+                                                                                  
+                                                                                  
 
 
 # ------------------------------------------------------------------
@@ -33,10 +52,7 @@ SIMULATE=true
 # das Skript wird über "bash -c ... curl ..." aufgerufen, also ohne vorheriges Klonen.
 # entprechend muss der Parameter apply anders erkannt werden
 
-echo "$0 - $1"
-
 p0=$0
-
 # start ohne "bash -c" und es gibt einen Parameter
 if [ $0 != 'bash' -a "$1." != "." ]; then
 	# wird lokal ausgeführt
@@ -44,14 +60,12 @@ if [ $0 != 'bash' -a "$1." != "." ]; then
 	p0=$1
 fi
 
-echo "$p0"
-
 # Den Parameter in Kleinbuchstaben umwandeln
 p0=$(echo $p0 | awk '{print tolower($0)}')
 
 # Entsprechend dem Parameter handeln
 if [ "$p0" == "apply" ]; then
-    SIMULATE=false
+	SIMULATE=false
 fi
 
 # ------------------------------------------------------------------
@@ -77,6 +91,7 @@ MAGICMIRROR_DIR="$HOME/MagicMirror"
 GRAFANA_INI="/etc/grafana/grafana.ini"
 
 red='\033[0;31m'
+green='\033[0;32m'
 nc='\033[0m' # No Color
 
 note() {
@@ -89,6 +104,8 @@ note() {
 	# Prüfen, ob die Ausgabe in Rot erfolgen soll
 	if [ "$color" == "red" ]; then
 		echo -e "${red}"
+	elif [ "$color" == "green" ]; then
+		echo -e "${green}"
 	else
 		echo -e "${nc}"
 	fi
@@ -262,8 +279,9 @@ config_protocolls() {
 	if grep -q '^dtoverlay=w1-gpio' "$BOOT_CONFIG_FILE"; then
 		# Prüfen, ob der spezifische Eintrag mit gpiopin=18 existiert
 		if ! grep -q '^dtoverlay=w1-gpio,gpiopin=18$' "$BOOT_CONFIG_FILE"; then
-			# Wenn dtoverlay=w1-gpio vorhanden, aber nicht mit gpiopin=18, dann vorhandenes auskommentieren und neues ergänzen
-			run_cmd "sed -i '/^dtoverlay=w1-gpio/c\# Alten dtoverlay=w1-gpio Eintrag auskommentiert, da nicht gpiopin=18\n# dtoverlay=w1-gpio,gpiopin=18' \"$BOOT_CONFIG_FILE\""
+			# Wenn dtoverlay=w1-gpio vorhanden, aber nicht mit gpiopin=18, dann vorhandenes auskommentieren 
+			run_cmd "sudo sed -i '/^dtoverlay=w1-gpio/ s/^/# Alten Eintrag von der Installationsroutine CaravanPi auskommentiert\n#&/' \"$BOOT_CONFIG_FILE\""
+			# Und neuen Eintrag ergänzen
 			run_cmd "echo \"# CaravanPi Temperatur Sensoren über 1-Wire auf GPIO Pin 18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
 			run_cmd "echo \"dtoverlay=w1-gpio,gpiopin=18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
 		else
@@ -279,21 +297,37 @@ config_protocolls() {
 # Funktion zum Klonen/Aktualisieren des CaravanPi Repositories
 install_update_caravanpi() {
 	if [ -d "$CARAVANPI_DIR" ]; then
+		cd "$CARAVANPI_DIR"
+		# Ermittle den aktuellen Branch
+		local current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+		echo
 		echo "CaravanPi Repository ist bereits auf diesem Gerät vorhanden."
+		echo "Lokal wird der Branch - $current_branch - benutzt. Dieser wird mit dem entsprechenden Branch auf github verglichen"
+		echo
 		read -p "Möchten Sie das Repository aktualisieren? (j/N): " answer
 		if [[ "$answer" =~ ^[Jj]$ ]]; then
 			cd "$CARAVANPI_DIR"
 			echo "Prüfe Änderungen..."
 			git fetch
-			local changes=$(git diff HEAD..origin/master)
+
+			local target_branch="master"
+			if [[ "$current_branch" == "development" ]]; then
+				target_branch="development"
+			fi
+
+			local changes=$(git diff HEAD..origin/$target_branch)
+
 			if [ -n "$changes" ]; then
-				echo "Änderungen verfügbar:"
-				git diff --stat HEAD..origin/master
+				"Änderungen verfügbar auf $target_branch Branch:"
+				git diff --stat HEAD..origin/$target_branch
+				echo
 				read -p "Möchten Sie diese Änderungen anwenden? (j/n): " apply_changes
-				if [[ "$apply_changes" == "j" || "$apply_changes" == "J" ]]; then
+				if [[ "$apply_changes" =~ ^[Jj]$ ]]; then
+					echo "Backup der bisherigen Konfigurationen wird ausgeführt"
 					backup_caravanpi
-					echo "Aktualisiere CaravanPi Repository..."
-					run_cmd "git merge origin/master"
+					echo "Aktualisiere CaravanPi Repository von $target_branch..."
+					run_cmd "git merge origin/$target_branch"
 				else
 					echo "Aktualisierung abgebrochen."
 				fi
@@ -309,6 +343,7 @@ install_update_caravanpi() {
 		run_cmd "git clone https://github.com/spitzlbergerj/CaravanPi.git \"$CARAVANPI_DIR\""
 	fi
 
+	echo 
 	echo "Ein/Ausschalter Skripte installieren"
 	run_cmd "sudo cp /home/pi/CaravanPi/pishutdown/pishutdown.py /usr/local/bin"
 	run_cmd "sudo cp /home/pi/CaravanPi/pishutdown/pishutdown.service /etc/systemd/system"
@@ -325,10 +360,23 @@ install_magicmirror() {
 	# Überprüfen, ob MagicMirror bereits geklont wurde
 	if [ -d "$MAGICMIRROR_DIR" ]; then
 		echo "MagicMirror scheint bereits installiert zu sein. Überspringe das Installieren..."
+		echo "Notwendige Updates führen Sie dort bitte selbst durch. Skripte hierzu finden Sie auf https://github.com/sdetweil/MagicMirror_scripts"
 	else
 		echo "MagicMirror Repository wird heruntergeladen..."
 		cd $HOME
-		run_cmd "bash -c  \"$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
+		# run_cmd kann hier nicht verwendet werden, weil curl vor der Übergabe an run_cmd ausgeführt wird
+		# daher hier direkt abgefragt
+
+		if [ "$SIMULATE" = true ]; then
+			echo "Simuliere: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
+		else
+			echo "Führe aus: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
+
+			# zunächst wird das Skript heruntergeladen und zwiwchengespeichert
+			curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh > /tmp/raspberry.sh
+			# dann ausführen
+			bash /tmp/raspberry.sh
+		fi
 	fi
 }
 
@@ -468,10 +516,12 @@ install_libraries() {
 # ########################################################################################
 
 if [ "$SIMULATE" = true ]; then
-	note "Kommandos werden NICHT ausgeführt, lediglich Simulation" "red"
+	note "Kommandos werden NICHT ausgeführt, lediglich Simulation" "green"
 else
-	note "ACHTUNG - Kommandos werden ausgeführt, keine Simulation" "red"
+	note "ACHTUNG - Kommandos werden ausgeführt !!! " "red"
 fi
+
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # Raspberry OS updaten
@@ -491,6 +541,8 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 		echo "Kein Neustart erforderlich."
 	fi
 fi
+
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # Raspberry OS konfigurieren
@@ -513,6 +565,8 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	fi
 fi
 
+cd "$HOME"
+
 # --------------------------------------------------------------------------
 # WLAN konfigurieren
 # --------------------------------------------------------------------------
@@ -530,6 +584,7 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	echo
 fi
 
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # Raspberry OS erweitern
@@ -541,6 +596,7 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	config_protocolls
 fi
 
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # CaravanPi Repository installieren
@@ -552,8 +608,7 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_update_caravanpi
 fi
 
-echo "Test Ende !!!"
-exit
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # MagicMirror installieren
@@ -563,7 +618,70 @@ note "Installation MagicMirror"
 read -p "Möchten Sie MagicMirror installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_magicmirror
+
+	echo
+	echo "Nachinstallieren des async Moduls von npm"
+	cd "$HOME/MagicMirror"
+	run_cmd "npm install async"
+
+	echo
+	echo "Installieren einiger MagicMirror Module ... "
+	cd "$HOME/MagicMirror/modules"
+	echo " ... MMM-SimpleLogo für das CaravanPi Logo"
+	run_cmd "git clone https://github.com/frdteknikelektro/MMM-SimpleLogo.git"
+	run_cmd "cp $HOME/CaravanPi/images/CaravanPi-Logo-weiss.png ~/MagicMirror/modules/MMM-SimpleLogo/public/CaravanPi-Logo-weiss.png"
+
+	cd "$HOME/MagicMirror/modules"
+	echo " ... MMM-Remote-Control um den MagicMirror per Website konfigurieren zu können"
+	run_cmd "git clone https://github.com/Jopyth/MMM-Remote-Control"
+	cd MMM-Remote-Control
+	rum_cmd "npm install"
+
+	cd "$HOME/MagicMirror/modules"
+	echo " ... MMM-CaravanPi Module"
+	echo "     ... MMM-CaravanPiTemperature"
+	run_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiTemperature"
+	cd MMM-CaravanPiTemperature
+	run_cmd "npm install"
+
+	cd "$HOME/MagicMirror/modules"
+	echo "     ... MMM-CaravanPiGasWeight"
+	run_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiGasWeight"
+	cd MMM-CaravanPiGasWeight
+	rum_cmd "npm install"
+
+	cd "$HOME/MagicMirror/modules"
+	echo "     ... MMM-CaravanPiClimate"
+	run_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiClimate"
+	cd MMM-CaravanPiClimate
+	rum_cmd "npm install"
+
+	cd "$HOME/MagicMirror/modules"
+	echo "     ... MMM-CaravanPiPosition"
+	rum_cmd "git clone https://github.com/spitzlbergerj/MMM-CaravanPiPosition"
+	cd MMM-CaravanPiPosition
+	rum_cmd "npm install"
+
+	cd "$HOME/MagicMirror/modules"
+	echo " ... MMM-GrafanaEmbedded zum Anzeigen der Grafana Grafen"
+	run_cmd "git clone https://github.com/eirikaho/MMM-GrafanaEmbedded.git"
+
+	echo "Kopieren der CaravanPi config.Josef Spitzlberger und der custom.css ..."
+	run_cmd "cp -f $HOME/CaravanPi/MagicMirror/config/config.js $HOME/MagicMirror/config"
+	run_cmd "cp -f $HOME/CaravanPi/MagicMirror/css/custom.css $HOME/MagicMirror/css"
+
+
+	echo
+	echo "Starten des MagicMirror"
+	run_cmd "pm2 start MagicMirror"
+
 fi
+
+cd "$HOME"
+
+echo "Test Ende !!!"
+exit
+
 
 # --------------------------------------------------------------------------
 # Apache Webserver installieren
@@ -575,6 +693,8 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_apache
 fi
 
+cd "$HOME"
+
 # --------------------------------------------------------------------------
 # MariaDB installieren
 # --------------------------------------------------------------------------
@@ -584,6 +704,9 @@ read -p "Möchten Sie MariaDB installieren und alle Tabellen anlegen? (j/N): " a
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_mariadb
 fi
+
+cd "$HOME"
+
 
 # --------------------------------------------------------------------------
 # phpmyadmin installieren
@@ -595,6 +718,8 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_phpmyadmin
 fi
 
+cd "$HOME"
+
 # --------------------------------------------------------------------------
 # Grafana installieren
 # --------------------------------------------------------------------------
@@ -604,6 +729,8 @@ read -p "Möchten Sie Grafana installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_grafana
 fi
+
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # Python Module installieren
@@ -615,6 +742,8 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_python_modules
 fi
 
+cd "$HOME"
+
 # --------------------------------------------------------------------------
 # Python Module installieren
 # --------------------------------------------------------------------------
@@ -625,9 +754,13 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_libraries
 fi
 
+cd "$HOME"
+
 # --------------------------------------------------------------------------
 # CaravanPi Config Lib initialisieren und damit ggf. defaults konvertieren
 # --------------------------------------------------------------------------
 note "CaravanPi Library initialisieren und ggf. defaults konvertieren"
 
 python3 $CARAVANPI_DIR/installation/caravanPiLibInit.py
+
+cd "$HOME"

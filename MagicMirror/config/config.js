@@ -47,7 +47,7 @@ modules: [
 	module: "MMM-SimpleLogo",
 	position: "top_center",
 	config: {
-		fileUrl: "modules/MMM-SimpleLogo/public/CaravanPi-Logo.png",
+		fileUrl: "modules/MMM-SimpleLogo/public/CaravanPi-Logo-weiss.png",
 		width: "220px", 
 		position: "center",
 		text: "",
@@ -99,6 +99,33 @@ modules: [
  *  CaravanPi Module
  * **********************************************************
  */
+
+// bevorzugt nicht mehr die MMM-CaravanPi-xxx einbinden, sondern Grafana Grafen 
+
+/* -------------
+{
+	 module: 'MMM-GrafanaEmbedded',
+		 position: 'top_right',   // This can be any of the regions.
+		 config: {
+				// http://192.168.178.139:3000/d/mef4p9ZVz/caravanpi-temperaturen?orgId=1&viewPanel=1
+				id: "mef4p9ZVz", 
+				host: "192.168.178.139", 
+				port: 3000,
+				dashboardName: "caravanpi-temperaturen",
+				orgId: 1,
+				panelId: 1,
+				width: "450",
+				height: "200",
+				refreshRate: "5m",
+				from: "now-36h",
+				to: "now",
+			}
+},
+--------------- */
+
+
+
+/* -------------
 {
 	module: "MMM-CaravanPiClimate",
 	position: "top_left",
@@ -121,7 +148,9 @@ modules: [
 		]
 	}
 },
+--------------- */
 
+/* -------------
 {
 	module: "MMM-CaravanPiTemperature",
 	position: "top_left",
@@ -146,7 +175,9 @@ modules: [
 		]
 	}
 },
+--------------- */
 
+/* -------------
 {
 	module: "MMM-CaravanPiGasWeight",
 	position: "top_left",
@@ -160,16 +191,17 @@ modules: [
 					name: "Alu 6kg Flasche 1",
 					file: "gasScale1",
 				},
-				/*
 				{
 					name: "Alu 8kg Flasche 2",
 					file: "gasScale2",
 				},
-				*/
 			]
 	}
 },
 
+--------------- */
+
+/* -------------
 {
 	module: "MMM-CaravanPiPosition",
 	position: "top_left",
@@ -184,13 +216,16 @@ modules: [
 		]
 	}
 },
+--------------- */
+
+
 
 /* **********************************************************
  *  weitere Module - Vorschläge
  * **********************************************************
  */
 	
-/*
+/* -------------
 {
 	module: 'MMM-DWD-WarnWeather',
 	position: 'top_right',
@@ -207,30 +242,9 @@ modules: [
 		severityThreshold: 2,
 	}
 },
-*/
+--------------- */
 
-/*
-{
-	 module: 'MMM-GrafanaEmbedded',
-		 position: 'top_right',   // This can be any of the regions.
-		 config: {
-				/* http://192.168.178.139:3000/d/mef4p9ZVz/caravanpi-temperaturen?orgId=1&viewPanel=1 */
-				id: "mef4p9ZVz", 
-				host: "192.168.178.139", 
-				port: 3000,
-				dashboardName: "caravanpi-temperaturen",
-				orgId: 1,
-				panelId: 1,
-				width: "450",
-				height: "200",
-				refreshRate: "5m",
-				from: "now-36h",
-				to: "now",
-			}
-},
-*/
-
-/*
+/* -------------
 {
 	module: "newsfeed",
 	position: "top_right",	// This can be any of the regions. Best results in center regions.
@@ -254,9 +268,9 @@ modules: [
 		]
 	}
 },
-*/
+--------------- */
 
-/*
+/* -------------
 {
 	module: 'MMM-SystemStats',
 	position: 'bottom_bar',
@@ -268,7 +282,8 @@ modules: [
 		singleRow: true,
 	}
 },
-*/
+--------------- */
+
 
 /* **********************************************************
  *  Remote Control Modul

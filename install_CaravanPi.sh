@@ -444,6 +444,10 @@ install_apache() {
 	echo "Überprüfe den Status des Apache2-Dienstes..."
 	run_cmd "sudo systemctl status apache2"
 
+	# PHP im Apache aktivieren
+	echo "Füge PHP Fähigkeit hinzu ..."
+	run_cmd "sudo apt install php php-mbstring"
+
 	echo "Apache2 wurde erfolgreich installiert und läuft."
 }
 
@@ -496,7 +500,7 @@ install_mariadb() {
 	FLUSH PRIVILEGES;
 	"
 
-	run_cmd "mysql -u root -e \"$sql_commands\""
+	run_cmd "sudo mysql -u root -e \"$sql_commands\""
 }
 
 
@@ -504,25 +508,31 @@ install_mariadb() {
 install_phpmyadmin() {
 	echo "phpmyadmin installieren ...."
 	echo
-	echo -e "${red}Achtung: die Frage ob dbconfig-common ausgeführt werden soll, bitte mit NEIN beantworten!${nc}"
+	echo -e "${red}Achtung: Sie bekommen während der nachfolgenden Installation zwei Fragen gestellt:${nc}"
+	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2"
+	echo " - die Frage, ob dbconfig-common ausgeführt werden soll, beantworten Sie mit NEIN!"
+	read irrelevant
 	echo 
 	run_cmd "sudo apt-get install phpmyadmin"
 
 	echo "Konfiguriere Apache2 für phpMyAdmin..."
 	run_cmd "sudo phpenmod mbstring"
+	
+	run_cmd "echo \"# phpmyadmin aktivieren\" | sudo tee -a /etc/apache2/apache2.conf > /dev/null"
+	run_cmd "echo \"Include /etc/phpmyadmin/apache.conf\" | sudo tee -a /etc/apache2/apache2.conf > /dev/null"
 	run_cmd "sudo systemctl restart apache2"
 }
 
 # Installation Grafana
 install_grafana() {
-	# Füge das Grafana GPG Schlüssel hinzu
-	echo "Füge Grafana GPG Schlüssel hinzu..."
-	run_cmd "curl https://packages.grafana.com/gpg.key -o /tmp/grafana.gpg" 
-	run_cmd "sudo mv /tmp/grafana.gpg /etc/apt/trusted.gpg.d/"
+	# Füge APT Keys hinzu
+	echo "Füge APT Keys hinzu"
+	run_cmd "sudo mkdir -p /etc/apt/keyrings/"
+	run_cmd "wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null"
 
 	# Füge das Grafana Repository hinzu
 	echo "Füge das Grafana Repository hinzu..."
-	run_cmd "echo \"deb https://packages.grafana.com/oss/deb stable main\" | sudo tee -a /etc/apt/sources.list.d/grafana.list"
+	run_cmd "echo \"deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main\" | sudo tee -a /etc/apt/sources.list.d/grafana.list"
 
 	# Paketliste nochmal aktualisieren
 	echo "Aktualisiere Paketlisten..."
@@ -530,12 +540,12 @@ install_grafana() {
 
 	# Installiere Grafana
 	echo "Installiere Grafana..."
-	run_cmd "sudo apt-get install grafana -y"
+	run_cmd "sudo apt-get install -y grafana"
 
 	# Starte den Grafana-Service und stelle sicher, dass er beim Booten läuft
 	echo "Starte Grafana und aktiviere den Autostart..."
-	run_cmd "sudo systemctl start grafana-server"
 	run_cmd "sudo systemctl enable grafana-server"
+	run_cmd "sudo systemctl start grafana-server"
 
 	# Sichere die originale grafana.ini Datei
 	run_cmd "sudo cp $GRAFANA_INI \"${GRAFANA_INI}.bak\""
@@ -564,11 +574,40 @@ install_grafana() {
 install_python_modules() {
 	echo "Python Module installieren ...."
 
+	echo " ... i2c-tools"
 	run_cmd "sudo apt-get install i2c-tools"
+	echo " ... mysql connector"
+	run_cmd "pip3 install mysql-connector-python --break-system-packages"
+	echo " ... mysql connector"
+	run_cmd "pip3 install paho-mqtt==1.6.1 --break-system-packages"
+	echo " ... Flask Framework"
+	run_cmd "pip3 install Flask --break-system-packages"
 
+	# Apache für Flask konfigurieren
+	# Apache wird der Proxy, jedoch muss /phpmyadmin weiterhin erreichbar bleiben
+	echo " ... Apache für Flask vorbereiten"
+	run_cmd "sudo a2enmod proxy"
+	run_cmd "sudo a2enmod proxy_http"
 
-	run_cmd "pip install Flask"
-	run_cmd "pip install mysql-connector-python"
+	# Füge ProxyPass zu 000-default.conf hinzu, um auf Flask-App zu verweisen
+	# und sicherzustellen, dass phpMyAdmin weiterhin funktioniert
+	run_cmd "echo \"<VirtualHost *:80>\" | sudo tee /etc/apache2/sites-available/000-default.conf"
+	run_cmd "echo \"    ServerAdmin webmaster@localhost\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
+	run_cmd "echo \"    DocumentRoot /var/www/html\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
+	run_cmd "echo \"    ProxyPass /phpmyadmin !\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
+	run_cmd "echo \"    ProxyPass / http://127.0.0.1:5000/\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
+	run_cmd "echo \"    ProxyPassReverse / http://127.0.0.1:5000/\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
+	run_cmd "echo \"</VirtualHost>\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
+
+	echo "Flask als Systemdienst einrichten"
+	run_cmd "sudo cp $CARAVANPI_DIR/html-flask/systemd-files/flaskwebserver.service /etc/systemd/system/"
+	run_cmd "sudo systemctl daemon-reload"
+	run_cmd "sudo systemctl enable flaskwebserver.service"
+	run_cmd "sudo systemctl start flaskwebserver.service"
+	run_cmd "sudo systemctl status flaskwebserver.service"
+
+	echo "Apache neu starten"
+	run_cmd "sudo service apache2 restart"
 }
 
 # Installation Geräte Librarys
@@ -813,12 +852,6 @@ fi
 
 cd "$HOME"
 
-
-echo "Test Ende !!!"
-exit
-
-
-
 # --------------------------------------------------------------------------
 # Python Module installieren
 # --------------------------------------------------------------------------
@@ -850,6 +883,7 @@ cd "$HOME"
 # Bewegunsmelder
 # Taster 
 # Flask
+# Apache auf Flask umlenken
 
 
 # --------------------------------------------------------------------------
@@ -869,6 +903,17 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 fi
 
 cd "$HOME"
+
+
+
+
+
+
+exit
+
+
+
+
 
 # --------------------------------------------------------------------------
 # CaravanPi Config Lib initialisieren und damit ggf. defaults konvertieren

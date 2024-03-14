@@ -412,7 +412,8 @@ install_update_caravanpi() {
 		# Klonen des Repositories in den spezifizierten Branch
 		run_cmd "git clone https://github.com/spitzlbergerj/CaravanPi.git \"$CARAVANPI_DIR\""
 		run_cmd "cd \"$CARAVANPI_DIR\""
-  		run_cmd "git checkout -b development origin/development"
+  		run_cmd "git fetch origin master:master"
+  		run_cmd "git fetch origin development:development"
 
 		# Ermittle die verfügbaren Branches vom Remote-Repository
 		echo "Verfügbare Branches:"
@@ -429,6 +430,7 @@ install_update_caravanpi() {
 				if git rev-parse --verify "$target_branch" > /dev/null 2>&1; then
 					echo "Wechsle zu Branch '$target_branch'..."
 					git checkout "$target_branch"
+					break
 				else
 					echo "Der Branch '$target_branch' existiert nicht. Überprüfen Sie die Eingabe und versuchen Sie es erneut."
 					echo

@@ -442,6 +442,13 @@ install_update_caravanpi() {
 		fi
 	fi
 
+	# git hooks aktivieren
+	echo "git hooks anlegen"
+	cd "$CARAVANPI_DIR"
+	run_cmd "cp .git_hooks/*commit .git/hooks"
+	run_cmd "chmod +x .git/hooks/*commit"
+	run_cmd "mkdir ~/CaravanPi/.git_sensible_backup"
+
 	echo 
 	echo "Ein/Ausschalter Skripte installieren"
 	run_cmd "sudo cp /home/pi/CaravanPi/pishutdown/pishutdown.py /usr/local/bin"

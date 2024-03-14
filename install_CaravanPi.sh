@@ -412,7 +412,6 @@ install_update_caravanpi() {
 		# Klonen des Repositories in den spezifizierten Branch
 		run_cmd "git clone https://github.com/spitzlbergerj/CaravanPi.git \"$CARAVANPI_DIR\""
 		run_cmd "cd \"$CARAVANPI_DIR\""
-  		run_cmd "git fetch origin master:master"
   		run_cmd "git fetch origin development:development"
 
 		# Ermittle die verfügbaren Branches vom Remote-Repository
@@ -425,6 +424,10 @@ install_update_caravanpi() {
 				# Frage nach dem gewünschten Branch
 				echo "Im Regelfall nutzen Sie bitte den master Branch!"
 				read_colored "cyan" "Welchen Branch möchten Sie nutzen? (default: master)" target_branch
+
+				if [[ -z $target_branch ]]; then
+					target_branch="master"
+				fi
 
 				# Überprüfen, ob der eingegebene Branch existiert
 				if git rev-parse --verify "$target_branch" > /dev/null 2>&1; then
@@ -463,6 +466,13 @@ install_magicmirror() {
 		# run_cmd kann hier nicht verwendet werden, weil curl vor der Übergabe an run_cmd ausgeführt wird
 		# daher hier direkt abgefragt
 
+		echo "In manchen Fällen wird während der Installaion von MagicMirror nochfolgende Warnung (vielfach) ausgegeben"
+		echo " ... MaxListenersExceededWarning: Possible EventEmitter memory leak detected ..."
+		echo "Diese Warnuen können Sie ignorieren. Die Installation klappt dennoch. Installation daher nicht abbrechen!!"
+		echo
+		read_colored "cyan" "Weiter mit Enter" irrelevant
+
+
 		if [ "$SIMULATE" = true ]; then
 			echo -e "${red}Simuliere:${nc} bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
 		else
@@ -490,7 +500,7 @@ install_apache() {
 
 	# PHP im Apache aktivieren
 	echo "Füge PHP Fähigkeit hinzu ..."
-	run_cmd "sudo apt install php php-mbstring"
+	run_cmd "sudo apt-get install php php-mbstring"
 
 	echo "Apache2 wurde erfolgreich installiert und läuft."
 }
@@ -545,7 +555,7 @@ install_mariadb() {
 	run_cmd "sudo mysql -u root -e \"$sql_commands\""
 
 	echo "Die Datenbank enthält nun folgende Tabellen:"
-	run_cmd "sudo mysql -u 'caravanpi'@'localhost' -p '$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
+	run_cmd "sudo mysql -u'caravanpi'@'localhost' -p'$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
 }
 
 
@@ -557,7 +567,7 @@ install_phpmyadmin() {
 	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2 (Leertaaste im Feld Apache2, TAB zu OK)"
 	echo " - die Frage, ob dbconfig-common ausgeführt werden soll, beantworten Sie mit JA! (TAB zu JA)"
 	echo 
-	read -p "Weiter" irrelevant
+	read_colored "cyan" "Weiter mit Enter" irrelevant
 	echo 
 	run_cmd "sudo apt-get install phpmyadmin"
 
@@ -737,26 +747,31 @@ install_backup() {
 		run_cmd "cd \"$RASPBERRY_PI_BACKUP_CLOUD_DIR\""
 
 		# Ermittle die verfügbaren Branches vom Remote-Repository
-		echo "Verfügbare Branches:"
-		run_cmd "git branch"
+		# echo "Verfügbare Branches:"
+		# run_cmd "git branch"
 
 		# nachfolgendes nur falls nicht nur simuliert (zu komplex für run_cmd)
-		if [ "$SIMULATE" = false ]; then
-			while true; do
-				# Frage nach dem gewünschten Branch
-				echo "Im Regelfall nutzen Sie bitte den master Branch!"
-				read_colored "cyan" "Welchen Branch möchten Sie nutzen? (default: master)" target_branch
+		# if [ "$SIMULATE" = false ]; then
+		# 	while true; do
+		# 		# Frage nach dem gewünschten Branch
+		# 		echo "Im Regelfall nutzen Sie bitte den main Branch!"
+		#		read_colored "cyan" "Welchen Branch möchten Sie nutzen? (default: main)" target_branch
 
-				# Überprüfen, ob der eingegebene Branch existiert
-				if git rev-parse --verify "$target_branch" > /dev/null 2>&1; then
-					echo "Wechsle zu Branch '$target_branch'..."
-					git checkout "$target_branch"
-				else
-					echo "Der Branch '$target_branch' existiert nicht. Überprüfen Sie die Eingabe und versuchen Sie es erneut."
-					echo
-				fi
-			done
-		fi
+		#		if [[ -z $target_branch ]]; then
+		#			target_branch="main"
+		#		fi
+
+		#		# Überprüfen, ob der eingegebene Branch existiert
+		#		if git rev-parse --verify "$target_branch" > /dev/null 2>&1; then
+		#			echo "Wechsle zu Branch '$target_branch'..."
+		#			git checkout "$target_branch"
+		#			break
+		#		else
+		#			echo "Der Branch '$target_branch' existiert nicht. Überprüfen Sie die Eingabe und versuchen Sie es erneut."
+		#			echo
+		#		fi
+		#	done
+		# fi
 	fi
 
 	run_cmd "ln -s $RASPBERRY_PI_BACKUP_CLOUD_DIR/backup /home/pi/backup"
@@ -770,7 +785,7 @@ install_backup() {
 	# Installation von rclone
 	echo "Installation von rclone"
 	if [ "$SIMULATE" = false ]; then
-		sudo -v ; curl https://rclone.org/install.sh | sudo bash
+		curl https://rclone.org/install.sh | sudo bash
 	fi
 
 	echo
@@ -1118,6 +1133,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Backup Routine clonen und einrichten
 # --------------------------------------------------------------------------
+note "Backup Routine installieren" "cyan"
 
 read_colored "cyan" "Möchten Sie die Backup Routine installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -1147,6 +1163,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # logrotate einrichten
 # --------------------------------------------------------------------------
+note "Logrotate konfigurieren" "cyan"
 
 read_colored "cyan" "Möchten Sie logrotate für CaravanPi aktivieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -1159,6 +1176,7 @@ cd "$HOME"
 # --------------------------------------------------------------------------
 # Crontabs
 # --------------------------------------------------------------------------
+note "Crontabs einrichten" "cyan"
 
 read_colored "cyan" "Möchten Sie die Crontabs von pi und root aktivieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then

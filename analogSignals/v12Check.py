@@ -210,7 +210,16 @@ def main():
 						print("Alarm in Config einschalten")
 						cplib.writeCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}", 1)
 						v12CheckAlarmActive = True
-					
+				
+				cplib = CaravanPiFiles()
+				cplib.handle_sensor_values(
+					args.screen,    		    # Anzeige am Bildschirm?
+					"Spannung",      			# sensor_name = Datenbankname 
+					f"12v{args.battery}",     	# sensor_id = Filename und Spalte in der Datenbank
+					["spannung"], 				# Liste Spaltennamen
+					(berechne_spannungsteiler(v12R1, v12R2, Vout=channel.voltage)) # Tupel Sensorwerte
+				)
+
 				time.sleep(delayAlarm if v12DropDetected else delay)
 
 			except Exception as e:

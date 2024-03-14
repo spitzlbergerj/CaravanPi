@@ -1,0 +1,16 @@
+[Unit]
+Description=Flask Webserver
+After=network.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/CaravanPi/html-flask
+ExecStart=/usr/bin/python3 -u /home/pi/CaravanPi/html-flask/flask-main.py
+Restart=always
+# Logdateien Umleitung, dabei unbuffered einschalten
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=append:/home/pi/CaravanPi/.log/flask-main.log
+StandardError=append:/home/pi/CaravanPi/.log/flask-main.log
+
+[Install]
+WantedBy=multi-user.target

@@ -29,7 +29,7 @@
     <gassensorAlarmActive>1</gassensorAlarmActive>
     <v230CheckInstalled>1</v230CheckInstalled>
     <v230CheckADCPin>0</v230CheckADCPin>
-    <v230CheckAlarmActive>0</v230CheckAlarmActive>
+    <v230CheckAlarmActive>1</v230CheckAlarmActive>
     <v12BatteryCheckInstalled>1</v12BatteryCheckInstalled>
     <v12BatteryCheckADCPin>2</v12BatteryCheckADCPin>
     <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>
@@ -41,13 +41,13 @@
     <v12BatteryR2>150</v12BatteryR2>
     <v12CarR1>560</v12CarR1>
     <v12CarR2>150</v12CarR2>
-    <gassensorAlarmResume>True</gassensorAlarmResume>
-    <v230CheckAlarmResume>True</v230CheckAlarmResume>
-    <v12BatteryCheckAlarmResume>True</v12BatteryCheckAlarmResume>
-    <v12CarCheckAlarmResume>True</v12CarCheckAlarmResume>
+    <gassensorAlarmResume>0</gassensorAlarmResume>
+    <v230CheckAlarmResume>0</v230CheckAlarmResume>
+    <v12BatteryCheckAlarmResume>0</v12BatteryCheckAlarmResume>
+    <v12CarCheckAlarmResume>1</v12CarCheckAlarmResume>
     </caravanpiDefaults>
   <adjustmentPosition>
-    <adjustX>-0.0392266</adjustX>
+    <adjustX>-0.0392267</adjustX>
     <adjustY>1.5298374</adjustY>
     <adjustZ>8.9044382</adjustZ>
     <toleranceX>0.2</toleranceX>

@@ -276,12 +276,16 @@ class CaravanPiFiles:
 							"stromPiInstalled", 
 							"gassensorInstalled", 
 							"gassensorAlarmActive", 
+							"gassensorAlarmResume", 
 							"v230CheckInstalled", 
 							"v230CheckAlarmActive", 
+							"v230CheckAlarmResume", 
 							"v12BatteryCheckInstalled", 
 							"v12BatteryCheckAlarmActive", 
+							"v12BatteryCheckAlarmResume", 
 							"v12CarCheckInstalled",
 							"v12CarCheckAlarmActive",
+							"v12CarCheckAlarmResume",
 						]:
 				if key in config_dict:
 					config_dict[key] = '1' if config_dict[key] else '0'

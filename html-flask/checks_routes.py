@@ -37,6 +37,7 @@ check_list = [
 	{'name': 'Python Bibliotheken', 'key': 'check_python_modules', 'run_check': True},
 	{'name': 'MagicMirror', 'key': 'check_magicmirror', 'run_check': True},
 	{'name': 'MariaDB', 'key': 'check_mariadb', 'run_check': True},
+	{'name': 'MQTT', 'key': 'check_mqtt', 'run_check': True},
 	{'name': 'Grafana', 'key': 'check_grafana', 'run_check': True},
 	{'name': 'Apache Webserver', 'key': 'check_apache', 'run_check': True},
 	{'name': '1-Wire Bus', 'key': 'check_1_wire', 'run_check': True},
@@ -245,8 +246,13 @@ def check_python_modules():
 
 	# Durchsuchen des Verzeichnisses nach Python-Dateien
 	for root, _, files in os.walk(search_dir):
+		# Verzeichnisse, die als obsolet gekennzeicnet sind, ignorieren
+		if 'obsolet' in root:
+			continue 
+
 		for file in files:
-			if file.endswith('.py'):
+			# nur Files betrachten mit der Endung .py und in denen das Wort obsolet nicht vorkommt
+			if file.endswith('.py') and 'obsolet' not in file:
 				file_path = os.path.join(root, file)
 				with open(file_path, 'r') as f:
 					try:
@@ -308,6 +314,24 @@ def check_magicmirror():
 def check_mariadb():
 	try:
 		connection = cplib.create_db_connection()
+
+		# Überprüfen Sie, ob die Verbindung erfolgreich hergestellt wurde
+		if connection is not None:
+			connection.disconnect() # Schließen Sie die Verbindung, wenn sie erfolgreich hergestellt wurde
+			return True
+		else:
+			return False
+		
+	except Exception as e:
+		print(f"Ein Fehler ist aufgetreten: {e}")
+		return False
+	
+# ---------------------------------------------------------------------------------------------
+# MQTT über den Aufbau einer Verbindung
+# ----------------------------------------------------------------------------------------------
+def check_mqtt():
+	try:
+		connection = cplib.create_mqtt_connection()
 
 		# Überprüfen Sie, ob die Verbindung erfolgreich hergestellt wurde
 		if connection is not None:
@@ -413,6 +437,12 @@ def check_i2c():
 	elif expected_climates == 0:
 		# Entfernen von 76 und 77, wenn sie in der Liste sind
 		i2c_expected_device_addresses = [addr for addr in i2c_expected_device_addresses if addr not in (0x76, 0x77)]
+
+
+	# Anpassen der erwarteten I2C Adresse aufgrund installierter Gassensoren bzw. 230 V Überwachung 
+	# diese benötigen einen AD Wandler auf Adresse 48
+	if cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorInstalled"), "bool") or cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckInstalled"), "bool"):
+		i2c_expected_device_addresses.append(0x48)
 
 	found_devices_hex = set(scan_i2c_bus(i2c_bus_number))  # Hex-Strings wie '0x20'
 	expected_devices = set(i2c_expected_device_addresses)  # Ganzzahlen
@@ -824,6 +854,27 @@ def register_checks_routes(app):
 			return redirect(url_for('route_check_final'))	
 
 		return render_template('check_base_template.html', title='Check MariaDB', current_check='check_mariadb', check_list=check_list, check_results=check_results, next_check_route=next_route)
+
+	@app.route('/check_mqtt')
+	def route_check_mqtt():
+		check_info = next((item for item in check_list if item['key'] == 'check_mqtt'), None)
+
+		# Überprüfen, ob der Check ausgeführt werden soll
+		if check_info:
+			next_route = find_next_route('check_mqtt')
+			if check_info['run_check']:
+				# Check durchführen
+				result = check_mqtt()
+				check_results['check_mqtt']['result'] = 'OK' if result else 'Fehler'
+				check_results['check_mqtt']['color'] = 'green' if result else 'red'
+			else:
+				# Weiterleitung zum nächsten Check, wenn dieser Check übersprungen werden soll
+				return redirect(url_for(next_route))
+		else:
+			# Weiterleitung zum Ende, wenn der Check nicht gefunden wurde
+			return redirect(url_for('route_check_final'))	
+
+		return render_template('check_base_template.html', title='Check MQTT', current_check='check_mqtt', check_list=check_list, check_results=check_results, next_check_route=next_route)
 
 	@app.route('/check_grafana')
 	def route_check_grafana():

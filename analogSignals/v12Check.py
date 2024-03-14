@@ -211,7 +211,6 @@ def main():
 						cplib.writeCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}", 1)
 						v12CheckAlarmActive = True
 				
-				cplib = CaravanPiFiles()
 				cplib.handle_sensor_values(
 					args.screen,    		    # Anzeige am Bildschirm?
 					"Spannung",      			# sensor_name = Datenbankname 

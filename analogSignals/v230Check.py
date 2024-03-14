@@ -145,6 +145,14 @@ def main():
 						cplib.writeCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive", 1)
 						v230CheckAlarmActive = True
 					
+				cplib.handle_sensor_values(
+					args.screen,    		    # Anzeige am Bildschirm?
+					"Spannung",      			# sensor_name = Datenbankname 
+					"230v",     	# sensor_id = Filename und Spalte in der Datenbank
+					["spannung"], 				# Liste Spaltennamen
+					(230.0 if not v230DropDetected else 0.0 ) # Tupel Sensorwerte
+				)
+
 				time.sleep(delayAlarm if v230DropDetected else delay)
 
 			except Exception as e:

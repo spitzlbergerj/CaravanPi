@@ -412,6 +412,7 @@ install_update_caravanpi() {
 		# Klonen des Repositories in den spezifizierten Branch
 		run_cmd "git clone https://github.com/spitzlbergerj/CaravanPi.git \"$CARAVANPI_DIR\""
 		run_cmd "cd \"$CARAVANPI_DIR\""
+  		run_cmd "git checkout -b development origin/development"
 
 		# Ermittle die verfügbaren Branches vom Remote-Repository
 		echo "Verfügbare Branches:"

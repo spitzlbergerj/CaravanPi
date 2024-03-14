@@ -10,10 +10,6 @@
 # min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
 #
 
-
-# Python-Flask starten für die CaravanPi Websites
-@reboot python3 -u /home/pi/CaravanPi/html-flask/flask-main.py  >/home/pi/CaravanPi/.log/flask-main.log 2>&1
-
 # Temperatursensoren alle 60 Sekunden auslesen
 00-59/10 * * * * python3 -u /home/pi/CaravanPi/temperature/temp2file.py  >/home/pi/CaravanPi/.log/temp2file.log 2>&1
 
@@ -53,9 +49,6 @@
 # 12V Eingang überwachen
 #@reboot python3 -u /home/pi/CaravanPi/analogSignals/v12Check.py -b "car" >/home/pi/CaravanPi/.log/v12Check.log 2>&1
 @reboot python3 -u /home/pi/CaravanPi/analogSignals/v12Check.py -b "bord" >/home/pi/CaravanPi/.log/v12Check.log 2>&1
-
-# Webservice bottleFramework starten
-#@reboot python3 -u /home/pi/CaravanPi/bottleFramework/bottleCommands.py >/home/pi/CaravanPi/.log/bottleCommands.log 2>&1
 
 # Zeit zwischen StromPi und Raspberry Pi synchronisieren
 @reboot python /home/pi/StromPi3/RTCSerial.py >/home/pi/CaravanPi/.log/StromPi-RTC-sync.log 2>&1

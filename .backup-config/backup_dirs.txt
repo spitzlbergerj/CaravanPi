@@ -1,0 +1,4 @@
+/home/pi/CaravanPi/defaults
+/home/pi/MagicMirror/css/custom.css
+/home/pi/MagicMirror/config/config.js
+/usr/local/bin/pishutdown.py

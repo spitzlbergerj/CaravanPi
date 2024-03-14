@@ -2,15 +2,8 @@
 #
 # min  hour  dayofmonth  month  dayofweek(0=Sonntag)   command
 #
-# beim Neustart Skript fuer Sensor starten
-@reboot python3 /home/pi/CaravanPi/pir/pir.py 120 1 > /home/pi/CaravanPi/.log/pir.log 2>&1
 
-# Backup Image starten (Sonntags)
-# 01 03 * * 0  /usr/local/bin/backup.sh > /home/pi/CaravanPi/.log/backup.log 2>&1
-# 05 20 * * *  /usr/local/bin/backup.sh > /home/pi/CaravanPi/.log/backup.log 2>&1
-#
 # Backup Dateien starten
-
 @reboot sleep 300 && /home/pi/backup/backup.sh >>/home/pi/CaravanPi/.log/backup.log 2>&1
 01 02 * * * /home/pi/backup/backup.sh >>/home/pi/CaravanPi/.log/backup.log 2>&1
 #

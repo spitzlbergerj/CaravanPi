@@ -1,0 +1,15 @@
+[Unit]
+Description=Bewegungsmelder
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pi/CaravanPi/pir
+ExecStart=/usr/bin/python3 -u /home/pi/CaravanPi/pir/pir.py 120 1
+Restart=always
+# Logdateien Umleitung, dabei unbuffered einschalten
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=append:/home/pi/CaravanPi/.log/pir.log
+StandardError=append:/home/pi/CaravanPi/.log/pir.log
+
+[Install]
+WantedBy=multi-user.target

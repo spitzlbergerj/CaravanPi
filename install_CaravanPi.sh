@@ -7,19 +7,19 @@
 LOG_FILE="$HOME/install_CaravanPi.log"
 ip_address=$(hostname -I | awk '{print $1}')
 
-# Raspberry Pi Revision und IP Adresse ins Logfile schreiben
-echo "------------------------------------------------------------" > "$LOG_FILE"
-echo "/proc/cpuinfo" > "$LOG_FILE"
-echo "------------------------------------------------------------" > "$LOG_FILE"
-/proc/cpuinfo > "$LOG_FILE"
-echo "------------------------------------------------------------" > "$LOG_FILE"
-echo "IP Adresse" > "$LOG_FILE"
-echo "------------------------------------------------------------" > "$LOG_FILE"
-echo "$ip_address" > "$LOG_FILE"
-echo "------------------------------------------------------------" > "$LOG_FILE"
+# Schreibe die Raspberry Pi Revision und IP-Adresse ins Logfile
+{
+    echo "------------------------------------------------------------"
+    echo "Inhalt von /proc/cpuinfo:"
+    echo "------------------------------------------------------------"
+	cat /proc/cpuinfo
+    echo "------------------------------------------------------------"
+    echo "IP-Adresse: $ip_address"
+    echo "------------------------------------------------------------"
+} >> "$LOG_FILE"
 
 # alle weiteren Ausgaben in das Logfile clonen
-exec > >(tee "$LOG_FILE") 2>&1
+exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo -e "\e[0m"
 echo '                                                                                     '
@@ -86,6 +86,8 @@ CARAVANPI_MARIADB_CREATE_TABLES="$CARAVANPI_DIR/installation/CaravanPiValues.sql
 MAGICMIRROR_DIR="$HOME/MagicMirror"
 
 GRAFANA_INI="/etc/grafana/grafana.ini"
+
+RASPBERRY_PI_BACKUP_CLOUD_DIR="$HOME/Raspberry-Pi-Backup-Cloud"
 
 # ANSI Farbcodes
 no_color='\033[0m' # Keine Farbe
@@ -550,7 +552,7 @@ install_phpmyadmin() {
 	echo
 	echo -e "${red}Achtung: Sie bekommen während der nachfolgenden Installation u.a. zwei Fragen gestellt:${nc}"
 	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2 (Leertaaste im Feld Apache2, TAB zu OK)"
-	echo " - die Frage, ob dbconfig-common ausgeführt werden soll, beantworten Sie mit NEIN! (TAB zu Nein)"
+	echo " - die Frage, ob dbconfig-common ausgeführt werden soll, beantworten Sie mit JA! (TAB zu JA)"
 	echo 
 	read -p "Weiter" irrelevant
 	echo 
@@ -671,7 +673,7 @@ install_python_modules() {
 	run_cmd "echo \"</VirtualHost>\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
 
 	echo "Flask als Systemdienst einrichten"
-	run_cmd "sudo cp $CARAVANPI_DIR/html-flask/systemd-files/flask.service /etc/systemd/system/"
+	run_cmd "sudo cp $CARAVANPI_DIR/.systemd-files/flask.service /etc/systemd/system/"
 	run_cmd "sudo systemctl daemon-reload"
 	run_cmd "sudo systemctl enable flask.service"
 	run_cmd "sudo systemctl start flask.service"
@@ -681,6 +683,138 @@ install_python_modules() {
 
 }
 
+# Installation Backup Routinr
+install_backup() {
+	echo "Backup Routine installieren ...."
+
+	if [ -d "$RASPBERRY_PI_BACKUP_CLOUD_DIR" ]; then
+		# Routine beretis installiert
+		cd "$RASPBERRY_PI_BACKUP_CLOUD_DIR"
+		# Ermittle den aktuellen Branch
+		local current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+		echo
+		echo "Raspberry-Pi-Backup-Cloud Repository ist bereits auf diesem Gerät vorhanden."
+		echo "Lokal wird der Branch - $current_branch - benutzt. Dieser wird mit dem entsprechenden Branch auf github verglichen"
+		echo
+		read_colored "cyan" "Möchten Sie das Repository aktualisieren? (j/N): " answer
+		if [[ "$answer" =~ ^[Jj]$ ]]; then
+			cd "$RASPBERRY_PI_BACKUP_CLOUD_DIR"
+			echo "Prüfe Änderungen..."
+			git fetch
+
+			local target_branch="master"
+			if [[ "$current_branch" == "development" ]]; then
+				target_branch="development"
+			fi
+
+			local changes=$(git diff HEAD..origin/$target_branch)
+
+			if [ -n "$changes" ]; then
+				"Änderungen verfügbar auf $target_branch Branch:"
+				git diff --stat HEAD..origin/$target_branch
+				echo
+				read_colored "cyan" "Möchten Sie diese Änderungen anwenden? (j/n): " apply_changes
+				if [[ "$apply_changes" =~ ^[Jj]$ ]]; then
+					echo "Aktualisiere Raspberry-Pi-Backup-Cloud Repository von $target_branch..."
+					run_cmd "git merge origin/$target_branch"
+				else
+					echo "Aktualisierung abgebrochen."
+				fi
+			else
+				echo "Keine Änderungen verfügbar. Repository ist aktuell."
+			fi
+		else
+			echo "Aktualisierung nicht gewünscht."
+		fi
+	else
+		echo "Raspberry-Pi-Backup-Cloud Repository wird heruntergeladen..."
+		# Klonen des Repositories in den spezifizierten Branch
+		run_cmd "git clone https://github.com/spitzlbergerj/Raspberry-Pi-Backup-Cloud.git \"$RASPBERRY_PI_BACKUP_CLOUD_DIR\""
+		run_cmd "cd \"$RASPBERRY_PI_BACKUP_CLOUD_DIR\""
+
+		# Ermittle die verfügbaren Branches vom Remote-Repository
+		echo "Verfügbare Branches:"
+		run_cmd "git branch"
+
+		# nachfolgendes nur falls nicht nur simuliert (zu komplex für run_cmd)
+		if [ "$SIMULATE" = false ]; then
+			while true; do
+				# Frage nach dem gewünschten Branch
+				echo "Im Regelfall nutzen Sie bitte den master Branch!"
+				read_colored "cyan" "Welchen Branch möchten Sie nutzen? (default: master)" target_branch
+
+				# Überprüfen, ob der eingegebene Branch existiert
+				if git rev-parse --verify "$target_branch" > /dev/null 2>&1; then
+					echo "Wechsle zu Branch '$target_branch'..."
+					git checkout "$target_branch"
+				else
+					echo "Der Branch '$target_branch' existiert nicht. Überprüfen Sie die Eingabe und versuchen Sie es erneut."
+					echo
+				fi
+			done
+		fi
+	fi
+
+	run_cmd "ln -s $RASPBERRY_PI_BACKUP_CLOUD_DIR/backup /home/pi/backup"
+	run_cmd "cp $CARAVANPI_DIR/.backup-config/backup2ndScript.sh /home/pi/backup/.config/backup2ndScript.sh"
+	run_cmd "cp $CARAVANPI_DIR/.backup-config/backup_dirs.txt /home/pi/backup/.config/backup_dirs.txt"
+	run_cmd "cp $CARAVANPI_DIR/.backup-config/backup_name.txt /home/pi/backup/.config/backup_name.txt"
+	run_cmd "cp $RASPBERRY_PI_BACKUP_CLOUD_DIR/backup/.config/rclone.conf-muster /home/pi/backup/.config/rclone.conf"
+
+	run_cmd "chmod +x /home/pi/backup/backup.sh /home/pi/backup/.config/backup2ndScript.sh"
+
+	# Installation von rclone
+	echo "Installation von rclone"
+	if [ "$SIMULATE" = false ]; then
+		sudo -v ; curl https://rclone.org/install.sh | sudo bash
+	fi
+
+	echo
+	echo_colored "magenta" "rclone muss noch zwingend konfiguriert werden."
+	echo_colored "magenta" "Eine Beschreibung hierzu finden Sie unter https://github.com/spitzlbergerj/Raspberry-Pi-Backup-Cloud"
+	echo
+	echo
+
+}
+
+next_steps() {
+
+	note "Abschluss und nächste Schritte" "cyan"
+
+	echo
+	echo
+	echo_colored "magenta" "Sie haben es nun beinahe geschafft! Nun folgen noch manuelle Schritte"
+	echo
+	echo "- reboot durchführen"
+	echo "     Sie sollten nach Abschluss der Installation einen reboot durchführen"
+	echo "     Sie können sich diesen Text noch einmal ausgeben lassen, "
+	echo "     wenn Sie dieses Installations-Skript noch einmal nur mit dem Paramter 'next' starten"
+	echo
+	echo "- rclone konfigurieren"
+	echo "     Damit die Datensicherung klappt, müssen Sie noch rclone entsprechend konfigurieren"
+	echo "     Eine gute Beschreibung hierfür finden Sie unter https://github.com/spitzlbergerj/Raspberry-Pi-Backup-Cloud"
+	echo
+	echo "- CaravanPi Konfiguration durchführen"
+	echo "     Vieles am CaravanPi wird über eine Konfigruationsdatei gesteuert. Diese xml Datei können Sie komfortabel"
+	echo "     über die CaravanPI Website befüllen. Gehen Sie dazu auf http://$ip_address/configs und führen Sie"
+	echo "     nacheinander alle Konfigurationsschritte durch"
+	echo
+	echo "- Crontabs kontrollieren und anpassen"
+	echo "     Dieses Skript hat für die Crontabs meine Muster Crontabs eingesetzt. Spätestens nach dem Booten werden"
+	echo "     die CaravanPi Programme beginnen, die Sensoren abzufragen und in Datei, Datenbank zu schreiben"
+	echo "     und an den MQTT Broker zu senden."
+	echo "     Ändern Sie die Crontab nach Ihren Bedürfnissen. Nehmen Sie z.B. Programme außer Betrieb, falls noch"
+	echo "     entsprechenden Sensoren verbaut wurden."
+	echo
+	echo
+	echo "- Sensoren in den Caravan einbauen und mit der CaravanPi Platine verbinden"
+	echo "     Der letzte Schritt ist dann natürlich die Hardware Sensoren in den Caravan einzubauen"
+	echo "     Auf dem CaravanPi Wiki finden Sie hierzu ausführliche Erläuterungen, wie ich das erledigt habe"
+	echo
+	echo
+}
+
 # ########################################################################################
 # ########################################################################################
 # ##                                                                                    ##
@@ -688,6 +822,12 @@ install_python_modules() {
 # ##                                                                                    ##
 # ########################################################################################
 # ########################################################################################
+
+# Wenn der Parameter next lautet, dann nur noch den Abschluss Text ausgeben
+if [ "$p0" == "next" ]; then
+	next_steps
+	exit
+fi
 
 if [ "$SIMULATE" = true ]; then
 	note "Kommandos werden NICHT ausgeführt, lediglich Simulation" "green"
@@ -973,14 +1113,15 @@ fi
 cd "$HOME"
 
 # --------------------------------------------------------------------------
-# Einträge in den Crontabs vornehmen 
+# Backup Routine clonen und einrichten
 # --------------------------------------------------------------------------
 
-# Bewegunsmelder
-# Taster 
-# Flask
-# Apache auf Flask umlenken
+read_colored "cyan" "Möchten Sie die Backup Routine installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_backup
+fi
 
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # Bewegungsssensor aktivieren
@@ -990,32 +1131,51 @@ note "Bewegungssernsor aktivieren" "cyan"
 read_colored "cyan" "Möchten Sie den Bewegungssensor aktivieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 
-	# in root Crontab aufnehmen
-	# beim Neustart Skript fuer Sensor starten
-	# @reboot python3 /home/pi/CaravanPi/pir/pir.py 120 1
-
-	echo
-
+	echo "PIR Sensor als Systemdienst einrichten"
+	run_cmd "sudo cp $CARAVANPI_DIR/.systemd-files/pir.service /etc/systemd/system/"
+	run_cmd "sudo systemctl daemon-reload"
+	run_cmd "sudo systemctl enable pir.service"
+	run_cmd "sudo systemctl start pir.service"
 fi
 
 cd "$HOME"
 
 
+# --------------------------------------------------------------------------
+# logrotate einrichten
+# --------------------------------------------------------------------------
 
+read_colored "cyan" "Möchten Sie logrotate für CaravanPi aktivieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	run_cmd "echo -e \"\n# CaravanPi\ninclude /home/pi/CaravanPi/logrotate/logrotate-CaravanPi.conf\" | sudo tee -a /etc/logrotate.conf > /dev/null"
+	run_cmd "sudo find \"$CARAVANPI_DIR\" -type f -name \"*logrotate*.conf\" -exec chown root:root {} \;"
+fi
 
+cd "$HOME"
 
+# --------------------------------------------------------------------------
+# Crontabs
+# --------------------------------------------------------------------------
 
-exit
+read_colored "cyan" "Möchten Sie die Crontabs von pi und root aktivieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	run_cmd "crontab $CARAVANPI_DIR/.crontabs/crontab-pi"
+	run_cmd "sudo crontab $CARAVANPI_DIR/.crontabs/crontab-root"
+fi
 
-
-
-
+cd "$HOME"
 
 # --------------------------------------------------------------------------
 # CaravanPi Config Lib initialisieren und damit ggf. defaults konvertieren
 # --------------------------------------------------------------------------
-note "CaravanPi Library initialisieren und ggf. defaults konvertieren"
+note "CaravanPi Library initialisieren und ggf. defaults konvertieren" "cyan"
 
 python3 $CARAVANPI_DIR/installation/caravanPiLibInit.py
 
 cd "$HOME"
+
+# --------------------------------------------------------------------------
+# nächste Schritte
+# --------------------------------------------------------------------------
+
+next_steps

@@ -423,7 +423,7 @@ install_update_caravanpi() {
 			while true; do
 				# Frage nach dem gewünschten Branch
 				echo "Im Regelfall nutzen Sie bitte den master Branch!"
-				read_colored "cyan" "Welchen Branch möchten Sie nutzen? (default: master)" target_branch
+				read_colored "cyan" "Welchen Branch möchten Sie nutzen? (default: master) " target_branch
 
 				if [[ -z $target_branch ]]; then
 					target_branch="master"
@@ -466,9 +466,9 @@ install_magicmirror() {
 		# run_cmd kann hier nicht verwendet werden, weil curl vor der Übergabe an run_cmd ausgeführt wird
 		# daher hier direkt abgefragt
 
-		echo "In manchen Fällen wird während der Installaion von MagicMirror nochfolgende Warnung (vielfach) ausgegeben"
+		echo "In manchen Fällen wird während der Installaion von MagicMirror nachfolgende Warnung (vielfach) ausgegeben"
 		echo " ... MaxListenersExceededWarning: Possible EventEmitter memory leak detected ..."
-		echo "Diese Warnuen können Sie ignorieren. Die Installation klappt dennoch. Installation daher nicht abbrechen!!"
+		echo "Diese Warnungen können Sie ignorieren. Die Installation klappt dennoch. Installation daher nicht abbrechen!!"
 		echo
 		read_colored "cyan" "Weiter mit Enter" irrelevant
 
@@ -512,15 +512,19 @@ install_mariadb() {
 
 	echo
 	echo
-	echo "Benutzer CaravanPi anlegen ... "
-	echo "-------------------------------"
-	read_colored "cyan" "Bitte geben Sie ein Passwort für den 'caravanpi' MariaDB Benutzer ein: " caravanpi_password
-
+	caravanpi_password=""
+	while [ -z "$caravanpi_password" ]; do
+		read_colored "cyan" "Bitte geben Sie ein Passwort für den Benutzer 'caravanpi' auf der MariaDB ein: " caravanpi_password
+		if [ -z "$caravanpi_password" ]; then
+			echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+		fi
+	done
+	
 	echo
-	echo "    Benutzer wird angelegt ..."
+	echo "    Benutzer CaravanPi wird angelegt ..."
 	run_cmd "sudo mysql -e \"CREATE USER 'caravanpi'@'localhost' IDENTIFIED BY '$caravanpi_password';\""
 
-	echo "    Datenbank wird angelegt ..."
+	echo "    Datenbank CaravanPiValues wird angelegt ..."
 	run_cmd "sudo mysql -e \"CREATE DATABASE CaravanPiValues;\""
 	run_cmd "sudo mysql -e \"GRANT ALL PRIVILEGES ON CaravanPiValues.* TO 'caravanpi'@'localhost';\""
 	run_cmd "sudo mysql -e \"FLUSH PRIVILEGES;\""
@@ -529,33 +533,8 @@ install_mariadb() {
 	run_cmd "sudo mysql CaravanPiValues < $CARAVANPI_MARIADB_CREATE_TABLES"
 
 	echo
-	echo
-	echo "Installation absichern ... "
-
-	# wir ersetzen hier sudo mysql_secure_installation durch eine Reihe von Einzelbefehlen, da 
-	# mysql_secure_installation micht gut innerhalb eines Skriptes ausführbar ist
-
-	root_password=""
-	while [ -z "$root_password" ]; do
-		read_colored "cyan" "Bitte geben Sie ein starkes Passwort für den MariaDB root User ein:" root_password
-		if [ -z "$root_password" ]; then
-			echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
-		fi
-	done
-
-	# SQL-Befehle, um die MariaDB-Sicherheitseinstellungen anzupassen
-	sql_commands="
-	ALTER USER 'root'@'localhost' IDENTIFIED BY '${root_password}';
-	DELETE FROM mysql.user WHERE User='';
-	DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-	DROP DATABASE IF EXISTS test;
-	DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
-	FLUSH PRIVILEGES;
-	"
-	run_cmd "sudo mysql -u root -e \"$sql_commands\""
-
 	echo "Die Datenbank enthält nun folgende Tabellen:"
-	run_cmd "sudo mysql -u'caravanpi'@'localhost' -p'$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
+	run_cmd "sudo mysql -u'caravanpi' -p'$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
 }
 
 
@@ -563,9 +542,11 @@ install_mariadb() {
 install_phpmyadmin() {
 	echo "phpmyadmin installieren ...."
 	echo
-	echo -e "${red}Achtung: Sie bekommen während der nachfolgenden Installation u.a. zwei Fragen gestellt:${nc}"
-	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2 (Leertaaste im Feld Apache2, TAB zu OK)"
-	echo " - die Frage, ob dbconfig-common ausgeführt werden soll, beantworten Sie mit JA! (TAB zu JA)"
+	echo -e "${red}Achtung: Sie bekommen während der nachfolgenden Installation einige Fragen gestellt:${nc}"
+	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2"
+	echo "     ACHTUNG, hier unbedingt Leertaaste im Feld Apache2 drücken, Stern erscheint, dann TAB zu OK"
+	echo
+	echo " - die Frage 'Konfigurieren der Datenbank für phpmyadmin mit dbconfig-common?' beantworten Sie mit JA! (TAB zu JA)"
 	echo 
 	read_colored "cyan" "Weiter mit Enter" irrelevant
 	echo 
@@ -578,6 +559,38 @@ install_phpmyadmin() {
 	run_cmd "echo \"Include /etc/phpmyadmin/apache.conf\" | sudo tee -a /etc/apache2/apache2.conf > /dev/null"
 	run_cmd "sudo systemctl restart apache2"
 }
+
+# Absichern MariaDB - erst nsch Installation von myphpadmin!
+secure_mariadb() {
+	echo "MariaDB Server absichern ...."
+	echo
+	echo
+	root_password=""
+	while [ -z "$root_password" ]; do
+		read_colored "cyan" "Bitte geben Sie ein Passwort für den Benutzer 'root' auf der MariaDB ein: " root_password
+		if [ -z "$root_password" ]; then
+			echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+		fi
+	done
+
+	echo
+	echo "Installation absichern ... "
+
+	# wir ersetzen hier sudo mysql_secure_installation durch eine Reihe von Einzelbefehlen, da 
+	# mysql_secure_installation micht gut innerhalb eines Skriptes ausführbar ist
+
+	# SQL-Befehle, um die MariaDB-Sicherheitseinstellungen anzupassen
+	sql_commands="
+	ALTER USER 'root'@'localhost' IDENTIFIED BY '${root_password}';
+	DELETE FROM mysql.user WHERE User='';
+	DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+	DROP DATABASE IF EXISTS test;
+	DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+	FLUSH PRIVILEGES;
+	"
+	run_cmd "sudo mysql -u root -e \"$sql_commands\""
+}
+
 
 # Installation Grafana
 install_grafana() {
@@ -855,6 +868,18 @@ fi
 
 cd "$HOME"
 
+echo "Die Installation von CaravanPi erfolgt in mehreren Schritten. Für das Funktionieren des CaravanPi sind alle Schritte vonnöten."
+echo "Überspringen Sie Schritte nur, wenn Sie wissen was Sie tun bzw. wenn Sie nach einem erforderlichen Reboot alle Schritte "
+echo "überspringen, die Sie schon ausgeführt haben."
+echo
+echo "Die Reihenfolge der einzelnen Schritte ist ebenfalls wichtig und einzuhalten."
+echo
+echo "Die einzelnen Kommados geben sehr viele Daten aus. Um die Übersicht zu erhöhen folge ich diesen Farb-Codex:"
+echo_colored "cyan" "CYAN für Kapitelüberschriften und Abfragen an Sie"
+echo_colored "magenta" "MAGENTA für wichtige Informationen"
+echo
+echo
+
 # --------------------------------------------------------------------------
 # Raspberry OS updaten
 # --------------------------------------------------------------------------
@@ -1054,6 +1079,10 @@ note "Installation MariaDB" "cyan"
 read_colored "cyan" "Möchten Sie MariaDB installieren und alle Tabellen anlegen? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_mariadb
+
+	echo
+	echo_colored "magenta" "Nach der Installation von phpmyadmin wird die MariaDB noch abgesichert"
+	echo
 fi
 
 cd "$HOME"
@@ -1073,6 +1102,18 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	echo "Rufen Sie dazu die Website http://$ip_address/phpmyadmin auf."
 	echo
 
+fi
+
+cd "$HOME"
+
+# --------------------------------------------------------------------------
+# MariaDB absichern
+# --------------------------------------------------------------------------
+note "MariaDB absichern" "cyan"
+
+read_colored "cyan" "Möchten Sie die MariaDB absichern? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	secure_mariadb
 fi
 
 cd "$HOME"

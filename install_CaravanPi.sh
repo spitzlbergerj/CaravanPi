@@ -135,7 +135,7 @@ echo_colored() {
 	esac
 
 	# Zeige den farbigen Prompt an und lese die Eingabe
-	echo -en "${color}${output}${no_color}"
+	echo -e "${color}${output}${no_color}"
 }
 
 
@@ -611,15 +611,45 @@ install_grafana() {
 	echo "Grafana wurde erfolgreich installiert und läuft."
 }
 
+# Installation Geräte Librarys
+install_libraries() {
+	echo "Libraries installieren ...."
+	cd "$CARAVANPI_DIR/.lib"
+
+	run_cmd "sudo apt-get install fping"
+
+	run_cmd "sudo apt-get install i2c-tools"
+
+	run_cmd "pip3 install adafruit-circuitpython-ads1x15 --break-system-packages"
+	run_cmd "pip3 install adafruit-circuitpython-lis3dh --break-system-packages"
+	run_cmd "pip3 install adafruit-circuitpython-busdevice --break-system-packages"
+	run_cmd "pip3 install adafruit-circuitpython-adxl34x --break-system-packages"
+	run_cmd "pip3 install adafruit-circuitpython-mcp230xx --break-system-packages"
+
+	run_cmd "pip3 install bme680 --break-system-packages"
+
+	run_cmd "pip3 install netaddr --break-system-packages"
+
+	run_cmd "pip3 install board --break-system-packages"
+	run_cmd "pip3 install busio --break-system-packages"
+
+	run_cmd "pip3 install digitalio --break-system-packages"
+
+	run_cmd "pip3 install crontab --break-system-packages"
+
+	# outdated
+	# run_cmd "sudo apt-get install python-dev python-smbus"
+	# run_cmd "sudo apt-get install build-essential git"
+}
+
+
 # Installation Python Module
 install_python_modules() {
-	echo "Python Module installieren ...."
+	echo "Python Module für MariaDB, MQTT und Flask installieren ...."
 
-	echo " ... i2c-tools"
-	run_cmd "sudo apt-get install i2c-tools"
 	echo " ... mysql connector"
 	run_cmd "pip3 install mysql-connector-python --break-system-packages"
-	echo " ... mysql connector"
+	echo " ... mqtt connector"
 	run_cmd "pip3 install paho-mqtt==1.6.1 --break-system-packages"
 	echo " ... Flask Framework"
 	run_cmd "pip3 install Flask --break-system-packages"
@@ -641,35 +671,14 @@ install_python_modules() {
 	run_cmd "echo \"</VirtualHost>\" | sudo tee -a /etc/apache2/sites-available/000-default.conf"
 
 	echo "Flask als Systemdienst einrichten"
-	run_cmd "sudo cp $CARAVANPI_DIR/html-flask/systemd-files/flaskwebserver.service /etc/systemd/system/"
+	run_cmd "sudo cp $CARAVANPI_DIR/html-flask/systemd-files/flask.service /etc/systemd/system/"
 	run_cmd "sudo systemctl daemon-reload"
-	run_cmd "sudo systemctl enable flaskwebserver.service"
-	run_cmd "sudo systemctl start flaskwebserver.service"
-	run_cmd "sudo systemctl status flaskwebserver.service"
+	run_cmd "sudo systemctl enable flask.service"
+	run_cmd "sudo systemctl start flask.service"
 
 	echo "Apache neu starten"
 	run_cmd "sudo service apache2 restart"
 
-	# outdated
-	# run_cmd "sudo apt-get install python-dev python-smbus"
-	# run_cmd "sudo apt-get install build-essential git"
-	
-
-}
-
-# Installation Geräte Librarys
-install_libraries() {
-	echo "Libraries installieren ...."
-
-	run_cmd "git clone https://github.com/adafruit/Adafruit_Python_ADS1x15"
-	run_cmd "cd Adafruit_Python_ADS1x15; sudo python3 setup.py install"
-
-	run_cmd "pip3 install adafruit-circuitpython-lis3dh --break-system-packages"
-	run_cmd "pip3 install adafruit-circuitpython-busdevice --break-system-packages"
-	run_cmd "pip3 install adafruit-circuitpython-adxl34x --break-system-packages"
-	run_cmd "pip3 install adafruit-circuitpython-mcp230xx --break-system-packages"
-
-	run_cmd "pip3 install bme680 --break-system-packages"
 }
 
 # ########################################################################################
@@ -929,9 +938,21 @@ fi
 cd "$HOME"
 
 # --------------------------------------------------------------------------
+# diverse Libraries installieren
+# --------------------------------------------------------------------------
+note "Installation diverser Libraries" "cyan"
+
+read_colored "cyan" "Möchten Sie die notwendigen Libraries installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_libraries
+fi
+
+cd "$HOME"
+
+# --------------------------------------------------------------------------
 # Python Module installieren
 # --------------------------------------------------------------------------
-note "Installation Python Module" "cyan"
+note "Installation Python Module für MariaDB, MQTT und Flask" "cyan"
 
 read_colored "cyan" "Möchten Sie die Python Module installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
@@ -943,19 +964,10 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	echo
 	echo_colored "magenta" "Sie können dort bereits jetzt den bisherigen Installationsstatus einsehen."
 	echo "Klicken Sie dazu auf den Button 'Status'"
+	echo "Achtung: Sie werden dabei vermutlich einen Fehler bei der MariaDB bekommen."
+	echo "Dies liegt daran, dass Sie in der CaravanPi Konfiguration die User Daten noch nicht gesetzt haben."
+	echo "Rufen Sie hierzu folgende Seite auf: http://$ip_address/config_caravanpi"
 
-fi
-
-cd "$HOME"
-
-# --------------------------------------------------------------------------
-# Geräte Libraries installieren
-# --------------------------------------------------------------------------
-note "Installation Geräte Libraries" "cyan"
-
-read_colored "cyan" "Möchten Sie die Geräte Libraries installieren? (j/N): " answer
-if [[ "$answer" =~ ^[Jj]$ ]]; then
-	install_libraries
 fi
 
 cd "$HOME"

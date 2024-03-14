@@ -544,9 +544,11 @@ install_phpmyadmin() {
 	echo
 	echo -e "${red}Achtung: Sie bekommen während der nachfolgenden Installation einige Fragen gestellt:${nc}"
 	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2"
-	echo "     ACHTUNG, hier unbedingt Leertaaste im Feld Apache2 drücken, Stern erscheint, dann TAB zu OK"
+	echo -e "     ${red}ACHTUNG${nc}, hier unbedingt ${red}Leertaaste im Feld Apache2${nc} drücken, Stern erscheint, dann TAB zu OK"
 	echo
 	echo " - die Frage 'Konfigurieren der Datenbank für phpmyadmin mit dbconfig-common?' beantworten Sie mit JA! (TAB zu JA)"
+	echo
+	echo " - die Frage 'Passwort für phpmyadmin Benutzer?' beantworten Sie mit einem Return"
 	echo 
 	read_colored "cyan" "Weiter mit Enter" irrelevant
 	echo 

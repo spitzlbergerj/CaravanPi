@@ -16,7 +16,7 @@ ip_address=$(hostname -I | awk '{print $1}')
     echo "------------------------------------------------------------"
     echo "IP-Adresse: $ip_address"
     echo "------------------------------------------------------------"
-} >> "$LOG_FILE"
+} > "$LOG_FILE"
 
 # alle weiteren Ausgaben in das Logfile clonen
 exec > >(tee -a "$LOG_FILE") 2>&1

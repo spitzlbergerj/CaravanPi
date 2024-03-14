@@ -5,21 +5,21 @@
 
 # Alle Ausgaben zusätzlich in ein Logfile schreiben
 LOG_FILE="$HOME/install_CaravanPi.log"
-exec > >(tee "$LOG_FILE") 2>&1
+ip_address=$(hostname -I | awk '{print $1}')
 
-# Titelbild ausgeben
-# echo -e "\e[0m"
-# echo '                                                                                                        '                                                                                                          
-# echo '  ,ad8888ba,                                                                             88888888ba   88'
-# echo ' d8""    `"8b                                                                            88      "8b  ""'
-# echo 'd8"                                                                                      88      ,8P    '
-# echo '88             ,adPPYYba,  8b,dPPYba,  ,adPPYYba,  8b       d8  ,adPPYYba,  8b,dPPYba,   88aaaaaa8P"  88'
-# echo '88             ""     `Y8  88P"   "Y8  ""     `Y8  `8b     d8"  ""     `Y8  88P"   `"8a  88"""""""    88'
-# echo 'Y8,            ,adPPPPP88  88          ,adPPPPP88   `8b   d8"   ,adPPPPP88  88       88  88           88'
-# echo ' Y8a.    .a8P  88,    ,88  88          88,    ,88    `8b,d8"    88,    ,88  88       88  88           88'
-# echo '  `"Y8888Y""   `"8bbdP"Y8  88          `"8bbdP"Y8      "8"      `"8bbdP"Y8  88       88  88           88'
-# echo '                                                                                                        '                                                                                                          
-# echo -e "\e[0m"
+# Raspberry Pi Revision und IP Adresse ins Logfile schreiben
+echo "------------------------------------------------------------" > "$LOG_FILE"
+echo "/proc/cpuinfo" > "$LOG_FILE"
+echo "------------------------------------------------------------" > "$LOG_FILE"
+/proc/cpuinfo > "$LOG_FILE"
+echo "------------------------------------------------------------" > "$LOG_FILE"
+echo "IP Adresse" > "$LOG_FILE"
+echo "------------------------------------------------------------" > "$LOG_FILE"
+echo "$ip_address" > "$LOG_FILE"
+echo "------------------------------------------------------------" > "$LOG_FILE"
+
+# alle weiteren Ausgaben in das Logfile clonen
+exec > >(tee "$LOG_FILE") 2>&1
 
 echo -e "\e[0m"
 echo '                                                                                     '
@@ -34,9 +34,6 @@ echo '  \______/  \_______|\__|      \_______|   \_/    \_______|\__|  \__|\__| 
 echo '                                                                                     '                                                                                                          
 echo -e "\e[0m"
                                                                                  
-                                                                                  
-                                                                                  
-
 
 # ------------------------------------------------------------------
 # parameter Verarbeitung
@@ -120,6 +117,25 @@ read_colored() {
 	# Zeige den farbigen Prompt an und lese die Eingabe
 	echo -en "${color}${prompt}${no_color}"
 	read -r "$var_name"
+}
+
+echo_colored() {
+	local color_code="$1"
+	local output="$2"
+	
+	# Wähle die Farbe basierend auf dem Parameter
+	case "$color_code" in
+		red) color=$red ;;
+		green) color=$green ;;
+		yellow) color=$yellow ;;
+		blue) color=$blue ;;
+		magenta) color=$magenta ;;
+		cyan) color=$cyan ;;
+		*) color=$no_color ;; # Standardfarbe, falls keine Übereinstimmung gefunden wurde
+	esac
+
+	# Zeige den farbigen Prompt an und lese die Eingabe
+	echo -en "${color}${output}${no_color}"
 }
 
 
@@ -390,9 +406,32 @@ install_update_caravanpi() {
 			echo "Aktualisierung nicht gewünscht."
 		fi
 	else
-		# Repository herunterladen
 		echo "CaravanPi Repository wird heruntergeladen..."
+		# Klonen des Repositories in den spezifizierten Branch
 		run_cmd "git clone https://github.com/spitzlbergerj/CaravanPi.git \"$CARAVANPI_DIR\""
+		run_cmd "cd \"$CARAVANPI_DIR\""
+
+		# Ermittle die verfügbaren Branches vom Remote-Repository
+		echo "Verfügbare Branches:"
+		run_cmd "git branch"
+
+		# nachfolgendes nur falls nicht nur simuliert (zu komplex für run_cmd)
+		if [ "$SIMULATE" = false ]; then
+			while true; do
+				# Frage nach dem gewünschten Branch
+				echo "Im Regelfall nutzen Sie bitte den master Branch!"
+				read_colored "cyan" "Welchen Branch möchten Sie nutzen? (default: master)" target_branch
+
+				# Überprüfen, ob der eingegebene Branch existiert
+				if git rev-parse --verify "$target_branch" > /dev/null 2>&1; then
+					echo "Wechsle zu Branch '$target_branch'..."
+					git checkout "$target_branch"
+				else
+					echo "Der Branch '$target_branch' existiert nicht. Überprüfen Sie die Eingabe und versuchen Sie es erneut."
+					echo
+				fi
+			done
+		fi
 	fi
 
 	echo 
@@ -420,9 +459,9 @@ install_magicmirror() {
 		# daher hier direkt abgefragt
 
 		if [ "$SIMULATE" = true ]; then
-			echo -e "${red}Simuliere: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\"${nc}"
+			echo -e "${red}Simuliere:${nc} bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
 		else
-			echo -e "${red}Führe aus: bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\"${nc}"
+			echo -e "${red}Führe aus:${nc} bash -c  \"\$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh)\""
 
 			# zunächst wird das Skript heruntergeladen und zwiwchengespeichert
 			curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror_scripts/master/raspberry.sh > /tmp/raspberry.sh
@@ -460,7 +499,7 @@ install_mariadb() {
 	echo
 	echo "Benutzer CaravanPi anlegen ... "
 	echo "-------------------------------"
-	read -sp "    Bitte geben Sie ein Passwort für den 'caravanpi' MariaDB Benutzer ein: " caravanpi_password
+	read_colored "cyan" "Bitte geben Sie ein Passwort für den 'caravanpi' MariaDB Benutzer ein: " caravanpi_password
 
 	echo
 	echo "    Benutzer wird angelegt ..."
@@ -483,8 +522,7 @@ install_mariadb() {
 
 	root_password=""
 	while [ -z "$root_password" ]; do
-		echo "Bitte geben Sie ein starkes Passwort für den MariaDB root User ein:"
-		read -s root_password
+		read_colored "cyan" "Bitte geben Sie ein starkes Passwort für den MariaDB root User ein:" root_password
 		if [ -z "$root_password" ]; then
 			echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
 		fi
@@ -499,8 +537,10 @@ install_mariadb() {
 	DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 	FLUSH PRIVILEGES;
 	"
-
 	run_cmd "sudo mysql -u root -e \"$sql_commands\""
+
+	echo "Die Datenbank enthält nun folgende Tabellen:"
+	run_cmd "sudo mysql -u 'caravanpi'@'localhost' -p '$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
 }
 
 
@@ -508,10 +548,11 @@ install_mariadb() {
 install_phpmyadmin() {
 	echo "phpmyadmin installieren ...."
 	echo
-	echo -e "${red}Achtung: Sie bekommen während der nachfolgenden Installation zwei Fragen gestellt:${nc}"
-	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2"
-	echo " - die Frage, ob dbconfig-common ausgeführt werden soll, beantworten Sie mit NEIN!"
-	read irrelevant
+	echo -e "${red}Achtung: Sie bekommen während der nachfolgenden Installation u.a. zwei Fragen gestellt:${nc}"
+	echo " - die Frage nach dem Webserver beantworten Sie mit Apache2 (Leertaaste im Feld Apache2, TAB zu OK)"
+	echo " - die Frage, ob dbconfig-common ausgeführt werden soll, beantworten Sie mit NEIN! (TAB zu Nein)"
+	echo 
+	read -p "Weiter" irrelevant
 	echo 
 	run_cmd "sudo apt-get install phpmyadmin"
 
@@ -608,23 +649,27 @@ install_python_modules() {
 
 	echo "Apache neu starten"
 	run_cmd "sudo service apache2 restart"
+
+	# outdated
+	# run_cmd "sudo apt-get install python-dev python-smbus"
+	# run_cmd "sudo apt-get install build-essential git"
+	
+
 }
 
 # Installation Geräte Librarys
 install_libraries() {
 	echo "Libraries installieren ...."
 
-	run_cmd "sudo apt-get install build-essential python-dev python-smbus git"
-	
 	run_cmd "git clone https://github.com/adafruit/Adafruit_Python_ADS1x15"
 	run_cmd "cd Adafruit_Python_ADS1x15; sudo python3 setup.py install"
 
+	run_cmd "pip3 install adafruit-circuitpython-lis3dh --break-system-packages"
+	run_cmd "pip3 install adafruit-circuitpython-busdevice --break-system-packages"
+	run_cmd "pip3 install adafruit-circuitpython-adxl34x --break-system-packages"
+	run_cmd "pip3 install adafruit-circuitpython-mcp230xx --break-system-packages"
 
-	run_cmd "pip3 install adafruit-circuitpython-lis3dh"
-	run_cmd "pip3 install adafruit-circuitpython-busdevice"
-	run_cmd "pip3 install adafruit-circuitpython-adxl34x"
-
-	run_cmd "sudo pip3 install adafruit-circuitpython-mcp230xx"
+	run_cmd "pip3 install bme680 --break-system-packages"
 }
 
 # ########################################################################################
@@ -654,8 +699,13 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 
 	echo "Überprüfe, ob ein Neustart erforderlich ist..."
 	if [ -f /var/run/reboot-required ]; then
+		echo
+		echo
 		echo "Ein Neustart ist erforderlich, um die Aktualisierungen zu vervollständigen."
 		echo "Bitte führen Sie 'sudo reboot' aus."
+		echo "Anschließend starten Sie das Installationsskript erneut und überspringen die Sektionen bis Konfiguration Raspberry OS."
+		echo
+		echo
 		exit
 	else
 		echo "Kein Neustart erforderlich."
@@ -677,8 +727,13 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 
 	echo "Überprüfe, ob ein Neustart erforderlich ist..."
 	if [ -f /var/run/reboot-required ]; then
+		echo
+		echo
 		echo "Ein Neustart ist erforderlich, um die Aktualisierungen zu vervollständigen."
 		echo "Bitte führen Sie 'sudo reboot' aus."
+		echo "Anschließend starten Sie das Installationsskript erneut und überspringen die Sektionen bis Wifi."
+		echo
+		echo
 		exit
 	else
 		echo "Kein Neustart erforderlich."
@@ -688,9 +743,9 @@ fi
 cd "$HOME"
 
 # --------------------------------------------------------------------------
-# WLAN konfigurieren
+# WLAN konfigurieren (mehrere WLANs über eine Schleife)
 # --------------------------------------------------------------------------
-note "Konfiguration Wifi" "cyan"
+note "Konfiguration Wifi - mehrere Eingaben möglich" "cyan"
 
 config_wifi
 
@@ -795,9 +850,12 @@ if [[ "$answer" =~ ^[Jj]$ ]]; then
 	run_cmd "cp -f $HOME/CaravanPi/MagicMirror/css/custom.css $HOME/MagicMirror/css"
 
 
-	echo
 	echo "Starten des MagicMirror"
 	run_cmd "pm2 start MagicMirror"
+
+	echo
+	echo_colored "magenta" "MagicMirror sollte nun in Kürze auf Ihrem Bildschirm erscheinen"
+	echo
 
 fi
 
@@ -811,6 +869,12 @@ note "Installation Apache Webserver"  "cyan"
 read_colored "cyan" "Möchten Sie den Apache Webserver installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_apache
+
+	echo
+	echo_colored "magenta" "Sie sollten nun auf die Website Ihres CaravanPi zugreifen können."
+	echo "Rufen Sie dazu die Website http://$ip_address/ auf."
+	echo
+
 fi
 
 cd "$HOME"
@@ -836,6 +900,12 @@ note "Installation phpmyadmin" "cyan"
 read_colored "cyan" "Möchten Sie phpmyadmin installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_phpmyadmin
+
+	echo
+	echo_colored "magenta" "Sie sollten nun auf phpMyAdmin und damit die Datenbank zugreifen können."
+	echo "Rufen Sie dazu die Website http://$ip_address/phpmyadmin auf."
+	echo
+
 fi
 
 cd "$HOME"
@@ -848,6 +918,12 @@ note "Installation Grafana" "cyan"
 read_colored "cyan" "Möchten Sie Grafana installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_grafana
+
+	echo
+	echo_colored "magenta" "Sie sollten nun auf Grafana zugreifen können."
+	echo "Rufen Sie dazu die Website http://$ip_address:3000 auf."
+	echo
+
 fi
 
 cd "$HOME"
@@ -860,6 +936,14 @@ note "Installation Python Module" "cyan"
 read_colored "cyan" "Möchten Sie die Python Module installieren? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	install_python_modules
+	
+	echo
+	echo_colored "magenta" "Sie sollten nun auf die CaravanPi Bedienungs-Website zugreifen können."
+	echo "Rufen Sie dazu jetzt erneut die Website http://$ip_address auf."
+	echo
+	echo_colored "magenta" "Sie können dort bereits jetzt den bisherigen Installationsstatus einsehen."
+	echo "Klicken Sie dazu auf den Button 'Status'"
+
 fi
 
 cd "$HOME"

@@ -667,11 +667,6 @@ install_libraries() {
 
 	run_cmd "pip3 install netaddr --break-system-packages"
 
-	run_cmd "pip3 install board --break-system-packages"
-	run_cmd "pip3 install busio --break-system-packages"
-
-	run_cmd "pip3 install digitalio --break-system-packages"
-
 	run_cmd "pip3 install crontab --break-system-packages"
 
 	# outdated

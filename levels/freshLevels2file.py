@@ -94,23 +94,6 @@ def interruptPumpOn(pin):
 	print(datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "INTERRUPT: Pumpe läuft - Wartezeit: ", waitAfterPumpSeconds, " Sekunden")
 	pumpOnTime = datetime.datetime.now()
 
-
-def write2file(liter):
-	global tank
-	try:
-		dateiName = "/home/pi/CaravanPi/values/tank"+'{:.0f}'.format(tank)
-		file = open(dateiName, 'a')
-		str_from_time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-		strLiter = '{:.0f}'.format(liter)
-		file.write("\n"+ "tank"+'{:.0f}'.format(tank)+" " + str_from_time_now + " " + strLiter)
-		file.close()
-		return 0
-	except:
-		# Schreibfehler
-		print ("Die Datei konnte nicht geschrieben werden.")
-		return -1
-
-
 	
 def main():
 	# -------------------------
@@ -168,10 +151,13 @@ def main():
 	for a in args:
 		print("further argument: ", a)
 	
+
+	cplib = CaravanPiFiles()
+
 	# -------------------------
 	# read defaults
 	# -------------------------
-	(literLevel1, literLevel2, literLevel3, literLevel4) = CaravanPiFiles.readFillLevels(tank)
+	(literLevel1, literLevel2, literLevel3, literLevel4) = cplib.readFillLevels(tank)
 
 	# -------------------------
 	# initialize IO Pins on MCP23017
@@ -257,8 +243,18 @@ def main():
 						else:
 							print("mind. "+str(actLiter)+" Liter im Tank")
 
-					if writeFile == 1:
-						write2file(actLiter)
+					# Sensorwerte verarbeiten
+					cplib.handle_sensor_values(
+						displayScreen == 1,								# Anzeige am Bildschirm?
+						"tankfuellgrad",								# sensor_name = Datenbankname
+						f"fresh-{tank}",								# sensor_id = Filename und Spalte in der Datenbank
+						[
+							"fuellgrad",
+						],											# Liste Spaltennamen
+						(
+							actLiter,
+						)											# Tupel Sensorwerte
+					)    
 		
 			time.sleep(waitAfterPumpSeconds)
 	except KeyboardInterrupt:

@@ -18,9 +18,11 @@ import sys
 from time import sleep
 from datetime import datetime
 import getopt
-import RPi.GPIO as GPIO
 import subprocess
 import os
+
+#import RPi.GPIO as GPIO
+from gpiozero import Button
 
 
 # tactile switch calibration position sensor
@@ -32,10 +34,9 @@ pinSwitchGasscale = 22
 scaleSelectMinSeconds = 3
 
 # button debounce time in seconds
-debounceSeconds = 0.01
+debounceSeconds = 0.1
 
-buttonPressedTime = None
-
+wasHeld = False
 
 # -------------------------
 # call options 
@@ -57,39 +58,25 @@ def switchInterruptPosition(channel):
 	subprocess.run(["python3","/home/pi/CaravanPi/position/setupPositionDefaults.py","-w","5"])
 	print ("ACHTUNG: Kalibrierung Lage Sensor wurde beendet")
 
-def switchInterruptGasscale(channel):  
-	# -------------------------
-	# switchInterruptGasscale 
-	# tactile switch was pressed start calibrating the gas scale
-	# -------------------------
-	global buttonPressedTime
+def switchInterruptGasscalePressed():
+	global wasHeld
+	wasHeld = False  # Zurücksetzen, wenn der Button erneut gedrückt wird
 
-	print ("Interrupt - buttonPressedTime: ", buttonPressedTime)
+def switchInterruptGasscaleReleased():
+	global wasHeld
+	if not wasHeld:
+		# kurzer Tastendruck
+		gasScaleCalibrate(1)
+		
+def switchInterruptGasscale2():
+	global wasHeld
+	wasHeld = True
+	gasScaleCalibrate(2)
 
-	if (GPIO.input(channel)):
-		# button is down
-		print ("button down")
-		if buttonPressedTime is None:
-			print("set buttonPressedTime")
-			buttonPressedTime = datetime.now()
-	else:
-		# button is up
-		print ("button up")
-		if buttonPressedTime is not None:
-			print ("buttonPressedTime not None")
-			elapsed = (datetime.now() - buttonPressedTime).total_seconds()
-			buttonPressedTime = None
-			if elapsed >= scaleSelectMinSeconds:
-				# button pressed for more than specified time, Flasche 2
-				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 2 wird gestartet!")
-				subprocess.run(["python3","/home/pi/CaravanPi/gas-weight/gasScaleCalibration.py", "-s", "-e", "1", "-g", "2", "-w", "5"])
-				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 2 wurde beendet")
-			elif elapsed >= debounceSeconds:
-				# button pressed for a shorter time, Flasche 1
-				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 1 wird gestartet!")
-				subprocess.run(["python3","/home/pi/CaravanPi/gas-weight/gasScaleCalibration.py", "-s", "-e", "1", "-g", "1", "-w", "5"])
-				print ("ACHTUNG: Kalibrierung Gaswaage Flasche 1 wurde beendet")
-
+def gasScaleCalibrate(gasscale_nr):  
+	print (f"ACHTUNG: Kalibrierung Gaswaage {gasscale_nr} wird gestartet!")
+	subprocess.run(["python3","/home/pi/CaravanPi/gas-weight/gasScaleCalibration.py", "-s", "-e", "1", "-g", str(gasscale_nr), "-w", "5"])
+	print (f"Kalibrierung Gaswaage Flasche {gasscale_nr} wurde beendet")
 
 
 def main():
@@ -125,15 +112,24 @@ def main():
 	# -------------------------
 	# tactile switches
 	# -------------------------
-	GPIO.setmode(GPIO.BCM)
+	# GPIO.setmode(GPIO.BCM)
 	
-	GPIO.setup(pinSwitchPosition, GPIO.IN)
-	GPIO.add_event_detect(pinSwitchPosition, GPIO.RISING, callback = switchInterruptPosition, bouncetime = 400)
+	# GPIO.setup(pinSwitchPosition, GPIO.IN)
+	# GPIO.add_event_detect(pinSwitchPosition, GPIO.RISING, callback = switchInterruptPosition, bouncetime = 400)
 
 	# Gasflaschenkalibrierung - kurzer Druck = Flasche 1 - langer Druck = Flasche 2
-	GPIO.setup(pinSwitchGasscale, GPIO.IN)
-	GPIO.add_event_detect(pinSwitchGasscale, GPIO.BOTH, callback = switchInterruptGasscale)
+	# GPIO.setup(pinSwitchGasscale, GPIO.IN)
+	# GPIO.add_event_detect(pinSwitchGasscale, GPIO.BOTH, callback = switchInterruptGasscale)
 	
+	# Initialisiere die Buttons mit GPIO Zero
+	buttonPosition = Button(pinSwitchPosition, pull_up=False, bounce_time=debounceSeconds)
+	buttonGasscale = Button(pinSwitchGasscale, pull_up=False, bounce_time=debounceSeconds, hold_time=scaleSelectMinSeconds)
+
+	buttonPosition.when_pressed = switchInterruptPosition
+	buttonGasscale.when_pressed = switchInterruptGasscalePressed
+	buttonGasscale.when_released = switchInterruptGasscaleReleased
+	buttonGasscale.when_held = switchInterruptGasscale2
+
 	# -------------------------
 	# endless loop
 	# -------------------------

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.4deb2+deb11u1
+-- version 5.2.1deb1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 10. Mrz 2024 um 11:41
--- Server-Version: 10.5.21-MariaDB-0+deb11u1
--- PHP-Version: 7.4.33
+-- Erstellungszeit: 14. Mrz 2024 um 17:28
+-- Server-Version: 10.11.6-MariaDB-0+deb12u1
+-- PHP-Version: 8.2.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `CaravanPiValues`
 --
-CREATE DATABASE IF NOT EXISTS `CaravanPiValues` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `CaravanPiValues`;
 
 -- --------------------------------------------------------
 
@@ -72,6 +70,7 @@ CREATE TABLE `batterymanagement` (
   `SoC` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
 -- --------------------------------------------------------
 
 --
@@ -83,6 +82,20 @@ CREATE TABLE `gasfuellgrad` (
   `zeitstempel` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `gewicht` float(10,0) NOT NULL,
   `fuellgrad` float(10,0) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `gassensor`
+--
+
+CREATE TABLE `gassensor` (
+  `sensor_id` varchar(20) NOT NULL,
+  `zeitstempel` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `parts_per_million` int(11) NOT NULL,
+  `alarm` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -98,6 +111,7 @@ CREATE TABLE `klimasensor` (
   `luftdruck` float(10,2) NOT NULL,
   `luftfeuchtigkeit` float(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- --------------------------------------------------------
 
@@ -124,7 +138,7 @@ CREATE TABLE `raspberrypi` (
 --
 
 CREATE TABLE `spannung` (
-  `quellen_id` varchar(20) NOT NULL,
+  `sensor_id` varchar(20) NOT NULL,
   `zeitstempel` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `spannung` float(15,3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -136,7 +150,7 @@ CREATE TABLE `spannung` (
 --
 
 CREATE TABLE `tankfuellgrad` (
-  `tank_id` varchar(20) NOT NULL,
+  `sensor_id` varchar(20) NOT NULL,
   `zeitstempel` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `fuellgrad` float(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -152,6 +166,69 @@ CREATE TABLE `temperatursensor` (
   `zeitstempel` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `temperatur` float(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `temperatursensor`
+--
+
+
+--
+-- Indizes der exportierten Tabellen
+--
+
+--
+-- Indizes für die Tabelle `ausrichtung`
+--
+ALTER TABLE `ausrichtung`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `batterymanagement`
+--
+ALTER TABLE `batterymanagement`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `gasfuellgrad`
+--
+ALTER TABLE `gasfuellgrad`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `gassensor`
+--
+ALTER TABLE `gassensor`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `klimasensor`
+--
+ALTER TABLE `klimasensor`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `raspberrypi`
+--
+ALTER TABLE `raspberrypi`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `spannung`
+--
+ALTER TABLE `spannung`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `tankfuellgrad`
+--
+ALTER TABLE `tankfuellgrad`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
+
+--
+-- Indizes für die Tabelle `temperatursensor`
+--
+ALTER TABLE `temperatursensor`
+  ADD UNIQUE KEY `SensorId_Zeitstempel` (`sensor_id`,`zeitstempel`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

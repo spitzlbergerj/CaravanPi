@@ -597,7 +597,6 @@ def check_crontab_pi():
 
 	# Titel für jede Prüfung
 	titles = {
-		'flask_main': 'flask wird gestartet',
 		'temp2file_regular': 'Temperatursensoren auslesen',
 		'position2file_regular': 'Lagesensor auslesen',
 		'tactileSwitches_boot': 'Taster aktivieren',
@@ -610,9 +609,8 @@ def check_crontab_pi():
 
 	checks_passed = []
 
-	checks = ['flask_main', 'temp2file_regular', 'position2file_regular', 'tactileSwitches_boot', 'systemstat2file_boot', 'RTCSerial_boot', 'scales', 'tanks', 'climates']
+	checks = ['temp2file_regular', 'position2file_regular', 'tactileSwitches_boot', 'systemstat2file_boot', 'RTCSerial_boot', 'scales', 'tanks', 'climates']
 	check_functions = {
-		'flask_main': lambda: is_script_present(crontab_lines, 'flask-main.py'),
 		'temp2file_regular': lambda: is_script_present(crontab_lines, 'temp2file.py'),
 		'position2file_regular': lambda: is_script_present(crontab_lines, 'position2file.py'),
 		'tactileSwitches_boot': lambda: is_script_present(crontab_lines, 'tactileSwitches.py'),
@@ -663,16 +661,14 @@ def check_crontab_root():
 	# Titel für jede Prüfung
 	titles = {
 		'backup': 'Backup Skript starten',
-		'pir': 'Bewegunssensor aktivieren',
 		'logrotate': 'Logdateien rotieren',
 	}
 
 	checks_passed = []
 
-	checks = ['backup', 'pir', 'logrotate']
+	checks = ['backup', 'logrotate']
 	check_functions = {
 		'backup': lambda: is_script_present(crontab_lines, 'backup.sh'),
-		'pir': lambda: is_script_present(crontab_lines, 'pir.py'),
 		'logrotate': lambda: is_script_present(crontab_lines, 'logrotate'),
 	}
 

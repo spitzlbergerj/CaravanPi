@@ -19,7 +19,6 @@ import signal
 import sys
 from time import sleep
 import argparse
-from gpiozero import Button, LED
 
 # imports for sensor ADXL345
 import board
@@ -30,7 +29,7 @@ import adafruit_adxl34x
 import math
 
 # import for GPIO Input tactile switches
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 # import for opening URL to change update Intervall on magic Mirror
 import urllib.request
@@ -121,8 +120,6 @@ pinSwitchNowHorizontal = 6
 # tactile switch to activate the 'live' mode
 pinSwitchLive = 13
 pinLEDLive = 5
-
-LEDlive = None
 
 # MagicMirror URL
 MMMUrl = "http://127.0.0.1:8080/MMM-CaravanPiPosition/changeUpdateInterval"
@@ -351,7 +348,7 @@ def checkApproximation(state, value, approximationValue):
 	return newState
 
 
-def activateLED(origX, origY, origZ, adjustX, adjustY, adjustSwitchY, adjustZ, toleranceX, toleranceY, approximationX, approximationY):
+def LED(origX, origY, origZ, adjustX, adjustY, adjustSwitchY, adjustZ, toleranceX, toleranceY, approximationX, approximationY):
 	#*************************************
 	# Activation of the LEDs
 	#*************************************
@@ -487,18 +484,13 @@ def switchInterruptLive(channel):
 	global globAdjustSwitchY
 	global liveMode
 	global MMMavailable
-	global LEDlive
 
 	print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "Taster Live Modus gedrückt")
 
 	if liveMode == 1:
 		print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: Live Modus beendet !!!")
 		liveMode = 0
-
-		# Umstellung auf gpiozero
-		# GPIO.output(pinLEDLive, False)
-		LEDlive.off()
-
+		GPIO.output(pinLEDLive, False)
 		ledOff()
 		globAdjustSwitchY = 0
 		# change update Intervall on MagicMirror
@@ -506,11 +498,7 @@ def switchInterruptLive(channel):
 	else:
 		print (datetime.datetime.now().strftime("%Y%m%d%H%M%S "), "ACHTUNG: Live Modus startet !!!")
 		liveMode = 1
-
-		# Umstellung auf gpiozero
-		# GPIO.output(pinLEDLive, True)
-		LEDlive.on()
-		
+		GPIO.output(pinLEDLive, True)
 		# change update Intervall on MagicMirror
 		if MMMavailable: urllib.request.urlopen(MMMUrl)
 
@@ -568,32 +556,6 @@ def main():
 	global pinSwitchNowHorizontal, pinSwitchLive, pinLEDLive
 	global liveMode
 	global MMMavailable
-	global LEDlive
-
-	# -------------------------
-	# tactile switches
-	# -------------------------
-	#
-	# Umstellung auf gpiozero
-	#GPIO.setmode(GPIO.BCM)
-	#GPIO.setup(pinSwitchNowHorizontal, GPIO.IN)
-	#GPIO.add_event_detect(pinSwitchNowHorizontal, GPIO.RISING, callback = switchInterruptNowHorizontal, bouncetime = 400)
-	#GPIO.setup(pinSwitchLive, GPIO.IN)
-	#GPIO.add_event_detect(pinSwitchLive, GPIO.RISING, callback = switchInterruptLive, bouncetime = 400)
-	#GPIO.setup(pinLEDLive, GPIO.OUT)	
-	#GPIO.output(pinLEDLive, False)
-	
-	# beide Buttons liegen zwischen 3V3 und GPIO Pin
-	# daher pull_up=False
-	buttonNowHorizontal = Button(pinSwitchNowHorizontal, pull_up=False, bounce_time=0.1)
-	buttonNowHorizontal.when_pressed = switchInterruptNowHorizontal
-
-	buttonLive = Button(pinSwitchLive, pull_up=False, bounce_time=0.1)
-	buttonLive.when_pressed = switchInterruptLive
-
-	LEDlive = LED(pinLEDLive)
-	LEDlive.off()
-
 
 	# -------------------------
 	# Argumente verarbeiten 
@@ -619,10 +581,7 @@ def main():
 	if args.live:
 		print("starten im Live Modus")
 		liveMode = 1
-
-		# Umstellung auf gpiozero
-		# GPIO.output(pinLEDLive, True
-		LEDlive.on()
+		GPIO.output(pinLEDLive, True)
 
 	# -----------------------------------------------------------------------------
 	# Prüfen, ob MagicMirror erreichbar ist
@@ -632,6 +591,21 @@ def main():
 	else:
 		MMMavailable = False
 
+	# -------------------------
+	# tactile switches
+	# -------------------------
+	GPIO.setmode(GPIO.BCM)
+
+	GPIO.setup(pinSwitchNowHorizontal, GPIO.IN)
+	GPIO.add_event_detect(pinSwitchNowHorizontal, GPIO.RISING, callback = switchInterruptNowHorizontal, bouncetime = 400)
+
+	GPIO.setup(pinSwitchLive, GPIO.IN)
+	GPIO.add_event_detect(pinSwitchLive, GPIO.RISING, callback = switchInterruptLive, bouncetime = 400)
+
+	GPIO.setup(pinLEDLive, GPIO.OUT)	
+	GPIO.output(pinLEDLive, False)
+	
+	
 	# -------------------------
 	# avoid outliers - init values
 	# -------------------------
@@ -823,7 +797,7 @@ def main():
 						ledY = lastY
 						ledZ = lastZ
 				
-				activateLED(ledX, ledY, ledZ, adjustX, adjustY, globAdjustSwitchY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
+				LED(ledX, ledY, ledZ, adjustX, adjustY, globAdjustSwitchY, adjustZ, toleranceX, toleranceY, approximationX, approximationY)
 				
 				# avoid outliers - swap vars
 				secondLastX = lastX
@@ -843,15 +817,15 @@ def main():
 				
 		except KeyboardInterrupt:
 			ledOff()
-			# GPIO.cleanup()
+			GPIO.cleanup()
 			break
 		except:
 			print("unprocessed Error:", sys.exc_info()[0])
 			ledOff()
-			# GPIO.cleanup()
+			GPIO.cleanup()
 			raise
 			
-	# GPIO.cleanup()
+	GPIO.cleanup()
 
 if __name__ == "__main__":
 	main()

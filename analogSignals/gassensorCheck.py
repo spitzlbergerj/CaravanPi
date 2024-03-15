@@ -139,6 +139,14 @@ def main():
 						cplib.writeCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive", 1)
 						gassensorAlarmActive = True
 					
+				cplib.handle_sensor_values(
+					args.screen,    				    # Anzeige am Bildschirm?
+					"gassensor",      					# sensor_name = Datenbankname 
+					"mq-2",     						# sensor_id = Filename und Spalte in der Datenbank
+					["parts_per_million", "alarm"], 	# Liste Spaltennamen
+					( channel.value, gasDetected) 		# Tupel Sensorwerte
+				)
+
 				time.sleep(delayAlarm if gasDetected else delay)
 
 			except Exception as e:

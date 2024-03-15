@@ -609,7 +609,7 @@ def check_crontab_pi():
 
 	checks_passed = []
 
-	checks = ['flask_main', 'temp2file_regular', 'position2file_regular', 'tactileSwitches_boot', 'systemstat2file_boot', 'RTCSerial_boot', 'scales', 'tanks', 'climates']
+	checks = ['temp2file_regular', 'position2file_regular', 'tactileSwitches_boot', 'systemstat2file_boot', 'RTCSerial_boot', 'scales', 'tanks', 'climates']
 	check_functions = {
 		'temp2file_regular': lambda: is_script_present(crontab_lines, 'temp2file.py'),
 		'position2file_regular': lambda: is_script_present(crontab_lines, 'position2file.py'),
@@ -666,7 +666,7 @@ def check_crontab_root():
 
 	checks_passed = []
 
-	checks = ['backup', 'pir', 'logrotate']
+	checks = ['backup', 'logrotate']
 	check_functions = {
 		'backup': lambda: is_script_present(crontab_lines, 'backup.sh'),
 		'logrotate': lambda: is_script_present(crontab_lines, 'logrotate'),

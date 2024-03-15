@@ -22,6 +22,7 @@ import argparse
 
 # imports for sensor ADXL345
 import board
+import busio
 import adafruit_adxl34x
 
 # imports for the calculation of position differences
@@ -53,7 +54,7 @@ cplib = CaravanPiFiles()
 # global variables
 # -----------------------------------------------
 # initiate 3-axis-sensor
-i2c = board.I2C()
+i2c = busio.I2C(board.SCL, board.SDA)
 accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
 # initiate GPIO port expander
@@ -140,11 +141,11 @@ def check_url_and_execute(url):
 		return response.status
 	except HTTPError as e:
 		# HTTP-Fehler (z.B. 404, 501, ...)
-		print(f"HTTP-Fehler beim Zugriff auf die URL {url}: {e.code} - {e.reason}")
+		print(f"Die Website {url} ist nicht erreichbar: HTTP-Fehler: {e.code} - {e.reason}")
 		return -4
 	except URLError as e:
 		# URL-Fehler (z.B. kein Netzwerk, falsche Domain, ...)
-		print(f"URL-Fehler beim Zugriff auf die Website {url}: {e.reason}")
+		print(f"Die Website {url} ist nicht erreichbar: URL-Fehler {url}: {e.reason}")
 		return -3
 	except ContentTooShortError as e:
 		# Der heruntergeladene Inhalt ist kürzer als erwartet

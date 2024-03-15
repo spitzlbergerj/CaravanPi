@@ -71,6 +71,7 @@ fi
 
 BOOT_CONFIG_FILE_OLD="/boot/config.txt"
 BOOT_CONFIG_FILE_NEW="/boot/firmware/config.txt"
+BOOT_CONFIG_FILE="$BOOT_CONFIG_FILE_NEW"
 
 STD_HOSTNAME="CaravanPi"
 
@@ -362,6 +363,32 @@ config_protocolls() {
 		run_cmd "echo \"# CaravanPi Temperatur Sensoren über 1-Wire auf GPIO Pin 18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
 		run_cmd "echo \"dtoverlay=w1-gpio,gpiopin=18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
 	fi
+
+	# Prüfung wegen Bildschirm Treiber, so dass vcgencmd den Bildschirm ein- und ausschalten kann
+	#!/bin/bash
+
+	SEARCH_STRING="dtoverlay=vc4-kms-v3d"
+	CHECK_STRING="# dtoverlay=vc4-kms-v3d"
+	REPLACE_STRING="# changed for CaravanPi so that vcgencmd could turn off monitor\n# dtoverlay=vc4-kms-v3d\ndtoverlay=vc4-fkms-v3d"
+
+	# Überprüfen, ob die Datei existiert
+	echo "Prüfung und ggf. Wechsel des Bildschirm Treibers"
+	if [ -f "$BOOT_CONFIG_FILE" ]; then
+		# Überprüfen, ob die Zeile vorhanden ist
+		if grep -q "$CHECK_STRING" "$CONFIG_FILE"; then
+			echo "Die Änderung wurde bereits vorgenommen. Keine weiteren Aktionen erforderlich."
+		elifif grep -q "$SEARCH_STRING" "$BOOT_CONFIG_FILE"; then
+			# Ersetze die Zeile durch den gewünschten Text
+			# Benutze sed, um eine Sicherungskopie vor dem Ersetzen zu erstellen (.bak)
+			sed -i.bak "/$SEARCH_STRING/c\\$REPLACE_STRING" "$BOOT_CONFIG_FILE"
+			echo "Die Konfiguration wurde erfolgreich geändert."
+		else
+			echo "Der Bildschirm Treiber $SEARCH_STRING wurde nicht gefunden. Keine Änderungen vorgenommen."
+		fi
+	else
+		echo "Die Datei $BOOT_CONFIG_FILE existiert nicht. Überspringe."
+	fi
+
 }
 
 # Funktion zum Klonen/Aktualisieren des CaravanPi Repositories
@@ -813,6 +840,44 @@ install_backup() {
 
 }
 
+# Installation Python Module
+install_stromPi3() {
+	echo "Python Modul für StromPi3 installieren ...."
+	run_cmd "sudo apt-get install python3-serial"
+
+	echo "Boot Config um Serielle Kommunikation erweitern ...."
+
+	# Zu appendende Zeilen
+	LINES_TO_APPEND=(
+	"dtoverlay=miniuart-bt"
+	"enable_uart=1"
+	"core_freq=250"
+	)
+
+	# Überprüfe, ob die Datei existiert
+	if [ -f "$BOOT_CONFIG_FILE" ]; then
+		for line in "${LINES_TO_APPEND[@]}"; do
+			# Überprüfe, ob die Zeile bereits existiert
+			if ! grep -qF -- "$line" "$BOOT_CONFIG_FILE"; then
+				# Füge die Zeile hinzu, wenn sie nicht existiert
+				run_cmd "echo \"$line\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
+			fi
+		done
+		echo "Konfiguration wurde erfolgreich aktualisiert."
+	fi
+
+	echo "Serielle Konfigurationen in raspi-config"
+	if [ "$SIMULATE" = false ]; then
+		sudo sed -i 's/console=serial0,115200 //g' /boot/cmdline.txt
+		sudo bash -c "echo 'enable_uart=1' >> /boot/config.txt"
+		sudo bash -c "echo 'dtoverlay=miniuart-bt' >> /boot/config.txt"
+		sudo apt-get install minicom
+		sudo minicom -D /dev/serial0 -b 38400
+	fi
+
+}
+
+
 next_steps() {
 
 	note "Abschluss und nächste Schritte" "cyan"
@@ -881,6 +946,7 @@ echo
 echo "Die einzelnen Kommados geben sehr viele Daten aus. Um die Übersicht zu erhöhen folge ich diesen Farb-Codex:"
 echo_colored "cyan" "CYAN für Kapitelüberschriften und Abfragen an Sie"
 echo_colored "magenta" "MAGENTA für wichtige Informationen"
+echo_colored "red" "ROT für die Kommandos, die dieses Skript ausführt"
 echo
 echo
 
@@ -1237,6 +1303,18 @@ cd "$HOME"
 note "CaravanPi Library initialisieren und ggf. defaults konvertieren" "cyan"
 
 python3 $CARAVANPI_DIR/installation/caravanPiLibInit.py
+
+cd "$HOME"
+
+# --------------------------------------------------------------------------
+# StromPi3 installieren
+# --------------------------------------------------------------------------
+note "StromPi3 installieren" "cyan"
+
+read_colored "cyan" "Möchten Sie die Software für den StromPi3 installieren? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_stromPi3
+fi
 
 cd "$HOME"
 

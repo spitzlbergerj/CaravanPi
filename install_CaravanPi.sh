@@ -377,7 +377,7 @@ config_protocolls() {
 		# Überprüfen, ob die Zeile vorhanden ist
 		if grep -q "$CHECK_STRING" "$CONFIG_FILE"; then
 			echo "Die Änderung wurde bereits vorgenommen. Keine weiteren Aktionen erforderlich."
-		elifif grep -q "$SEARCH_STRING" "$BOOT_CONFIG_FILE"; then
+		elif grep -q "$SEARCH_STRING" "$BOOT_CONFIG_FILE"; then
 			# Ersetze die Zeile durch den gewünschten Text
 			# Benutze sed, um eine Sicherungskopie vor dem Ersetzen zu erstellen (.bak)
 			sed -i.bak "/$SEARCH_STRING/c\\$REPLACE_STRING" "$BOOT_CONFIG_FILE"
@@ -840,7 +840,8 @@ install_backup() {
 
 }
 
-# Installation Python Module
+# Installation StromPi3
+
 install_stromPi3() {
 	echo "Python Modul für StromPi3 installieren ...."
 	run_cmd "sudo apt-get install python3-serial"
@@ -872,10 +873,36 @@ install_stromPi3() {
 		sudo bash -c "echo 'enable_uart=1' >> /boot/config.txt"
 		sudo bash -c "echo 'dtoverlay=miniuart-bt' >> /boot/config.txt"
 		sudo apt-get install minicom
-		sudo minicom -D /dev/serial0 -b 38400
+		# sudo minicom -D /dev/serial0 -b 38400
 	fi
 
 }
+
+# Setzen Splash Screen
+
+set_splash_screen() {
+	echo "Willkommensbildschirm setzen ...."
+
+	# Zielverzeichnis für den Splash Screen
+	local target_dir="/usr/share/plymouth/themes/CaravanPi"
+
+	# Überprüfe, ob das Verzeichnis existiert, und lege es an, falls nicht
+	if [ ! -d "$target_dir" ]; then
+		echo "Erstelle Verzeichnis $target_dir ..."
+		sudo mkdir -p "$target_dir"
+	fi
+
+	# Kopiere alle Dateien von CARAVANPI_DIR/.splashScreen in das Zielverzeichnis
+	echo "Kopiere Dateien von $CARAVANPI_DIR/.splashScreen nach $target_dir ..."
+	sudo cp -a "$CARAVANPI_DIR/.splashScreen/"* "$target_dir/"
+
+	# Setze den neuen Splash Screen
+	echo "Setze CaravanPi als den neuen Splash Screen ..."
+	sudo plymouth-set-default-theme -R CaravanPi
+
+	echo "Der Splash Screen wurde erfolgreich aktualisiert."
+}
+
 
 
 next_steps() {
@@ -1303,6 +1330,15 @@ cd "$HOME"
 note "CaravanPi Library initialisieren und ggf. defaults konvertieren" "cyan"
 
 python3 $CARAVANPI_DIR/installation/caravanPiLibInit.py
+
+cd "$HOME"
+
+# --------------------------------------------------------------------------
+# Splash Screen setzen
+# --------------------------------------------------------------------------
+note "Willkommensbildschirm setzen" "cyan"
+
+set_splash_screen
 
 cd "$HOME"
 

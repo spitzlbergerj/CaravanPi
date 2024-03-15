@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=CaravanPi
+Description=CaravanPi Splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/CaravanPi
+ScriptFile=/usr/share/plymouth/themes/CaravanPi/CaravanPi.script

@@ -29,7 +29,7 @@
     <gassensorAlarmActive>1</gassensorAlarmActive>
     <v230CheckInstalled>1</v230CheckInstalled>
     <v230CheckADCPin>0</v230CheckADCPin>
-    <v230CheckAlarmActive>1</v230CheckAlarmActive>
+    <v230CheckAlarmActive>0</v230CheckAlarmActive>
     <v12BatteryCheckInstalled>1</v12BatteryCheckInstalled>
     <v12BatteryCheckADCPin>2</v12BatteryCheckADCPin>
     <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>

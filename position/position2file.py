@@ -836,23 +836,29 @@ def main():
 				lastZ = z
 
 				sleep(.5)
+
 			else:
 				# Warten über Schleife, damit Tasten, Signale, etc. während des Schlafens nicht verloren gehen
 				j=0
 				while j< 600 and liveMode == 0: # 600/.5 = 300 Sekunden = 5 Minuten
 					j=j+1
 					sleep (.5)
+
 				# falls inzwsichen LEDtest gestartet wurde, alle LEDs aus
 				ledOff()
 				
 		except KeyboardInterrupt:
 			ledOff()
 			# GPIO.cleanup()
+
+			sleep(1)
 			break
 		except:
 			print("unprocessed Error:", sys.exc_info()[0])
 			ledOff()
 			# GPIO.cleanup()
+
+			sleep(1)
 			raise
 			
 	# GPIO.cleanup()

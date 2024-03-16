@@ -221,7 +221,6 @@ def main():
 				)
 				print("handle_sensor_values erledigt")
 
-				time.sleep(delayAlarm if v12DropDetected else delay)
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -235,6 +234,8 @@ def main():
 			else:
 				# kein Fehler aufgetreten
 				errorcount = 0
+
+			time.sleep(delayAlarm if v12DropDetected else delay)
 
 	except KeyboardInterrupt:
 		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen

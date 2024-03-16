@@ -28,6 +28,8 @@ from CaravanPiFunctionsClass import CaravanPiFunctions
 
 
 def main():
+	delay = 30
+
 	# ArgumentParser-Objekt erstellen
 	parser = argparse.ArgumentParser(description='Lesen aller Temperatursensoren am 1-Wire-Bus')
 	parser.add_argument('-s', '--screen', action='store_true',
@@ -40,7 +42,7 @@ def main():
 	# Argumente parsen
 	args = parser.parse_args()
 	delay = int(args.delay)
-	delayAlarm = 1.5
+	delayAlarm = 2
 
 	# Libraries anbinden
 	cplib = CaravanPiFiles()
@@ -147,8 +149,6 @@ def main():
 					( channel.value, gasDetected) 		# Tupel Sensorwerte
 				)
 
-				time.sleep(delayAlarm if gasDetected else delay)
-
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
 				# alle anderen Fehler
@@ -157,10 +157,13 @@ def main():
 					print("zu viele Fehler")
 					return False
 				continue
-				
+			
 			else:
 				# kein Fehler aufgetreten
 				errorcount = 0
+
+			time.sleep(delayAlarm if gasDetected else delay)
+
 
 	except KeyboardInterrupt:
 		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen

@@ -153,7 +153,6 @@ def main():
 					(230.0 if not v230DropDetected else 0.0 , ) # Tupel Sensorwerte
 				)
 
-				time.sleep(delayAlarm if v230DropDetected else delay)
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -167,6 +166,8 @@ def main():
 			else:
 				# kein Fehler aufgetreten
 				errorcount = 0
+
+			time.sleep(delayAlarm if v230DropDetected else delay)
 
 	except KeyboardInterrupt:
 		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen

@@ -264,15 +264,18 @@ def main():
 		
 			time.sleep(waitAfterPumpSeconds)
 	except KeyboardInterrupt:
-		GPIO.cleanup()
+		#GPIO.cleanup()
+		Pump.close()
 	except:
 		print("unprocessed Error:", sys.exc_info()[0])
-		GPIO.cleanup()
+		#GPIO.cleanup()
+		Pump.close()
 
 	# -------------------------
 	# Cleaning at the end
 	# -------------------------
-	GPIO.cleanup()
+	#GPIO.cleanup()
+	Pump.close()
 
 if __name__ == "__main__":
 	main()

@@ -28,6 +28,8 @@ from CaravanPiFunctionsClass import CaravanPiFunctions
 
 
 def main():
+	delay = 30
+
 	# ArgumentParser-Objekt erstellen
 	parser = argparse.ArgumentParser(description='Lesen aller Temperatursensoren am 1-Wire-Bus')
 	parser.add_argument('-s', '--screen', action='store_true',
@@ -40,7 +42,7 @@ def main():
 	# Argumente parsen
 	args = parser.parse_args()
 	delay = int(args.delay)
-	delayAlarm = 1.5
+	delayAlarm = 2
 
 	# Libraries anbinden
 	cplib = CaravanPiFiles()
@@ -113,9 +115,11 @@ def main():
 	
 	errorcount = 0
 	gasDetected = False
+	zaehler = 0
 
 	try: # Main program loop
 		while True:  
+			zaehler += 1  
 			try:
 				# Einlesen, ob Alarm ausgegeben werden soll
 				gassensorAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive") is not None else False
@@ -139,15 +143,15 @@ def main():
 						cplib.writeCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive", 1)
 						gassensorAlarmActive = True
 					
-				cplib.handle_sensor_values(
-					args.screen,    				    # Anzeige am Bildschirm?
-					"gassensor",      					# sensor_name = Datenbankname 
-					"mq-2",     						# sensor_id = Filename und Spalte in der Datenbank
-					["parts_per_million", "alarm"], 	# Liste Spaltennamen
-					( channel.value, gasDetected) 		# Tupel Sensorwerte
-				)
-
-				time.sleep(delayAlarm if gasDetected else delay)
+				if not gasDetected or (gasDetected and zaehler >= (delay/delayAlarm)):
+					cplib.handle_sensor_values(
+						args.screen,    				    # Anzeige am Bildschirm?
+						"gassensor",      					# sensor_name = Datenbankname 
+						"mq-2",     						# sensor_id = Filename und Spalte in der Datenbank
+						["parts_per_million", "alarm"], 	# Liste Spaltennamen
+						( channel.value, gasDetected) 		# Tupel Sensorwerte
+					)
+					zaehler = 0
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -157,10 +161,13 @@ def main():
 					print("zu viele Fehler")
 					return False
 				continue
-				
+			
 			else:
 				# kein Fehler aufgetreten
 				errorcount = 0
+
+			time.sleep(delayAlarm if gasDetected else delay)
+
 
 	except KeyboardInterrupt:
 		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen

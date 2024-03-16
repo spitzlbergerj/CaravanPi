@@ -32,7 +32,9 @@ import os
 import getopt
 
 # import for GPIO Input tactile switches
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+from gpiozero import Button
+
 
 # -----------------------------------------------
 # libraries from CaravanPi
@@ -100,7 +102,7 @@ def main():
 	# -----------------------------------------------
 	# Initialize the GPIO ports
 	# -----------------------------------------------
-	GPIO.setmode(GPIO.BCM)
+	# GPIO.setmode(GPIO.BCM)
 
 	# -------------------------
 	# process call parameters
@@ -215,15 +217,16 @@ def main():
 			time.sleep(waitAfterReadingSeconds)
 
 	except KeyboardInterrupt:
-		GPIO.cleanup()
+		print("Keyboard Interrupt")
+		# GPIO.cleanup()
 	except:
 		print("unprocessed Error:", sys.exc_info()[0])
-		GPIO.cleanup()
+		# GPIO.cleanup()
 
 	# -------------------------
 	# Cleaning at the end
 	# -------------------------
-	GPIO.cleanup()
+	# GPIO.cleanup()
 
 if __name__ == "__main__":
 	main()

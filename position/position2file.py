@@ -585,14 +585,18 @@ def main():
 	
 	# beide Buttons liegen zwischen 3V3 und GPIO Pin
 	# daher pull_up=False
-	buttonNowHorizontal = Button(pinSwitchNowHorizontal, pull_up=False, bounce_time=0.1)
-	buttonNowHorizontal.when_pressed = switchInterruptNowHorizontal
 
-	buttonLive = Button(pinSwitchLive, pull_up=False, bounce_time=0.1)
-	buttonLive.when_pressed = switchInterruptLive
+	try:
+		buttonNowHorizontal = Button(pinSwitchNowHorizontal, pull_up=False, bounce_time=0.1)
+		buttonNowHorizontal.when_pressed = switchInterruptNowHorizontal
 
-	LEDlive = LED(pinLEDLive)
-	LEDlive.off()
+		buttonLive = Button(pinSwitchLive, pull_up=False, bounce_time=0.1)
+		buttonLive.when_pressed = switchInterruptLive
+
+		LEDlive = LED(pinLEDLive)
+		LEDlive.off()
+	except Exception as e: 
+		print(f"gpiozero Fehler: {e}")		
 
 
 	# -------------------------
@@ -832,26 +836,39 @@ def main():
 				lastZ = z
 
 				sleep(.5)
+
 			else:
 				# Warten über Schleife, damit Tasten, Signale, etc. während des Schlafens nicht verloren gehen
 				j=0
 				while j< 600 and liveMode == 0: # 600/.5 = 300 Sekunden = 5 Minuten
 					j=j+1
 					sleep (.5)
+
 				# falls inzwsichen LEDtest gestartet wurde, alle LEDs aus
 				ledOff()
 				
 		except KeyboardInterrupt:
 			ledOff()
 			# GPIO.cleanup()
+
+			sleep(1)
 			break
 		except:
 			print("unprocessed Error:", sys.exc_info()[0])
 			ledOff()
 			# GPIO.cleanup()
+
+			sleep(1)
 			raise
 			
 	# GPIO.cleanup()
+	
+	try:
+		buttonNowHorizontal.close() 
+		buttonLive.close()
+		LEDlive.close()
+	except Exception as e: 
+		print(f"gpiozero Fehler: {e}")		
 
 if __name__ == "__main__":
 	main()

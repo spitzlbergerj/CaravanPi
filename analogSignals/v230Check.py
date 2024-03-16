@@ -115,10 +115,11 @@ def main():
 	errorcount = 0
 	schwelle = 2.0
 	v230DropDetected = False
-
+	zaehler = 0
 
 	try: # Main program loop
-		while True:  
+		while True:
+			zaehler += 1  
 			try:
 				# Einlesen, ob Alarm ausgegeben werden soll
 				v230CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive") is not None else False
@@ -144,16 +145,18 @@ def main():
 						print("Alarm in Config einschalten")
 						cplib.writeCaravanPiConfigItem("caravanpiDefaults/v230CheckAlarmActive", 1)
 						v230CheckAlarmActive = True
-					
-				cplib.handle_sensor_values(
-					args.screen,    		    # Anzeige am Bildschirm?
-					"Spannung",      			# sensor_name = Datenbankname 
-					"230v",     	# sensor_id = Filename und Spalte in der Datenbank
-					["spannung"], 				# Liste Spaltennamen
-					(230.0 if not v230DropDetected else 0.0 ) # Tupel Sensorwerte
-				)
-
-				time.sleep(delayAlarm if v230DropDetected else delay)
+				
+				# Falls v230 Dropped, dann nicht jedesmal schreiben
+				
+				if not v230DropDetected or (v230DropDetected and zaehler >= (delay/delayAlarm)):
+					cplib.handle_sensor_values(
+						args.screen,    		    # Anzeige am Bildschirm?
+						"spannung",      			# sensor_name = Datenbankname 
+						"230v",     	# sensor_id = Filename und Spalte in der Datenbank
+						["spannung"], 				# Liste Spaltennamen
+						(230.0 if not v230DropDetected else 0.0 , ) # Tupel Sensorwerte
+					)
+					zaehler = 0
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -167,6 +170,8 @@ def main():
 			else:
 				# kein Fehler aufgetreten
 				errorcount = 0
+
+			time.sleep(delayAlarm if v230DropDetected else delay)
 
 	except KeyboardInterrupt:
 		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen

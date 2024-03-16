@@ -30,9 +30,10 @@ import time, datetime
 import sys
 import os
 import getopt
+from gpiozero import Button
 
 # import for GPIO Input tactile switches
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 # -----------------------------------------------
 # libraries from CaravanPi
@@ -87,7 +88,7 @@ def usage():
 	print ("  -t <nr>   welcher Tank soll abgefragt werden\n")
 
 
-def interruptPumpOn(pin):
+def interruptPumpOn():
 	# high = Pumpe laeuft nicht, low = Pumpe laeuft
 	global pumpOnTime
 	global waitAfterPumpSeconds
@@ -116,7 +117,7 @@ def main():
 	# -----------------------------------------------
 	# Initialize the GPIO ports
 	# -----------------------------------------------
-	GPIO.setmode(GPIO.BCM)
+	# GPIO.setmode(GPIO.BCM)
 
 	# -------------------------
 	# process call parameters
@@ -189,9 +190,14 @@ def main():
 	# -------------------------
 	# Interrupt for switching on the pump
 	# -------------------------
-	GPIO.setup(pinPumpeAn, GPIO.IN)
+	# GPIO.setup(pinPumpeAn, GPIO.IN)
 	# Wenn Pumpe wieder ausschaltet, dann Interruptbehandlung
-	GPIO.add_event_detect(pinPumpeAn, GPIO.RISING, callback = interruptPumpOn, bouncetime = 400)	
+	# GPIO.add_event_detect(pinPumpeAn, GPIO.RISING, callback = interruptPumpOn, bouncetime = 400)	
+
+	Pump = Button(pinPumpeAn, pull_up=True, bounce_time=0.4)
+	Pump.when_pressed = interruptPumpOn
+
+
 
 	# -------------------------
 	# set things for meassuring at startup
@@ -258,15 +264,18 @@ def main():
 		
 			time.sleep(waitAfterPumpSeconds)
 	except KeyboardInterrupt:
-		GPIO.cleanup()
+		#GPIO.cleanup()
+		Pump.close()
 	except:
 		print("unprocessed Error:", sys.exc_info()[0])
-		GPIO.cleanup()
+		#GPIO.cleanup()
+		Pump.close()
 
 	# -------------------------
 	# Cleaning at the end
 	# -------------------------
-	GPIO.cleanup()
+	#GPIO.cleanup()
+	Pump.close()
 
 if __name__ == "__main__":
 	main()

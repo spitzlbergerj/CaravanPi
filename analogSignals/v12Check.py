@@ -169,9 +169,11 @@ def main():
 	
 	errorcount = 0
 	v12DropDetected = False
+	zaehler = 0
 
 	try: # Main program loop
 		while True:  
+			zaehler += 1  
 			try:
 				# Einlesen, ob Alarm ausgegeben werden soll
 				v12CheckAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}"), "bool") if cplib.readCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}") is not None else False
@@ -211,15 +213,16 @@ def main():
 						cplib.writeCaravanPiConfigItem(f"caravanpiDefaults/{v12xmlItemAlarm}", 1)
 						v12CheckAlarmActive = True
 				
-				cplib.handle_sensor_values(
-					args.screen,    		    # Anzeige am Bildschirm?
-					"Spannung",      			# sensor_name = Datenbankname 
-					f"12v{args.battery}",     	# sensor_id = Filename und Spalte in der Datenbank
-					["spannung"], 				# Liste Spaltennamen
-					(berechne_spannungsteiler(v12R1, v12R2, Vout=channel.voltage)) # Tupel Sensorwerte
-				)
+				if not v12DropDetected or (v12DropDetected and zaehler >= (delay/delayAlarm)):
+					cplib.handle_sensor_values(
+						args.screen,    		    # Anzeige am Bildschirm?
+						"spannung",      			# sensor_name = Datenbankname 
+						f"12v{args.battery}",     	# sensor_id = Filename und Spalte in der Datenbank
+						["spannung"], 				# Liste Spaltennamen
+						(berechne_spannungsteiler(v12R1, v12R2, Vout=channel.voltage),) # Tupel Sensorwerte
+					)
+					zaehler = 0
 
-				time.sleep(delayAlarm if v12DropDetected else delay)
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")
@@ -233,6 +236,8 @@ def main():
 			else:
 				# kein Fehler aufgetreten
 				errorcount = 0
+
+			time.sleep(delayAlarm if v12DropDetected else delay)
 
 	except KeyboardInterrupt:
 		# Alarm ausgeben, dass nicht zufällig Dauerton verbleibt beim Abbrechen

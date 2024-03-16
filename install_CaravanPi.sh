@@ -377,7 +377,7 @@ config_protocolls() {
 		# Überprüfen, ob die Zeile vorhanden ist
 		if grep -q "$CHECK_STRING" "$CONFIG_FILE"; then
 			echo "Die Änderung wurde bereits vorgenommen. Keine weiteren Aktionen erforderlich."
-		elifif grep -q "$SEARCH_STRING" "$BOOT_CONFIG_FILE"; then
+		elif grep -q "$SEARCH_STRING" "$BOOT_CONFIG_FILE"; then
 			# Ersetze die Zeile durch den gewünschten Text
 			# Benutze sed, um eine Sicherungskopie vor dem Ersetzen zu erstellen (.bak)
 			sed -i.bak "/$SEARCH_STRING/c\\$REPLACE_STRING" "$BOOT_CONFIG_FILE"
@@ -569,6 +569,14 @@ install_mariadb() {
 	echo
 	echo "Die Datenbank enthält nun folgende Tabellen:"
 	run_cmd "sudo mysql -u'caravanpi' -p'$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
+
+	echo
+	echo "Speichere Passwort in CaravanPi Config xml"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/write2MariaDB' --value '1'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBhost' --value 'localhost'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBuser' --value 'caravanpi'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBpasswd' --value '$caravanpi_password'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBdatabase' --value 'CaravanPiValues'"
 }
 
 
@@ -840,7 +848,8 @@ install_backup() {
 
 }
 
-# Installation Python Module
+# Installation StromPi3
+
 install_stromPi3() {
 	echo "Python Modul für StromPi3 installieren ...."
 	run_cmd "sudo apt-get install python3-serial"
@@ -872,10 +881,36 @@ install_stromPi3() {
 		sudo bash -c "echo 'enable_uart=1' >> /boot/config.txt"
 		sudo bash -c "echo 'dtoverlay=miniuart-bt' >> /boot/config.txt"
 		sudo apt-get install minicom
-		sudo minicom -D /dev/serial0 -b 38400
+		# sudo minicom -D /dev/serial0 -b 38400
 	fi
 
 }
+
+# Setzen Splash Screen
+
+set_splash_screen() {
+	echo "Willkommensbildschirm setzen ...."
+
+	# Zielverzeichnis für den Splash Screen
+	local target_dir="/usr/share/plymouth/themes/CaravanPi"
+
+	# Überprüfe, ob das Verzeichnis existiert, und lege es an, falls nicht
+	if [ ! -d "$target_dir" ]; then
+		echo "Erstelle Verzeichnis $target_dir ..."
+		sudo mkdir -p "$target_dir"
+	fi
+
+	# Kopiere alle Dateien von CARAVANPI_DIR/.splashScreen in das Zielverzeichnis
+	echo "Kopiere Dateien von $CARAVANPI_DIR/.splashScreen nach $target_dir ..."
+	sudo cp -a "$CARAVANPI_DIR/.splashScreen/"* "$target_dir/"
+
+	# Setze den neuen Splash Screen
+	echo "Setze CaravanPi als den neuen Splash Screen ..."
+	sudo plymouth-set-default-theme -R CaravanPi
+
+	echo "Der Splash Screen wurde erfolgreich aktualisiert."
+}
+
 
 
 next_steps() {
@@ -907,10 +942,20 @@ next_steps() {
 	echo "     Ändern Sie die Crontab nach Ihren Bedürfnissen. Nehmen Sie z.B. Programme außer Betrieb, falls noch"
 	echo "     entsprechenden Sensoren verbaut wurden."
 	echo
-	echo
 	echo "- Sensoren in den Caravan einbauen und mit der CaravanPi Platine verbinden"
 	echo "     Der letzte Schritt ist dann natürlich die Hardware Sensoren in den Caravan einzubauen"
 	echo "     Auf dem CaravanPi Wiki finden Sie hierzu ausführliche Erläuterungen, wie ich das erledigt habe"
+	echo
+	echo "- grafana Login durchführen, Passwort vergeben, Dashboards anlegen"
+	echo "     Grafana wurde mit dem Standarduser 'admin' und dem Standardpasswort 'admin' installiert."
+	echo "     Starten Sie die Grafana Website unter http://$ip_address:3000 und klicken Sie auf Login."
+	echo "     Verwenden Sie 'admin'/'admin' zum einloggen und vergeben Sie nach Aufforderung ein neues Passwort für den User 'admin'."
+	echo "     Legen Sie die Dashboards an, die Sie am MagicMirror anzeigen wollen. Anleitung finden Sie im CaravanPi Wiki."
+	echo
+	echo "- MagicMirror Module einfügen"
+	echo "     Der MagicMirror zeigt aktuell noch keine Werte an. Nutzen Sie die Datei-basierten Module MMM-CaravanPi-xxx, die "
+	echo "     durch dieses Skript bereits angelegt wurden. Eine Anleitung hier finden Sie im Wiki https://github.com/spitzlbergerj/CaravanPi/wiki "
+	echo "     Oder binden Sie die Grafana Desktops mit den Werteverläufen ein. Anleitung ebenfalls im Wiki. "
 	echo
 	echo
 }
@@ -1303,6 +1348,15 @@ cd "$HOME"
 note "CaravanPi Library initialisieren und ggf. defaults konvertieren" "cyan"
 
 python3 $CARAVANPI_DIR/installation/caravanPiLibInit.py
+
+cd "$HOME"
+
+# --------------------------------------------------------------------------
+# Splash Screen setzen
+# --------------------------------------------------------------------------
+note "Willkommensbildschirm setzen" "cyan"
+
+set_splash_screen
 
 cd "$HOME"
 

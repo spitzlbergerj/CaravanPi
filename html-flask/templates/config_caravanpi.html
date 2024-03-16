@@ -59,6 +59,9 @@
 					</p>
 					</div>
 				</div>
+				<p>
+					<hr>
+				</p>
 
 				<!-- in Dateien -->
 				<div class="row">
@@ -194,7 +197,7 @@
 								<img src="/static/images/eye-solid.png" alt="Einblenden">
 								</button>
 							</div>
-
+						</div>
 					</div>
 				</div>
 
@@ -203,30 +206,32 @@
 				<p><b>Anzahl von Sensoren</b><br/></p>
 
 				<!-- Sensorenanzahl -->
-				<div class="row">
-					<div class="col-75">
-						<label for="countGasScales">Anzahl Gasflaschenwaagen</label>  
+				<div class="count_settings">
+					<div class="row">
+						<div class="col-75">
+							<label for="countGasScales">Anzahl Gasflaschenwaagen</label>  
+						</div>
+						<div class="col-25">
+							<input name="countGasScales" type="number" step="1" min="1" max="2" value="{{ caravanpiDefaults.get('countGasScales', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="countGasScales" type="number" step="1" min="1" max="2" value="{{ caravanpiDefaults.get('countGasScales', '')}}" >
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="countTanks">Anzahl Tanks</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="countTanks">Anzahl Tanks</label>  
+						</div>
+						<div class="col-25">
+							<input name="countTanks" type="number" step="1" min="1" max="3" value="{{ caravanpiDefaults.get('countTanks', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="countTanks" type="number" step="1" min="1" max="3" value="{{ caravanpiDefaults.get('countTanks', '')}}" >
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="countTanks">Anzahl Klimasensoren</label>  
-					</div>
-					<div class="col-25">
-						<input name="countClimateSensors" type="number" step="1" min="1" max="2" value="{{ caravanpiDefaults.get('countClimateSensors', '')}}" >
+					<div class="row">
+						<div class="col-75">
+							<label for="countTanks">Anzahl Klimasensoren</label>  
+						</div>
+						<div class="col-25">
+							<input name="countClimateSensors" type="number" step="1" min="1" max="2" value="{{ caravanpiDefaults.get('countClimateSensors', '')}}" >
+						</div>
 					</div>
 				</div>
 
@@ -235,58 +240,59 @@
 				<p><b>Einstellungen für die Abfrageintervalle der Sensoren</b><br/></p>
 
 				<!-- crontab Intervalle -->
+				<div class="crontab_settings">
+					<div class="row">
+						<div class="col-75">
+							<label for="intervallGasscale">Gasflaschenwaagen (in min)</label>  
+						</div>
+						<div class="col-25">
+							<input name="intervallGasscale" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallGasscale', '')}}" >
+						</div>
+					</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="intervallGasscale">Gasflaschenwaagen (in min)</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="intervallTemp">Temperatursensoren (in min)</label>  
+						</div>
+						<div class="col-25">
+							<input name="intervallTemp" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallTemp', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="intervallGasscale" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallGasscale', '')}}" >
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="intervallTemp">Temperatursensoren (in min)</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="intervallClimate">Klimasensoren (in min)</label>  
+						</div>
+						<div class="col-25">
+							<input name="intervallClimate" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallClimate', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="intervallTemp" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallTemp', '')}}" >
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="intervallClimate">Klimasensoren (in min)</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="intervallTanks">Tanks (in min)</label>  
+						</div>
+						<div class="col-25">
+							<input name="intervallTanks" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallTanks', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="intervallClimate" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallClimate', '')}}" >
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="intervallTanks">Tanks (in min)</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="intervallPositionNormal">Lagedaten (in min)</label>  
+						</div>
+						<div class="col-25">
+							<input name="intervallPositionNormal" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallPositionNormal', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="intervallTanks" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallTanks', '')}}" >
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="intervallPositionNormal">Lagedaten (in min)</label>  
-					</div>
-					<div class="col-25">
-						<input name="intervallPositionNormal" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallPositionNormal', '')}}" >
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-75">
-						<label for="intervallRaspberry">Systemdaten des Raspberry Pi (in min)</label>  
-					</div>
-					<div class="col-25">
-						<input name="intervallRaspberry" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallRaspberry', '')}}" >
+					<div class="row">
+						<div class="col-75">
+							<label for="intervallRaspberry">Systemdaten des Raspberry Pi (in min)</label>  
+						</div>
+						<div class="col-25">
+							<input name="intervallRaspberry" type="number" step="1" min="1" max="120" value="{{ caravanpiDefaults.get('intervallRaspberry', '')}}" >
+						</div>
 					</div>
 				</div>
 
@@ -295,6 +301,7 @@
 				<hr>
 				<p><b>Liontron Battery Management</b><br/></p>
 
+				
 				<div class="row">
 					<div class="col-75">
 						<label for="LiontronMACAddress">Liontron LiPo Batterie MAC Adresse</label>  
@@ -311,203 +318,205 @@
 				Dies empfiehlt sich insbesondere beim Gassensor.</p>
 
 
-				<br/><br/>
-				<hr>
-				<p><b>Gassensor</b><br/></p>
+				<div class="acustic_settings">
+					<br/><br/>
+					<hr>
+					<p><b>Gassensor</b><br/></p>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="gassensorInstalled">ist ein Gassensor installiert?</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="gassensorInstalled">ist ein Gassensor installiert?</label>  
+						</div>
+						<div class="col-25">
+							<input name="gassensorInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorInstalled', False) else '' }}>
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="gassensorInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorInstalled', False) else '' }}>
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="gassensorDigitalIn">GPIO Pin des Digitalausgangs des Gasssensors</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="gassensorDigitalIn">GPIO Pin des Digitalausgangs des Gasssensors</label>  
+						</div>
+						<div class="col-25">
+							<input name="gassensorDigitalIn" type="char" value="{{ caravanpiDefaults.get('gassensorDigitalIn', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="gassensorDigitalIn" type="char" value="{{ caravanpiDefaults.get('gassensorDigitalIn', '')}}" >
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="gassensorAnalogIn">ADC Pin des Analogausgangs des Gasssensors</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="gassensorAnalogIn">ADC Pin des Analogausgangs des Gasssensors</label>  
+						</div>
+						<div class="col-25">
+							<input name="gassensorAnalogIn" type="char" value="{{ caravanpiDefaults.get('gassensorAnalogIn', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="gassensorAnalogIn" type="char" value="{{ caravanpiDefaults.get('gassensorAnalogIn', '')}}" >
+					<div class="row">
+						<div class="col-75">
+							<label for="gassensorAlarmActive">Akustischen Alarm auslösen?</label>  
+						</div>
+						<div class="col-25">
+							<input name="gassensorAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorAlarmActive', False) else '' }}>
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="gassensorAlarmActive">Akustischen Alarm auslösen?</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="gassensorAlarmResume">Akustischen Alarm reaktivieren?</label>  
+						</div>
+						<div class="col-25">
+							<input name="gassensorAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorAlarmResume', False) else '' }}>
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="gassensorAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorAlarmActive', False) else '' }}>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="gassensorAlarmResume">Akustischen Alarm reaktivieren?</label>  
-					</div>
-					<div class="col-25">
-						<input name="gassensorAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('gassensorAlarmResume', False) else '' }}>
-					</div>
-				</div>
-
-
-
-				<br/><br/>
-				<hr>
-				<p><b>230V Überwachung</b><br/></p>
-
-				<div class="row">
-					<div class="col-75">
-						<label for="v230CheckInstalled">ist eine 230V Überwachung installiert?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v230CheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckInstalled', False) else '' }}>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-75">
-						<label for="v230CheckADCPin">ADC Pin der 230V Überwachung</label>  
-					</div>
-					<div class="col-25">
-						<input name="v230CheckADCPin" type="char" value="{{ caravanpiDefaults.get('v230CheckADCPin', '')}}" >
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v230CheckAlarmActive">Akustischen Alarm auslösen?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v230CheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckAlarmActive', False) else '' }}>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v230CheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v230CheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckAlarmResume', False) else '' }}>
-					</div>
-				</div>
 
 
 
-				<br/><br/>
-				<hr>
-				<p><b>12V Bordbatterie Überwachung</b><br/></p>
+					<br/><br/>
+					<hr>
+					<p><b>230V Überwachung</b><br/></p>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="v12BatteryCheckInstalled">ist eine 12V Bordbatterie Überwachung installiert?</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="v230CheckInstalled">ist eine 230V Überwachung installiert?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v230CheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckInstalled', False) else '' }}>
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="v12BatteryCheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckInstalled', False) else '' }}>
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="v12BatteryCheckADCPin">ADC Pin der 230V Überwachung</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="v230CheckADCPin">ADC Pin der 230V Überwachung</label>  
+						</div>
+						<div class="col-25">
+							<input name="v230CheckADCPin" type="char" value="{{ caravanpiDefaults.get('v230CheckADCPin', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="v12BatteryCheckADCPin" type="char" value="{{ caravanpiDefaults.get('v12BatteryCheckADCPin', '')}}" >
+					<div class="row">
+						<div class="col-75">
+							<label for="v230CheckAlarmActive">Akustischen Alarm auslösen?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v230CheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckAlarmActive', False) else '' }}>
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12BatteryR1">Spannungsteiler Widerstand R1 (an V-in)</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="v230CheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v230CheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v230CheckAlarmResume', False) else '' }}>
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="v12BatteryR1" type="char" value="{{ caravanpiDefaults.get('v12BatteryR1', '')}}" >
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12BatteryR2">Spannungsteiler Widerstand R2 (an GND)</label>  
-					</div>
-					<div class="col-25">
-						<input name="v12BatteryR2" type="char" value="{{ caravanpiDefaults.get('v12BatteryR2', '')}}" >
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12BatteryCheckAlarmActive">Akustischen Alarm auslösen?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v12BatteryCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmActive', False) else '' }}>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12BatteryCheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v12BatteryCheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmResume', False) else '' }}>
-					</div>
-				</div>
 
 
 
+					<br/><br/>
+					<hr>
+					<p><b>12V Bordbatterie Überwachung</b><br/></p>
 
-				<br/><br/>
-				<hr>
-				<p><b>12V Auto Überwachung</b><br/></p>
+					<div class="row">
+						<div class="col-75">
+							<label for="v12BatteryCheckInstalled">ist eine 12V Bordbatterie Überwachung installiert?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12BatteryCheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckInstalled', False) else '' }}>
+						</div>
+					</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="v12CarCheckInstalled">ist eine 12V Auto Überwachung installiert?</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="v12BatteryCheckADCPin">ADC Pin der 230V Überwachung</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12BatteryCheckADCPin" type="char" value="{{ caravanpiDefaults.get('v12BatteryCheckADCPin', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="v12CarCheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckInstalled', False) else '' }}>
+					<div class="row">
+						<div class="col-75">
+							<label for="v12BatteryR1">Spannungsteiler Widerstand R1 (an V-in)</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12BatteryR1" type="char" value="{{ caravanpiDefaults.get('v12BatteryR1', '')}}" >
+						</div>
 					</div>
-				</div>
+					<div class="row">
+						<div class="col-75">
+							<label for="v12BatteryR2">Spannungsteiler Widerstand R2 (an GND)</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12BatteryR2" type="char" value="{{ caravanpiDefaults.get('v12BatteryR2', '')}}" >
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-75">
+							<label for="v12BatteryCheckAlarmActive">Akustischen Alarm auslösen?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12BatteryCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmActive', False) else '' }}>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-75">
+							<label for="v12BatteryCheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12BatteryCheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12BatteryCheckAlarmResume', False) else '' }}>
+						</div>
+					</div>
 
-				<div class="row">
-					<div class="col-75">
-						<label for="v12CarCheckADCPin">ADC Pin der 12V Auto Überwachung</label>  
+
+
+
+					<br/><br/>
+					<hr>
+					<p><b>12V Auto Überwachung</b><br/></p>
+
+					<div class="row">
+						<div class="col-75">
+							<label for="v12CarCheckInstalled">ist eine 12V Auto Überwachung installiert?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12CarCheckInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckInstalled', False) else '' }}>
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="v12CarCheckADCPin" type="char" value="{{ caravanpiDefaults.get('v12CarCheckADCPin', '')}}" >
+
+					<div class="row">
+						<div class="col-75">
+							<label for="v12CarCheckADCPin">ADC Pin der 12V Auto Überwachung</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12CarCheckADCPin" type="char" value="{{ caravanpiDefaults.get('v12CarCheckADCPin', '')}}" >
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12CarR1">Spannungsteiler Widerstand R1 (an V-in)</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="v12CarR1">Spannungsteiler Widerstand R1 (an V-in)</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12CarR1" type="char" value="{{ caravanpiDefaults.get('v12CarR1', '')}}" >
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="v12CarR1" type="char" value="{{ caravanpiDefaults.get('v12CarR1', '')}}" >
+					<div class="row">
+						<div class="col-75">
+							<label for="v12CarR2">Spannungsteiler Widerstand R2 (an GND)</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12CarR2" type="char" value="{{ caravanpiDefaults.get('v12CarR2', '')}}" >
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12CarR2">Spannungsteiler Widerstand R2 (an GND)</label>  
+					<div class="row">
+						<div class="col-75">
+							<label for="v12CarCheckAlarmActive">Akustischen Alarm auslösen?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12CarCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmActive', False) else '' }}>
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="v12CarR2" type="char" value="{{ caravanpiDefaults.get('v12CarR2', '')}}" >
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12CarCheckAlarmActive">Akustischen Alarm auslösen?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v12CarCheckAlarmActive" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmActive', False) else '' }}>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-75">
-						<label for="v12CarCheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
-					</div>
-					<div class="col-25">
-						<input name="v12CarCheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmResume', False) else '' }}>
+					<div class="row">
+						<div class="col-75">
+							<label for="v12CarCheckAlarmResume">Akustischen Alarm reaktivieren?</label>  
+						</div>
+						<div class="col-25">
+							<input name="v12CarCheckAlarmResume" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('v12CarCheckAlarmResume', False) else '' }}>
+						</div>
 					</div>
 				</div>
 
@@ -519,24 +528,25 @@
 
 				<!-- Sonstige Einstellungen -->
 
-				<div class="row">
-					<div class="col-75">
-						<label for="stromPiInstalled">ist ein StromPi installiert?</label>  
+				<div class="other_settings"></div>
+					<div class="row">
+						<div class="col-75">
+							<label for="stromPiInstalled">ist ein StromPi installiert?</label>  
+						</div>
+						<div class="col-25">
+							<input name="stromPiInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('stromPiInstalled', False) else '' }}>
+						</div>
 					</div>
-					<div class="col-25">
-						<input name="stromPiInstalled" type="checkbox"  value="1" {{ 'checked' if caravanpiDefaults.get('stromPiInstalled', False) else '' }}>
+
+					<div class="row">
+						<div class="col-75">
+							<label for="BuzzerGPIOPin">GPIO Pin des Buzzers</label>  
+						</div>
+						<div class="col-25">
+							<input name="BuzzerGPIOPin" type="char" value="{{ caravanpiDefaults.get('BuzzerGPIOPin', '')}}" >
+						</div>
 					</div>
 				</div>
-
-				<div class="row">
-					<div class="col-75">
-						<label for="BuzzerGPIOPin">GPIO Pin des Buzzers</label>  
-					</div>
-					<div class="col-25">
-						<input name="BuzzerGPIOPin" type="char" value="{{ caravanpiDefaults.get('BuzzerGPIOPin', '')}}" >
-					</div>
-				</div>
-
 
 
 				<!-- Button -->
@@ -586,16 +596,16 @@
 			var send2MQTTCheckbox = document.querySelector('input[name="send2MQTT"]');
 		
 			// Initialer Aufruf für den Fall, dass die Checkboxen bereits markiert sind
-			toggleSettings(write2DBCheckbox, '.db-settings', true);
-			toggleSettings(send2MQTTCheckbox, '.mqtt-settings', true);
+			toggleSettings(write2DBCheckbox, '.db-settings', false);
+			toggleSettings(send2MQTTCheckbox, '.mqtt-settings', false);
 		
 			// Event Listener für Änderungen
 			write2DBCheckbox.addEventListener('change', function() {
-				toggleSettings(this, '.db-settings', true);
+				toggleSettings(this, '.db-settings', false);
 			});
 		
 			send2MQTTCheckbox.addEventListener('change', function() {
-				toggleSettings(this, '.mqtt-settings', true);
+				toggleSettings(this, '.mqtt-settings', false);
 			});
 		});
 	</script>

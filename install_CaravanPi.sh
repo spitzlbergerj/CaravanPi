@@ -942,10 +942,20 @@ next_steps() {
 	echo "     Ändern Sie die Crontab nach Ihren Bedürfnissen. Nehmen Sie z.B. Programme außer Betrieb, falls noch"
 	echo "     entsprechenden Sensoren verbaut wurden."
 	echo
-	echo
 	echo "- Sensoren in den Caravan einbauen und mit der CaravanPi Platine verbinden"
 	echo "     Der letzte Schritt ist dann natürlich die Hardware Sensoren in den Caravan einzubauen"
 	echo "     Auf dem CaravanPi Wiki finden Sie hierzu ausführliche Erläuterungen, wie ich das erledigt habe"
+	echo
+	echo "- grafana Login durchführen, Passwort vergeben, Dashboards anlegen"
+	echo "     Grafana wurde mit dem Standarduser 'admin' und dem Standardpasswort 'admin' installiert."
+	echo "     Starten Sie die Grafana Website unter http://$ip_address:3000 und klicken Sie auf Login."
+	echo "     Verwenden Sie 'admin'/'admin' zum einloggen und vergeben Sie nach Aufforderung ein neues Passwort für den User 'admin'."
+	echo "     Legen Sie die Dashboards an, die Sie am MagicMirror anzeigen wollen. Anleitung finden Sie im CaravanPi Wiki."
+	echo
+	echo "- MagicMirror Module einfügen"
+	echo "     Der MagicMirror zeigt aktuell noch keine Werte an. Nutzen Sie die Datei-basierten Module MMM-CaravanPi-xxx, die "
+	echo "     durch dieses Skript bereits angelegt wurden. Eine Anleitung hier finden Sie im Wiki https://github.com/spitzlbergerj/CaravanPi/wiki "
+	echo "     Oder binden Sie die Grafana Desktops mit den Werteverläufen ein. Anleitung ebenfalls im Wiki. "
 	echo
 	echo
 }

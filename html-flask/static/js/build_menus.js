@@ -208,8 +208,6 @@ window.onload = function() {
 		populateTestLinks(testsMenu); // Hauptmenü der Tests
 	}
 
-	console.log("Aktoren Menü suchen ...");
-
 	var aktorMenu = document.getElementById("aktorMenu");
 	console.log("Aktoren gefunden?", aktorMenu);
 

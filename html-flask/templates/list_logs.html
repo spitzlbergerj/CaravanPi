@@ -48,9 +48,9 @@
 			{% for file in files_info %}
 			<li>
 				<strong>{{ file.name }}</strong><br>
-				<details>
+				<details  style="margin-left: 20px;">
 					<pre>{{ file.last_lines|join('\n') }}</pre>
-				</details>
+				</details><br><br>
 			</li>
 			{% endfor %}
 

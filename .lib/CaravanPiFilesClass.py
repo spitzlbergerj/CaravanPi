@@ -655,6 +655,8 @@ class CaravanPiFiles:
 		# zunächst die Defaultwerte in der Default xml lesen
 		self.update_settings()
 
+		# print(f"Host: {self.MariaDBhost}, User: {self.MariaDBuser}, Passwd: {self.MariaDBpasswd}, Database: {self.MariaDBdatabase}")
+
 		connection = None
 		try:
 			connection = mysql.connector.connect(

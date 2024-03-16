@@ -115,9 +115,11 @@ def main():
 	
 	errorcount = 0
 	gasDetected = False
+	zaehler = 0
 
 	try: # Main program loop
 		while True:  
+			zaehler += 1  
 			try:
 				# Einlesen, ob Alarm ausgegeben werden soll
 				gassensorAlarmActive = cplib.typwandlung(cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive"), "bool") if cplib.readCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive") is not None else False
@@ -141,13 +143,15 @@ def main():
 						cplib.writeCaravanPiConfigItem("caravanpiDefaults/gassensorAlarmActive", 1)
 						gassensorAlarmActive = True
 					
-				cplib.handle_sensor_values(
-					args.screen,    				    # Anzeige am Bildschirm?
-					"gassensor",      					# sensor_name = Datenbankname 
-					"mq-2",     						# sensor_id = Filename und Spalte in der Datenbank
-					["parts_per_million", "alarm"], 	# Liste Spaltennamen
-					( channel.value, gasDetected) 		# Tupel Sensorwerte
-				)
+				if not gasDetected or (gasDetected and zaehler >= (delay/delayAlarm)):
+					cplib.handle_sensor_values(
+						args.screen,    				    # Anzeige am Bildschirm?
+						"gassensor",      					# sensor_name = Datenbankname 
+						"mq-2",     						# sensor_id = Filename und Spalte in der Datenbank
+						["parts_per_million", "alarm"], 	# Liste Spaltennamen
+						( channel.value, gasDetected) 		# Tupel Sensorwerte
+					)
+					zaehler = 0
 
 			except Exception as e:
 				print(f"Fehler {e} ist aufgetreten")

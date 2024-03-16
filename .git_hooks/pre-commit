@@ -11,7 +11,7 @@ CRONTABS_DIR="/home/pi/CaravanPi/.crontabs"
 
 # Backup-Funktion
 backup_files() {
-    cp "$1" "$BACKUP_DIR/$(basename $1).backup"
+	cp "$1" "$BACKUP_DIR/$(basename $1).backup"
 }
 
 # Dateien vor der Bearbeitung sichern
@@ -20,9 +20,38 @@ backup_files "$README_MD"
 
 # Funktion, um die Dateien zu bearbeiten (wie zuvor)
 update_files() {
-    sed -i 's/<MariaDBpasswd>[^<]*<\/MariaDBpasswd>/<MariaDBpasswd>dasGeheimePasswort<\/MariaDBpasswd>/' "$1"
-    sed -i 's/<MQTTpassword>[^<]*<\/MQTTpassword>/<MQTTpassword>dasGeheimePasswort<\/MQTTpassword>/' "$1"
-    sed -i 's/<MQTTbroker>[^<]*<\/MQTTbroker>/<MQTTbroker>MQTTBrokerWebAdresse<\/MQTTbroker>/' "$1"
+	sed -i 's/<countGasScales>[^<]*<\/countGasScales>/<countGasScales>0<\/countGasScales>/' "$1"
+	sed -i 's/<countTanks>[^<]*<\/countTanks>/<countTanks>0<\/countTanks>/' "$1"
+	sed -i 's/<countClimateSensors>[^<]*<\/countClimateSensors>/<countClimateSensors>0<\/countClimateSensors>/' "$1"
+
+	sed -i 's/<write2file>[^<]*<\/write2file>/<write2file>1<\/write2file>/' "$1"
+
+	sed -i 's/<write2MariaDB>[^<]*<\/write2MariaDB>/<write2MariaDB>0<\/write2MariaDB>/' "$1"
+	sed -i 's/<MariaDBpasswd>[^<]*<\/MariaDBpasswd>/<MariaDBpasswd>dasGeheimePasswort<\/MariaDBpasswd>/' "$1"
+
+	sed -i 's/<send2MQTT>[^<]*<\/send2MQTT>/<send2MQTT>0<\/send2MQTT>/' "$1"
+	sed -i 's/<MQTTpassword>[^<]*<\/MQTTpassword>/<MQTTpassword>dasGeheimePasswort<\/MQTTpassword>/' "$1"
+	sed -i 's/<MQTTbroker>[^<]*<\/MQTTbroker>/<MQTTbroker>MQTTBrokerWebAdresse<\/MQTTbroker>/' "$1"
+
+	sed -i 's/<stromPiInstalled>[^<]*<\/stromPiInstalled>/<stromPiInstalled>0<\/stromPiInstalled>/' "$1"
+
+	sed -i 's/<gassensorInstalled>[^<]*<\/gassensorInstalled>/<gassensorInstalled>0<\/gassensorInstalled>/' "$1"
+	sed -i 's/<gassensorAlarmActive>[^<]*<\/gassensorAlarmActive>/<gassensorAlarmActive>0<\/gassensorAlarmActive>/' "$1"
+	sed -i 's/<gassensorAlarmResume>[^<]*<\/gassensorAlarmResume>/<gassensorAlarmResume>0<\/gassensorAlarmResume>/' "$1"
+
+	sed -i 's/<v230CheckInstalled>[^<]*<\/v230CheckInstalled>/<v230CheckInstalled>0<\/v230CheckInstalled>/' "$1"
+	sed -i 's/<v230CheckAlarmActive>[^<]*<\/v230CheckAlarmActive>/<v230CheckAlarmActive>0<\/v230CheckAlarmActive>/' "$1"
+	sed -i 's/<v230CheckAlarmResume>[^<]*<\/v230CheckAlarmResume>/<v230CheckAlarmResume>0<\/v230CheckAlarmResume>/' "$1"
+
+	sed -i 's/<v12BatteryCheckInstalled>[^<]*<\/v12BatteryCheckInstalled>/<v12BatteryCheckInstalled>0<\/v12BatteryCheckInstalled>/' "$1"
+	sed -i 's/<v12BatteryCheckAlarmActive>[^<]*<\/v12BatteryCheckAlarmActive>/<v12BatteryCheckAlarmActive>0<\/v12BatteryCheckAlarmActive>/' "$1"
+	sed -i 's/<v12BatteryCheckAlarmResume>[^<]*<\/v12BatteryCheckAlarmResume>/<v12BatteryCheckAlarmResume>0<\/v12BatteryCheckAlarmResume>/' "$1"
+
+	sed -i 's/<v12CarCheckInstalled>[^<]*<\/v12CarCheckInstalled>/<v12CarCheckInstalled>0<\/v12CarCheckInstalled>/' "$1"
+	sed -i 's/<v12CarCheckAlarmActive>[^<]*<\/v12CarCheckAlarmActive>/<v12CarCheckAlarmActive>0<\/v12CarCheckAlarmActive>/' "$1"
+	sed -i 's/<v12CarCheckAlarmResume>[^<]*<\/v12CarCheckAlarmResume>/<v12CarCheckAlarmResume>0<\/v12CarCheckAlarmResume>/' "$1"
+
+	sed -i 's/<LiontronMACAddress>[^<]*<\/LiontronMACAddress>/<LiontronMACAddress>00:00:00:00:00:00<\/LiontronMACAddress>/' "$1"
 }
 
 # Dateien aktualisieren

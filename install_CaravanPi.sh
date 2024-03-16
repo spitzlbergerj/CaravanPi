@@ -569,6 +569,14 @@ install_mariadb() {
 	echo
 	echo "Die Datenbank enthält nun folgende Tabellen:"
 	run_cmd "sudo mysql -u'caravanpi' -p'$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
+
+	echo
+	echo "Speichere Passwort in CaravanPi Config xml"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/write2MariaDB' --value '1'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBhost' --value 'localhost'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBuser' --value 'caravanpi'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBpasswd' --value '$caravanpi_password'"
+	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBdatabase' --value 'CaravanPiValues'"
 }
 
 

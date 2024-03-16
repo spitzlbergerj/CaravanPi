@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <CaravanPiConfigurations>
   <caravanpiDefaults>
-    <countGasScales>2</countGasScales>
-    <countTanks>1</countTanks>
+    <countGasScales>0</countGasScales>
+    <countTanks>0</countTanks>
     <write2file>1</write2file>
-    <write2MariaDB>1</write2MariaDB>
-    <send2MQTT>1</send2MQTT>
+    <write2MariaDB>0</write2MariaDB>
+    <send2MQTT>0</send2MQTT>
     <MariaDBhost>localhost</MariaDBhost>
     <MariaDBuser>caravanpi</MariaDBuser>
     <MariaDBpasswd>dasGeheimePasswort</MariaDBpasswd>
@@ -14,7 +14,7 @@
     <MQTTport>8883</MQTTport>
     <MQTTuser>CaravanPiMQTT</MQTTuser>
     <MQTTpassword>dasGeheimePasswort</MQTTpassword>
-    <countClimateSensors>1</countClimateSensors>
+    <countClimateSensors>0</countClimateSensors>
     <stromPiInstalled>0</stromPiInstalled>
     <intervallGasscale>10</intervallGasscale>
     <intervallTemp>10</intervallTemp>
@@ -22,18 +22,18 @@
     <intervallTanks>10</intervallTanks>
     <intervallPositionNormal>10</intervallPositionNormal>
     <intervallRaspberry>10</intervallRaspberry>
-    <LiontronMACAddress>A4:C1:38:C2:06:47</LiontronMACAddress>
-    <gassensorInstalled>1</gassensorInstalled>
+    <LiontronMACAddress>00:00:00:00:00:00</LiontronMACAddress>
+    <gassensorInstalled>0</gassensorInstalled>
     <gassensorDigitalIn>16</gassensorDigitalIn>
     <gassensorAnalogIn>1</gassensorAnalogIn>
-    <gassensorAlarmActive>1</gassensorAlarmActive>
-    <v230CheckInstalled>1</v230CheckInstalled>
+    <gassensorAlarmActive>0</gassensorAlarmActive>
+    <v230CheckInstalled>0</v230CheckInstalled>
     <v230CheckADCPin>0</v230CheckADCPin>
     <v230CheckAlarmActive>0</v230CheckAlarmActive>
-    <v12BatteryCheckInstalled>1</v12BatteryCheckInstalled>
+    <v12BatteryCheckInstalled>0</v12BatteryCheckInstalled>
     <v12BatteryCheckADCPin>2</v12BatteryCheckADCPin>
     <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>
-    <v12CarCheckInstalled>1</v12CarCheckInstalled>
+    <v12CarCheckInstalled>0</v12CarCheckInstalled>
     <v12CarCheckADCPin>3</v12CarCheckADCPin>
     <v12CarCheckAlarmActive>0</v12CarCheckAlarmActive>
     <BuzzerGPIOPin>26</BuzzerGPIOPin>
@@ -44,7 +44,7 @@
     <gassensorAlarmResume>0</gassensorAlarmResume>
     <v230CheckAlarmResume>0</v230CheckAlarmResume>
     <v12BatteryCheckAlarmResume>0</v12BatteryCheckAlarmResume>
-    <v12CarCheckAlarmResume>1</v12CarCheckAlarmResume>
+    <v12CarCheckAlarmResume>0</v12CarCheckAlarmResume>
     </caravanpiDefaults>
   <adjustmentPosition>
     <adjustX>-0.2353596</adjustX>

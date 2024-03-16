@@ -27,24 +27,24 @@
     <gassensorDigitalIn>16</gassensorDigitalIn>
     <gassensorAnalogIn>1</gassensorAnalogIn>
     <gassensorAlarmActive>0</gassensorAlarmActive>
+    <gassensorAlarmResume>0</gassensorAlarmResume>
     <v230CheckInstalled>0</v230CheckInstalled>
     <v230CheckADCPin>0</v230CheckADCPin>
     <v230CheckAlarmActive>0</v230CheckAlarmActive>
+    <v230CheckAlarmResume>0</v230CheckAlarmResume>
     <v12BatteryCheckInstalled>0</v12BatteryCheckInstalled>
     <v12BatteryCheckADCPin>2</v12BatteryCheckADCPin>
-    <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>
-    <v12CarCheckInstalled>0</v12CarCheckInstalled>
-    <v12CarCheckADCPin>3</v12CarCheckADCPin>
-    <v12CarCheckAlarmActive>0</v12CarCheckAlarmActive>
-    <BuzzerGPIOPin>26</BuzzerGPIOPin>
     <v12BatteryR1>560</v12BatteryR1>
     <v12BatteryR2>150</v12BatteryR2>
+    <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>
+    <v12BatteryCheckAlarmResume>0</v12BatteryCheckAlarmResume>
+    <v12CarCheckInstalled>0</v12CarCheckInstalled>
+    <v12CarCheckADCPin>3</v12CarCheckADCPin>
     <v12CarR1>560</v12CarR1>
     <v12CarR2>150</v12CarR2>
-    <gassensorAlarmResume>0</gassensorAlarmResume>
-    <v230CheckAlarmResume>0</v230CheckAlarmResume>
-    <v12BatteryCheckAlarmResume>0</v12BatteryCheckAlarmResume>
+    <v12CarCheckAlarmActive>0</v12CarCheckAlarmActive>
     <v12CarCheckAlarmResume>0</v12CarCheckAlarmResume>
+    <BuzzerGPIOPin>26</BuzzerGPIOPin>
     </caravanpiDefaults>
   <adjustmentPosition>
     <adjustX>-0.2353596</adjustX>

@@ -25,7 +25,7 @@
 			<hr>
 
 			<p>&nbsp;</p>
-			<p>CaravanPi - LOG Dateien</p>
+			<h2>CaravanPi - LOG Dateien</h2>
 			<p><br></p>
 
 			<table border="1">
@@ -42,6 +42,17 @@
 					</tr>
 				{% endfor %}
 			</table>
+
+			<h2>LOGs - jeweils letzte 30 Zeilen</h2>
+
+			{% for file in files_info %}
+			<li>
+				<strong>{{ file.name }}</strong><br>
+				<details>
+					<pre>{{ file.last_lines|join('\n') }}</pre>
+				</details>
+			</li>
+			{% endfor %}
 
 		</div>
 

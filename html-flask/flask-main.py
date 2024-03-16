@@ -36,14 +36,14 @@ register_actors_routes(app)
 # Unterstützungsfunktionen
 
 def get_i2cdetect_output():
-    try:
-        # Führen Sie den Befehl aus und erfassen Sie die Ausgabe
-        result = subprocess.run(['/usr/sbin/i2cdetect', '-y', '1'], capture_output=True, text=True, check=True)
-        output = result.stdout
-    except subprocess.CalledProcessError as e:
-        # Falls ein Fehler auftritt, geben Sie eine entsprechende Nachricht zurück
-        output = f"Ein Fehler ist aufgetreten: {e}"
-    return output
+	try:
+		# Führen Sie den Befehl aus und erfassen Sie die Ausgabe
+		result = subprocess.run(['/usr/sbin/i2cdetect', '-y', '1'], capture_output=True, text=True, check=True)
+		output = result.stdout
+	except subprocess.CalledProcessError as e:
+		# Falls ein Fehler auftritt, geben Sie eine entsprechende Nachricht zurück
+		output = f"Ein Fehler ist aufgetreten: {e}"
+	return output
 
 # definieren der zentralen Routen
 
@@ -75,20 +75,24 @@ def list_logs():
 		size = os.path.getsize(file)
 		# Letzte Änderung als Datum
 		mtime = datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+		# Letzten 15 Zeilen der Datei
+		with open(file, 'r', encoding='utf-8', errors='ignore') as f:
+			lines = f.readlines()[-30:]
 		files_info.append({
 			'name': os.path.basename(file),
 			'size': size,
-			'mtime': mtime
+			'mtime': mtime,
+			'last_lines': lines
 		})
 	files_info.sort(key=lambda x: x['name'].lower())
 	return render_template('list_logs.html', files_info=files_info)
 
 @app.route('/i2cdetect')
 def i2cdetect():
-    # Rufen Sie die Funktion auf, um die i2cdetect-Ausgabe zu erhalten
-    i2cdetect_output = get_i2cdetect_output()
-    # Senden Sie die Ausgabe als Response zurück, hier als einfacher Text
-    return Response(i2cdetect_output, mimetype='text/plain')
+	# Rufen Sie die Funktion auf, um die i2cdetect-Ausgabe zu erhalten
+	i2cdetect_output = get_i2cdetect_output()
+	# Senden Sie die Ausgabe als Response zurück, hier als einfacher Text
+	return Response(i2cdetect_output, mimetype='text/plain')
 
 @app.route('/reboot')
 def reboot_system():

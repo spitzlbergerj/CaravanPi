@@ -585,14 +585,18 @@ def main():
 	
 	# beide Buttons liegen zwischen 3V3 und GPIO Pin
 	# daher pull_up=False
-	buttonNowHorizontal = Button(pinSwitchNowHorizontal, pull_up=False, bounce_time=0.1)
-	buttonNowHorizontal.when_pressed = switchInterruptNowHorizontal
 
-	buttonLive = Button(pinSwitchLive, pull_up=False, bounce_time=0.1)
-	buttonLive.when_pressed = switchInterruptLive
+	try:
+		buttonNowHorizontal = Button(pinSwitchNowHorizontal, pull_up=False, bounce_time=0.1)
+		buttonNowHorizontal.when_pressed = switchInterruptNowHorizontal
 
-	LEDlive = LED(pinLEDLive)
-	LEDlive.off()
+		buttonLive = Button(pinSwitchLive, pull_up=False, bounce_time=0.1)
+		buttonLive.when_pressed = switchInterruptLive
+
+		LEDlive = LED(pinLEDLive)
+		LEDlive.off()
+	except Exception as e: 
+		print(f"gpiozero Fehler: {e}")		
 
 
 	# -------------------------
@@ -852,6 +856,13 @@ def main():
 			raise
 			
 	# GPIO.cleanup()
+	
+	try:
+		buttonNowHorizontal.close() 
+		buttonLive.close()
+		LEDlive.close()
+	except Exception as e: 
+		print(f"gpiozero Fehler: {e}")		
 
 if __name__ == "__main__":
 	main()

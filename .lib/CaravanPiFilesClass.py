@@ -699,14 +699,21 @@ class CaravanPiFiles:
 
 		# Überprüfen, ob 'zeitstempel' in den Spalten ist und CURRENT_TIMESTAMP einsetzen
 		timestamp_index = None
+		using_timestamp = False
 		if "zeitstempel" in columns:
 			timestamp_index = columns.index("zeitstempel")
-			columns = [col for col in columns if col != "zeitstempel"]  # 'zeitstempel' aus den Spalten entfernen
-			values = tuple(value for i, value in enumerate(values) if i != timestamp_index)  # entsprechenden Wert entfernen
+			using_timestamp = True
 
 		# Erstellen der SQL-Abfrage
-		columns_string = ', '.join(columns + (["zeitstempel"] if timestamp_index is not None else []))
-		values_string = ', '.join(['%s'] * len(values) + (["CURRENT_TIMESTAMP"] if timestamp_index is not None else []))
+		if using_timestamp:
+			# Wenn ein Zeitstempel übergeben wird, nutzen wir diesen in der Abfrage
+			values_string = ', '.join(['%s'] * len(values))
+		else:
+			# Wenn kein Zeitstempel übergeben wird, fügen wir CURRENT_TIMESTAMP hinzu
+			columns.append("zeitstempel")  # 'zeitstempel' zu den Spalten hinzufügen
+			values_string = ', '.join(['%s'] * len(values) + ["CURRENT_TIMESTAMP"])
+
+		columns_string = ', '.join(columns)
 		query = f"INSERT INTO {table_name} ({columns_string}) VALUES ({values_string})"
 
 		# Ausführen der Abfrage

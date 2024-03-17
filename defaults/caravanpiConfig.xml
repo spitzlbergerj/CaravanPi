@@ -48,15 +48,15 @@
     </caravanpiDefaults>
   <adjustmentPosition>
     <adjustX>-0.2353596</adjustX>
-    <adjustY>1.3729310000000001</adjustY>
+    <adjustY>1.372931</adjustY>
     <adjustZ>8.9044382</adjustZ>
     <toleranceX>0.2</toleranceX>
     <toleranceY>0.2</toleranceY>
     <approximationX>0.25</approximationX>
     <approximationY>0.25</approximationY>
     <distRight>140</distRight>
-    <distFront>10</distFront>
-    <distAxis>20</distAxis>
+    <distFront>3300</distFront>
+    <distAxis>400</distAxis>
     </adjustmentPosition>
   <dimensionsCaravan>
     <lengthOverAll>7900</lengthOverAll>

@@ -1,15 +1,13 @@
 ![CaraavanPiLogo](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-Logo.png)  
 # CaravanPi
 
+ACHTUNG: Dokumentation nicht aktuell v2.0 noch nicht eingearbeitet
+
 - [Website](https://www.CaravanPi.de)
-- [deutsches Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)
+- [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/)
+- [Platine bestellen](https://www.caravanpi.de/platine)
+- 
 - [Movitation](#motivation)
-- [Functionality](#functionality)
-- [Caravan or Motorhome?](#caravan-or-motorhome)
-- [current development state](#current-development-state)
-- [Components](#components)
-- [Documentation (Wiki)](#wiki)
-- [To Do](#to-do)
 
 
 ## Aktualisierungen / Change Log

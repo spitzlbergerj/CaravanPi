@@ -1,8 +1,6 @@
 # CaravanPi Change Log
 
-deutsch | english
------ | -----
-In dieser Datei werde ich alle relevanten Änderungen am CaravanPi dokumentieren | All notable changes to this project will be documented in this file.
+In dieser Datei werde ich alle relevanten Änderungen am CaravanPi dokumentieren
 
 ---
 
@@ -29,11 +27,33 @@ In dieser Datei werde ich alle relevanten Änderungen am CaravanPi dokumentieren
 - **Einführung von Grafana zur Darstellung der Sensorwerte als Verlauf**
    Neben der Datenbank MariaDB und der Datenbank-Managementsoftware phpmyadmin kommt nun Grafana zur grafischen Darstellung der Sensorwerte und deren Verlauf zum Einsatz.
 
+- **Umstellung der CaravanPi Website auf Flask Framework**
+   Die CaravanPi Website basiert nun auf dem Python Framework Flask und ist dadurch bei weitem flexibler geworden.
+   Über die Website kann die Statusprüfung angestoßen werden, die Konfiguration kann eingetragen werden, Testroutinen können gestarte werden.
+   Zudem sind auch Shortcuts für die Grafana Website, phpMyAdmin oder auch den magicMirror enthalten.
+
+- **Der Status des CaravanPi kann nun über eine Statusabfrage geprüft werden**
+   Alle wesentlichen Komponenten des Aufbaus werden dabei der Reihe nach geprüft und getestet. Die Konfiguration durch den Nutzer wird dabei berücksichtigt, so dass nur die Teile geprüft werden, die auch verbaut wurden.
+
 - **Überwachung der Landstrom-Versorgung und der Bordbatterie-Versorgung**
+   Als ganz neue Features wurden die Überwachung der 230V Landstromversorgung und zweier 12V Batterien (Bordbatterie und Fahrzeugbatterie) hinzugefügt.
+
+- **Gasalarmsensor integriert**
+   Zur Überwachung eventueller Propan oder Butan Konzentrationen im Caravan wurde ein MQ-2 Sensor hinzugefügt.
 
 - **Integration der Überwachung einer Liontron Litium Batterie**
+   Auch das Batteriemanagement eine LiPo batterie kann nun angesteuert und ausgelesen werden. Beispielhaft LionTron.
+
+- **Installationsskript**
+   Ein Installationsskript kann nun die Installation des CaravanPi inkl. Magicmirror, MariaDB, Grafana, myPhpAdmin und aller benötigten Libraies übernehmen.
+   Dabei werden alte Konfigurationsdateien migriert. Ein Update sollte also problemfrei möglich sein, ist aber noch nicht endgültig getestet.
+
+- **Ansteuerung von Aktoren wie ESP82 D1 mini oder Shelly integriert**
+   Beispielhaft wurde ein D1 mini als Aktor integriert und die Kommunikation von und zum CaravanPi eingebaut
 
 - **Dokumentation der Internet-Verbindung über eine Starlink-Antenne**
+   noch nachzuholen.
+
 
 
 ## V 1.1 - Fehlerkorrekturen und Erweiterungen

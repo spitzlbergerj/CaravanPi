@@ -6,7 +6,9 @@ ACHTUNG: Dokumentation nicht aktuell v2.0 noch nicht eingearbeitet
 - [Website](https://www.CaravanPi.de)
 - [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/)
 - [Platine bestellen](https://www.caravanpi.de/platine)
-- 
+
+- [Newsletter abonnieren (Sendinblue/Brevo Plattform)](https://40fb016c.sibforms.com/serve/MUIFAH4-cq2k2-T8acJ-A43b4eFEC9NdXuY4Qsx0Z8AVap96J-xUTzrsRBFXvzXRIEBnFebbvgbXibn9NFGg8v5Qx55c4hzOQlpmxT23eU7bOGsW2ycUFhNx8PIrJcuGtE8EaE4Ah49gLuzYuZXHCerz-JhMHt5MQxiBJ0xqzuM7EOsEn82apHaTXQg5AoC__NkGssehrymHcnL7)
+
 - [Movitation](#motivation)
 
 
@@ -14,98 +16,33 @@ ACHTUNG: Dokumentation nicht aktuell v2.0 noch nicht eingearbeitet
 
 Details siehe / Please view [CHANGELOG.md](https://github.com/spitzlbergerj/CaravanPi/blob/master/CHANGELOG.md)
 
-## aktuelle ToDos
-
-- Füllstandssensoren Einbau und Konfiguration nicht ausreichend dokumentiert
-- neue Funktion: Überwachung und Anzeige inkl. Warnung für die 230V Versorgung und die 12V Batterie
-- neue Funktion: Gassensor zur Überwachung einer möglichwerweise schädlichen Gas-Konzentration inkl. Warnung
-- neue Funktion: mehrere Gasflaschenwaagen ermöglichen
-
 ## Motivation
 
-deutsch | english
------ | -----
-System zur Messung und Anzeige verschiedener Sensorenwerte in Wohnwagen, Caravans und Wohnmobilen, wie z.B. Klimawerte, Füllstände von Tanks und Gasflaschen sowie Nivellierungsdaten. Zur Darstellung wird die Software <a href="https://magicmirror.builders/">Magic Mirror</a> verwendet. | System for measuring and displaying various values in caravans and motor homes, including climatic values, filling levels of tanks and gas cylinders and levelling data. <a href="https://magicmirror.builders/">Magic Mirror</a> is used for presentation.
-Es existiert eine Schritt für Schritt Anleitung in deutsch. Englische Schnipsel sind bereits vorhanden und werden ausgebaut werden.|There is a step by step guide in German. English snippets are already available and will be extended.
-[direkt zur Anleitung](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)|[directly to assembly instructions](https://github.com/spitzlbergerj/CaravanPi/wiki/Wiki-Home-english)
+System zur Messung und Anzeige verschiedener Sensorenwerte in Wohnwagen, Caravans und Wohnmobilen, wie z.B. Klimawerte, Füllstände von Tanks und Gasflaschen sowie Nivellierungsdaten. Zur Darstellung wird die Software <a href="https://magicmirror.builders/">Magic Mirror</a> verwendet. 
+Es existiert eine Schritt für Schritt Anleitung in deutsch. Englische Schnipsel sind bereits vorhanden und werden ausgebaut werden.
+[direkt zur Anleitung](https://github.com/spitzlbergerj/CaravanPi/wiki/Home/)
 
-schematic drawing | MagicMirror display
+Schemazeichnung | MagicMirror Anzeige (vor Grafana)
 ----- | -----
-![schema](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg) | ![MagicMirror](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg)
-[full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg) | [full size image](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg) 
+![Schema](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-320.jpg) | ![MagicMirror](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror-320.jpg)
+[größeres Bild](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi.jpg) | [größeres Bild](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-MagicMirror.jpg) 
 
-## Circuit design
-deutsch | english
+
+## Platinen Design
+
+Die Platine liegt inzwischen in der version V6 vor in die wiederum eine Reihe von Verbesserungen eingeflossen sind.  
+Vorderseite | Rückseite
 ----- | -----
-Nun ist auch das Platinen Design abgeschlossen. Die Platine wurde ausführlich getestet und funktioniert einwandfrei | For the CaravanPi, there is now a circuit board design that can be produced by appropriate service providers, also pre-assembled. 
-front | back
 ![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Vorderseite.png) | ![front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-Rückseite.png) 
-Alle zum Bestellen der Platine benötigten Angaben und Dateien befinden sich im Verzeichnis circuit-board | All information and files needed to order the board are located in the directory circuit-board
-Die Platine ist aus SMD Bauteilen aufgebaut. Als Klemmen werden WAGO Klemmen verwendet. | The board is built from SMD components. WAGO PCB terminal blocks are used as cable clamps.
+Alle zum Bestellen der Platine benötigten Angaben und Dateien befinden sich im Verzeichnis circuit-board
+Die Platine ist aus SMD Bauteilen aufgebaut. Als Klemmen verwendete ich früher WAGO Klemmen. Aufgrund des hohen Preises derselben bin ich inzwischen auf JST XA Stecker umgestiegen, die auch sehr viel flexibler beim Umbau sind. Bitte auf hochwertige Stecker achten, am besten original JST bauteile verwenden.
+Ich kläre gerade mit JLCPCB, bei denen ich meine Platinen bestelle, ob diese Klemmen ebenfalls ab Werk aufgelötet werden können.
+
+Ich habe beinahe immer einige Platinen vorrätig. Bitte nutzen Sie den Bestelllink oben, falls Sie Interesse an einer Platine haben.
 
 ![V5 back - front](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/doku/CaravanPi-Platine-V5-Fraont-Back.jpg) 
 
-## Functionality
-The CaravanPi has actually the following functionalities:
-- Display of various data in a caravan or motorhome
-  - Several climate sensors (e.g. inside and outside) with temperature, air pressure, air humidity
-  - Multiple temperature sensors (e.g. freezer compartment, refrigerator)
-  - Several filling levels (e.g. fresh water tank, waste water tank)
-  - Filling level of a gas cylinder via weight determination
-- Saving of all sensor data, so that course analyses can be made and represented
-- Display of the current position of the caravan or motorhome using a display and LEDs at the corners of the caravan
-- Calibration of the gas scale and the position sensor via keystroke
-- Adaptation of all constants via a website 
-- Use of the display and also the configuration website via mobile devices
-- Use other MagicMirror modules on the same display
-- and more (to come) ....
 
-## Caravan or motorhome
+## Dokumentation
 
-The CaravanPi was designed and developed for use in a caravan. But the CaravanPi can also be used very well in motorhomes. Only the position determination and display with the LEDs must be adapted, since the display via LEDs makes no sense here. But the indication of the height differences at the corners will help also in motorhomes.
-
-## Current development state
-
-(Oktober 2020)
-All sensors (temperature, climate, 3-axis, load cell) are now working and all values are read and stored cyclically. The levelling of the caravan by means of the LEDs works reliably. The display of all collected data on the MagicMirror also works. And there is now a German Wiki with a step-by-step guide, which was tested in parallel by an interested person. Appropriate circuit diagrams exist for all components of the caravanPi, which facilitate reproduction and are useful for troubleshooting. 
-
-A website where all necessary configurations can be done is also working.
-
-With a friend I am also working on the "circuit board design" and on the sensible combination of all components in one housing.
-
-The CaravanPi including all sensors is installed in my Tabbert caravan and tested there. Everything works perfectly. The next step is the circuit board design, so that the creation of the necessary circuit board is considerably simplified.
-
-## Components 
-
-The CaravanPi consists of the following components:
-- Raspberry Pi
-- software MagicMirror incl. new modules MMM-CaravanPi*
-- apache webserver
-- a lot of Python scripts
-- a lot of hardware like 
-  - Battery hat ([StromPi](https://strompi.joy-it.net/))
-  - Load cell (Bosche)
-  - various sensors
-    - ADXL345 - 3-axis position sensor
-    - hx711 - scale control
-    - BME280 - climate sensor
-    - DS18B20 temperature sensor
-    - MCP23017 GPIO extension
-    - I2C extender
-  - RGB LEDs
-  - buzzer
-  - and more
-
-## Wiki
-
-All components, the software, the assembly, the installation, the configuration and much more is explained in detail in the Wiki.
-
-***Please read the [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki) before you start with your construction! There you'll find a lot of information to my idea behind CaravanPi and a lot of technical details.***
-
-## To Do
-- ~~development of a circuit board,~~
-- ~~circuit board, which can then be purchased, etched or ordered from a online circuid board shop~~
-- ~~python and MMM-Module for filling level in fresh water tank~~
-- python and MMM-Module for filling level in waste tank
-- adopt climate section for the BME 680 with air qualitiy value
-- ~~do all the documentation~~
+Die Dokumentation findet im [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/) statt. Dieses wird gerade neu aufgebaut, um auch alle neuen Funktionälitäten darstellen zu können. 

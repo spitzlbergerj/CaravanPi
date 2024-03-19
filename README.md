@@ -1,12 +1,14 @@
 ![CaraavanPiLogo](https://github.com/spitzlbergerj/CaravanPi/raw/master/images/CaravanPi-Logo.png)  
 # CaravanPi
 
+ACHTUNG: Dokumentation nicht aktuell v2.0 noch nicht eingearbeitet
+
 - [Website](https://www.CaravanPi.de)
 - [Wiki](https://github.com/spitzlbergerj/CaravanPi/wiki/)
 - [Platine bestellen](https://www.caravanpi.de/platine)
 
 - [Newsletter abonnieren (Sendinblue/Brevo Plattform)](https://40fb016c.sibforms.com/serve/MUIFAH4-cq2k2-T8acJ-A43b4eFEC9NdXuY4Qsx0Z8AVap96J-xUTzrsRBFXvzXRIEBnFebbvgbXibn9NFGg8v5Qx55c4hzOQlpmxT23eU7bOGsW2ycUFhNx8PIrJcuGtE8EaE4Ah49gLuzYuZXHCerz-JhMHt5MQxiBJ0xqzuM7EOsEn82apHaTXQg5AoC__NkGssehrymHcnL7)
-- 
+
 - [Movitation](#motivation)
 
 

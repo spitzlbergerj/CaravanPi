@@ -5,13 +5,23 @@ CONFIG_XML="defaults/caravanpiConfig.xml"
 README_MD="defaults/README.md"
 BACKUP_DIR=".git_sensible_backup"
 
-# Wiederherstellungsfunktion
-restore_files() {
-    mv "$BACKUP_DIR/$(basename $1).backup" "$1"
+# Wiederherstellungsfunktion und Backup mit Datumstempel
+restore_and_backup_file() {
+    local filename=$(basename "$1")
+    local timestamp=$(date +%Y%m%d%H%M%S)
+    
+    # Datei wiederherstellen
+    cp "$BACKUP_DIR/$filename.backup" "$1"
+    
+    # Backup behalten und Datumstempel hinzufügen
+    mv "$BACKUP_DIR/$filename.backup" "$BACKUP_DIR/$filename.$timestamp"
+    
+    # Alte Backups löschen, nur die letzten 5 behalten
+    ls -1t "$BACKUP_DIR/$filename."* | tail -n +6 | xargs -r rm --
 }
 
 # Dateien nach dem Commit wiederherstellen
-restore_files "$CONFIG_XML"
-restore_files "$README_MD"
+restore_and_backup_file "$CONFIG_XML"
+restore_and_backup_file "$README_MD"
 
 exit 0

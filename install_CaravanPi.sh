@@ -364,6 +364,10 @@ config_protocolls() {
 		run_cmd "echo \"dtoverlay=w1-gpio,gpiopin=18\" | sudo tee -a \"$BOOT_CONFIG_FILE\" > /dev/null"
 	fi
 
+}
+
+# Bildschirmtreiber umstellen, damit Abschalten funktioniert
+install_update_screen_driver() {
 	# Prüfung wegen Bildschirm Treiber, so dass vcgencmd den Bildschirm ein- und ausschalten kann
 	#!/bin/bash
 
@@ -375,20 +379,19 @@ config_protocolls() {
 	echo "Prüfung und ggf. Wechsel des Bildschirm Treibers"
 	if [ -f "$BOOT_CONFIG_FILE" ]; then
 		# Überprüfen, ob die Zeile vorhanden ist
-		if grep -q "$CHECK_STRING" "$CONFIG_FILE"; then
+		if grep -q "$CHECK_STRING" "$BOOT_CONFIG_FILE"; then
 			echo "Die Änderung wurde bereits vorgenommen. Keine weiteren Aktionen erforderlich."
 		elif grep -q "$SEARCH_STRING" "$BOOT_CONFIG_FILE"; then
 			# Ersetze die Zeile durch den gewünschten Text
 			# Benutze sed, um eine Sicherungskopie vor dem Ersetzen zu erstellen (.bak)
-			sed -i.bak "/$SEARCH_STRING/c\\$REPLACE_STRING" "$BOOT_CONFIG_FILE"
-			echo "Die Konfiguration wurde erfolgreich geändert."
+			run_cmd "sudo sed -i.bak \"/$SEARCH_STRING/c\\$REPLACE_STRING\" \"$BOOT_CONFIG_FILE\""
+			echo "Die Konfiguration wurden geändert."
 		else
 			echo "Der Bildschirm Treiber $SEARCH_STRING wurde nicht gefunden. Keine Änderungen vorgenommen."
 		fi
 	else
 		echo "Die Datei $BOOT_CONFIG_FILE existiert nicht. Überspringe."
 	fi
-
 }
 
 # Funktion zum Klonen/Aktualisieren des CaravanPi Repositories
@@ -544,39 +547,78 @@ install_mariadb() {
 	echo "MariaDB Server installieren ...."
 	run_cmd "sudo apt-get install -y mariadb-server"
 
-	echo
-	echo
+	root_password=""
+	mysql_root_password_option=""
+
+	# Prüfung ob schon ein root Passwort gesetzt wurde (z.B. weil wir eine Update machen)
+	# Versuche, eine einfache SQL-Abfrage ohne Passwort auszuführen
+    if ! echo 'SELECT 1;' | sudo mysql &>/dev/null; then
+        # Falls der Befehl fehlschlägt, fordere zur Passworteingabe für root auf
+		while [ -z "$root_password" ]; do
+			echo
+			echo "Der User root ist vorhanden und hat bereits ein Passwort"
+			read_colored "cyan" "Bitte geben Sie das bereits gesetzte Passwort des MariaDB Benutzers 'root' ein: " root_password
+			if [ -z "$root_password" ]; then
+				echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+			fi
+		done
+        mysql_root_password_option="-p${root_password}"
+    fi
+
 	caravanpi_password=""
-	while [ -z "$caravanpi_password" ]; do
-		read_colored "cyan" "Bitte geben Sie ein Passwort für den Benutzer 'caravanpi' auf der MariaDB ein: " caravanpi_password
-		if [ -z "$caravanpi_password" ]; then
-			echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
-		fi
-	done
-	
 	echo
-	echo "    Benutzer CaravanPi wird angelegt ..."
-	run_cmd "sudo mysql -e \"CREATE USER 'caravanpi'@'localhost' IDENTIFIED BY '$caravanpi_password';\""
+	echo
+	# Prüfen, ob der Nutzer 'caravanpi' bereits existiert
+    if ! sudo mysql ${mysql_root_password_option} -e "SELECT 1 FROM mysql.user WHERE user = 'caravanpi' AND host = 'localhost';" | grep -q 1; then
+		echo
 
-	echo "    Datenbank CaravanPiValues wird angelegt ..."
-	run_cmd "sudo mysql -e \"CREATE DATABASE CaravanPiValues;\""
-	run_cmd "sudo mysql -e \"GRANT ALL PRIVILEGES ON CaravanPiValues.* TO 'caravanpi'@'localhost';\""
-	run_cmd "sudo mysql -e \"FLUSH PRIVILEGES;\""
+		while [ -z "$caravanpi_password" ]; do
+			read_colored "cyan" "Bitte geben Sie ein neues Passwort für den MariaDB Benutzer 'caravanpi' ein: " caravanpi_password
+			if [ -z "$caravanpi_password" ]; then
+				echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+			fi
+		done
+		echo "    Benutzer CaravanPi wird angelegt ..."
+		run_cmd "sudo mysql ${mysql_root_password_option} -e \"CREATE USER 'caravanpi'@'localhost' IDENTIFIED BY '$caravanpi_password';\""
+	else
+        echo "    Benutzer CaravanPi existiert bereits."
+		echo
+ 		while [ -z "$caravanpi_password" ]; do
+			read_colored "cyan" "Bitte geben Sie das bereits vergebene Passwort des MariaDB Benutzers 'caravanpi' ein: " caravanpi_password
+			if [ -z "$caravanpi_password" ]; then
+				echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+			fi
+		done
+   fi
 
-	echo "   Datenbanktabellen werden angelegt ..."
-	run_cmd "sudo mysql CaravanPiValues < $CARAVANPI_MARIADB_CREATE_TABLES"
+	if ! sudo mysql ${mysql_root_password_option} -e "SHOW DATABASES LIKE 'CaravanPiValues';" | grep -q CaravanPiValues; then
+		echo "    Datenbank CaravanPiValues wird angelegt ..."
+		run_cmd "sudo mysql ${mysql_root_password_option} -e \"CREATE DATABASE CaravanPiValues;\""
+		run_cmd "sudo mysql ${mysql_root_password_option} -e \"GRANT ALL PRIVILEGES ON CaravanPiValues.* TO 'caravanpi'@'localhost';\""
+		run_cmd "sudo mysql ${mysql_root_password_option} -e \"FLUSH PRIVILEGES;\""
+	else
+        echo "    Datenbank CaravanPiValues existiert bereits."
+    fi
+
+	# Prüfen, ob die Tabelle 'position' bereits in der Datenbank 'CaravanPiValues' existiert
+    if ! sudo mysql ${mysql_root_password_option} -e "USE CaravanPiValues; SHOW TABLES LIKE 'ausrichtung';" | grep -q ausrichtung; then
+		echo "   Datenbanktabellen werden angelegt ..."
+		run_cmd "sudo mysql ${mysql_root_password_option} CaravanPiValues < $CARAVANPI_MARIADB_CREATE_TABLES"
+	else
+        echo "   Tabellen anscheinend bereits vorhanden. Einspielung übersprungen ..."
+    fi
 
 	echo
-	echo "Die Datenbank enthält nun folgende Tabellen:"
+	echo "Die Datenbank enthält aktuell folgende Tabellen:"
 	run_cmd "sudo mysql -u'caravanpi' -p'$caravanpi_password' -e \"SHOW TABLES in CaravanPiValues\""
 
 	echo
 	echo "Speichere Passwort in CaravanPi Config xml"
-	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/write2MariaDB' --value '1'"
-	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBhost' --value 'localhost'"
-	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBuser' --value 'caravanpi'"
-	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBpasswd' --value '$caravanpi_password'"
-	rum_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBdatabase' --value 'CaravanPiValues'"
+	run_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/write2MariaDB' --value '1'"
+	run_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBhost' --value 'localhost'"
+	run_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBuser' --value 'caravanpi'"
+	run_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBpasswd' --value '$caravanpi_password'"
+	run_cmd "python3 $CARAVANPI_DIR/installation/caravanPiConfigItemWrite.py --element_path 'caravanpiDefaults/MariaDBdatabase' --value 'CaravanPiValues'"
 }
 
 
@@ -609,13 +651,34 @@ secure_mariadb() {
 	echo "MariaDB Server absichern ...."
 	echo
 	echo
+
 	root_password=""
-	while [ -z "$root_password" ]; do
-		read_colored "cyan" "Bitte geben Sie ein Passwort für den Benutzer 'root' auf der MariaDB ein: " root_password
-		if [ -z "$root_password" ]; then
-			echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
-		fi
-	done
+	mysql_root_password_option=""
+
+	# Prüfung ob schon ein root Passwort gesetzt wurde (z.B. weil wir eine Update machen)
+	# Versuche, eine einfache SQL-Abfrage ohne Passwort auszuführen
+    if ! echo 'SELECT 1;' | sudo mysql &>/dev/null; then
+        # Falls der Befehl fehlschlägt, fordere zur Passworteingabe für root auf
+		while [ -z "$root_password" ]; do
+			echo
+			echo "Der User root ist vorhanden und hat bereits ein Passwort"
+			read_colored "cyan" "Bitte geben Sie das bereits gesetzte Passwort des MariaDB Benutzers 'root' ein: " root_password
+			if [ -z "$root_password" ]; then
+				echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+			fi
+		done
+        mysql_root_password_option="-p${root_password}"
+	else
+        # root hat noch kein Passwort
+		while [ -z "$root_password" ]; do
+			echo
+			read_colored "cyan" "Bitte geben Sie ein neues Passwort den MariaDB Benutzer 'root' ein: " root_password
+			if [ -z "$root_password" ]; then
+				echo "Das Passwort darf nicht leer sein. Bitte versuchen Sie es erneut."
+			fi
+		done
+        mysql_root_password_option="-p${root_password}"
+    fi
 
 	echo
 	echo "Installation absichern ... "
@@ -632,7 +695,7 @@ secure_mariadb() {
 	DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 	FLUSH PRIVILEGES;
 	"
-	run_cmd "sudo mysql -u root -e \"$sql_commands\""
+	run_cmd "sudo mysql ${mysql_root_password_option} -u root -e \"$sql_commands\""
 }
 
 
@@ -1066,6 +1129,17 @@ note "Konfiguration benötigter Kommunikationsprotokolle" "cyan"
 read_colored "cyan" "Möchten Sie die benötigten Kommunikationsprotokolle aktivieren (i2c, 1-wire, ...)? (j/N): " answer
 if [[ "$answer" =~ ^[Jj]$ ]]; then
 	config_protocolls
+fi
+cd "$HOME"
+
+# --------------------------------------------------------------------------
+# Bildschirmtreiber umstellen
+# --------------------------------------------------------------------------
+note "Umstellen des Bildschirmtreibers, damit dieser abgeschaltet werden kann" "cyan"
+
+read_colored "cyan" "Möchten Sie den Bildschirmtreiber umstellen auf einen kompatiblen? (j/N): " answer
+if [[ "$answer" =~ ^[Jj]$ ]]; then
+	install_update_screen_driver
 fi
 
 cd "$HOME"

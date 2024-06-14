@@ -11,6 +11,7 @@ Version 2 | erste Version, die ich bei einem Dienstleister habe produzieren lass
 Version 3 | korrigierte Version, die ich erstmals bei JLCPCB inkl. SMD Bestückung habe fertigen lassen
 Version 4 | Umstellung aller IC auf SMD
 Version 5 | nur SMD Bauteile, Fehlerkorrektur R24 1-wire, Gaswaagen-Klemme 6 polig für A und B Kanal des HX711
+Version 6 | Fehlerkorrektur HX711 mit 5V versorgt anstatt 3V3 um mehr Stabilität zu erzeugen
 
 # Fertigung bei JLCPCB
 

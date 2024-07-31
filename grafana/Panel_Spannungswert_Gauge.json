@@ -1,0 +1,179 @@
+{
+    "datasource": {
+      "type": "mysql",
+      "uid": "adsch3zs4b1fkc"
+    },
+    "fieldConfig": {
+      "defaults": {
+        "mappings": [
+          {
+            "options": {
+              "from": 0,
+              "result": {
+                "color": "dark-red",
+                "index": 0
+              },
+              "to": 11.5
+            },
+            "type": "range"
+          },
+          {
+            "options": {
+              "from": 11.51,
+              "result": {
+                "color": "dark-green",
+                "index": 1
+              },
+              "to": 12.99999
+            },
+            "type": "range"
+          },
+          {
+            "options": {
+              "from": 13,
+              "result": {
+                "color": "orange",
+                "index": 2
+              },
+              "to": 15
+            },
+            "type": "range"
+          }
+        ],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": null
+            }
+          ]
+        },
+        "color": {
+          "mode": "thresholds"
+        },
+        "decimals": 1,
+        "max": 14,
+        "min": 0,
+        "unit": "volt"
+      },
+      "overrides": []
+    },
+    "gridPos": {
+      "h": 8,
+      "w": 6,
+      "x": 0,
+      "y": 0
+    },
+    "id": 3,
+    "options": {
+      "reduceOptions": {
+        "values": true,
+        "calcs": [],
+        "fields": "/^spannung$/",
+        "limit": 1
+      },
+      "orientation": "auto",
+      "showThresholdLabels": false,
+      "showThresholdMarkers": true,
+      "sizing": "auto",
+      "minVizWidth": 75,
+      "minVizHeight": 75
+    },
+    "pluginVersion": "11.1.0",
+    "targets": [
+      {
+        "dataset": "CaravanPiValues",
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "editorMode": "builder",
+        "format": "table",
+        "hide": false,
+        "rawQuery": true,
+        "rawSql": "SELECT zeitstempel, sensor_id, spannung FROM CaravanPiValues.spannung WHERE sensor_id = '12vbord' ORDER BY zeitstempel DESC LIMIT 1 ",
+        "refId": "A",
+        "sql": {
+          "columns": [
+            {
+              "parameters": [
+                {
+                  "name": "zeitstempel",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            {
+              "parameters": [
+                {
+                  "name": "sensor_id",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            {
+              "parameters": [
+                {
+                  "name": "spannung",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            }
+          ],
+          "groupBy": [
+            {
+              "property": {
+                "type": "string"
+              },
+              "type": "groupBy"
+            }
+          ],
+          "limit": 1,
+          "orderBy": {
+            "property": {
+              "name": "zeitstempel",
+              "type": "string"
+            },
+            "type": "property"
+          },
+          "orderByDirection": "DESC",
+          "whereJsonTree": {
+            "children1": [
+              {
+                "id": "9bab99a8-cdef-4012-b456-7190e01d856a",
+                "properties": {
+                  "field": "sensor_id",
+                  "fieldSrc": "field",
+                  "operator": "equal",
+                  "value": [
+                    "12vbord"
+                  ],
+                  "valueError": [
+                    null
+                  ],
+                  "valueSrc": [
+                    "value"
+                  ],
+                  "valueType": [
+                    "text"
+                  ]
+                },
+                "type": "rule"
+              }
+            ],
+            "id": "89aaba88-0123-4456-b89a-b190d69bcb79",
+            "type": "group"
+          },
+          "whereString": "sensor_id = '12vbord'"
+        },
+        "table": "spannung"
+      }
+    ],
+    "title": "Spannungswerte",
+    "transparent": true,
+    "type": "gauge"
+  }

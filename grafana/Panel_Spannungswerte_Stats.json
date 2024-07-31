@@ -1,0 +1,336 @@
+{
+    "datasource": {
+      "type": "mysql",
+      "uid": "adsch3zs4b1fkc"
+    },
+    "fieldConfig": {
+      "defaults": {
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": null
+            }
+          ]
+        },
+        "color": {
+          "mode": "thresholds"
+        },
+        "decimals": 1,
+        "max": 14,
+        "min": 0,
+        "unit": "volt"
+      },
+      "overrides": [
+        {
+          "matcher": {
+            "id": "byFrameRefID",
+            "options": "A"
+          },
+          "properties": [
+            {
+              "id": "mappings",
+              "value": [
+                {
+                  "options": {
+                    "from": 0,
+                    "result": {
+                      "color": "red",
+                      "index": 0
+                    },
+                    "to": 11.5
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 11.500001,
+                    "result": {
+                      "color": "green",
+                      "index": 1,
+                      "text": "Bordbatterie"
+                    },
+                    "to": 12.999999
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 13,
+                    "result": {
+                      "color": "yellow",
+                      "index": 2
+                    },
+                    "to": 999
+                  },
+                  "type": "range"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "matcher": {
+            "id": "byFrameRefID",
+            "options": "B"
+          },
+          "properties": [
+            {
+              "id": "mappings",
+              "value": [
+                {
+                  "options": {
+                    "from": 0,
+                    "result": {
+                      "color": "red",
+                      "index": 0,
+                      "text": "Landstrom"
+                    },
+                    "to": 229
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 230,
+                    "result": {
+                      "color": "green",
+                      "index": 1,
+                      "text": "Landstrom"
+                    },
+                    "to": 230
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 231,
+                    "result": {
+                      "color": "yellow",
+                      "index": 2
+                    },
+                    "to": 999
+                  },
+                  "type": "range"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "gridPos": {
+      "h": 8,
+      "w": 6,
+      "x": 6,
+      "y": 0
+    },
+    "id": 7,
+    "options": {
+      "reduceOptions": {
+        "values": true,
+        "calcs": [],
+        "fields": "/^spannung$/",
+        "limit": 2
+      },
+      "orientation": "auto",
+      "textMode": "value",
+      "wideLayout": true,
+      "colorMode": "background_solid",
+      "graphMode": "area",
+      "justifyMode": "center",
+      "showPercentChange": false,
+      "percentChangeColorMode": "standard",
+      "text": {
+        "valueSize": 20
+      }
+    },
+    "pluginVersion": "11.1.0",
+    "targets": [
+      {
+        "dataset": "CaravanPiValues",
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "editorMode": "builder",
+        "format": "table",
+        "hide": false,
+        "rawQuery": true,
+        "rawSql": "SELECT zeitstempel, sensor_id AS \"Bordbatterie\", spannung FROM CaravanPiValues.spannung WHERE sensor_id = '12vbord' ORDER BY zeitstempel DESC LIMIT 1 ",
+        "refId": "A",
+        "sql": {
+          "columns": [
+            {
+              "parameters": [
+                {
+                  "name": "zeitstempel",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            {
+              "alias": "\"Bordbatterie\"",
+              "parameters": [
+                {
+                  "name": "sensor_id",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            {
+              "parameters": [
+                {
+                  "name": "spannung",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            }
+          ],
+          "groupBy": [
+            {
+              "property": {
+                "type": "string"
+              },
+              "type": "groupBy"
+            }
+          ],
+          "limit": 1,
+          "orderBy": {
+            "property": {
+              "name": "zeitstempel",
+              "type": "string"
+            },
+            "type": "property"
+          },
+          "orderByDirection": "DESC",
+          "whereJsonTree": {
+            "children1": [
+              {
+                "id": "9bab99a8-cdef-4012-b456-7190e01d856a",
+                "properties": {
+                  "field": "sensor_id",
+                  "fieldSrc": "field",
+                  "operator": "equal",
+                  "value": [
+                    "12vbord"
+                  ],
+                  "valueError": [
+                    null
+                  ],
+                  "valueSrc": [
+                    "value"
+                  ],
+                  "valueType": [
+                    "text"
+                  ]
+                },
+                "type": "rule"
+              }
+            ],
+            "id": "89aaba88-0123-4456-b89a-b190d69bcb79",
+            "type": "group"
+          },
+          "whereString": "sensor_id = '12vbord'"
+        },
+        "table": "spannung"
+      },
+      {
+        "dataset": "CaravanPiValues",
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "editorMode": "builder",
+        "format": "table",
+        "hide": false,
+        "rawQuery": true,
+        "rawSql": "SELECT zeitstempel, sensor_id, spannung FROM CaravanPiValues.spannung WHERE sensor_id = '230v' ORDER BY zeitstempel DESC LIMIT 1 ",
+        "refId": "B",
+        "sql": {
+          "columns": [
+            {
+              "parameters": [
+                {
+                  "name": "zeitstempel",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            {
+              "parameters": [
+                {
+                  "name": "sensor_id",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            {
+              "parameters": [
+                {
+                  "name": "spannung",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            }
+          ],
+          "groupBy": [
+            {
+              "property": {
+                "type": "string"
+              },
+              "type": "groupBy"
+            }
+          ],
+          "limit": 1,
+          "orderBy": {
+            "property": {
+              "name": "zeitstempel",
+              "type": "string"
+            },
+            "type": "property"
+          },
+          "orderByDirection": "DESC",
+          "whereJsonTree": {
+            "children1": [
+              {
+                "id": "9bab99a8-cdef-4012-b456-7190e01d856a",
+                "properties": {
+                  "field": "sensor_id",
+                  "fieldSrc": "field",
+                  "operator": "equal",
+                  "value": [
+                    "230v"
+                  ],
+                  "valueError": [
+                    null
+                  ],
+                  "valueSrc": [
+                    "value"
+                  ],
+                  "valueType": [
+                    "text"
+                  ]
+                },
+                "type": "rule"
+              }
+            ],
+            "id": "89aaba88-0123-4456-b89a-b190d69bcb79",
+            "type": "group"
+          },
+          "whereString": "sensor_id = '230v'"
+        },
+        "table": "spannung"
+      }
+    ],
+    "transparent": true,
+    "type": "stat"
+  }

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CaravanPi - aktuelle Ausrichtung des Caravan</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/caravanpi.css') }}">
+	<style>
+		.canvas-container {
+			position: relative;
+			width: {{ canvas_width }}px; /* Canvas Container Breite */
+			height: {{ canvas_height }}px; /* Canvas Container Höhe */
+			margin: 0 auto;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border: {{ border_width }} solid black;
+		}
+		.canvas-background {
+			position: absolute;
+			width: {{ image_width }}px; /* Bildbreite */
+			height: {{ image_height }}px; /* Bildhöhe */
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		canvas {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+		<div id="hamburgerMenu" class="hamburger-menu-content">
+			<!-- Hamburger-Menü-Links werden per JavaScript hinzugefügt -->
+		</div>
+
+		<div class="content">
+			<div class="logo">
+				<img src="/static/images/CaravanPi-Logo.png" alt="CaravanPi Logo" class="logo">
+			</div>
+			<hr>
+
+			<h1>Aktuelle Ausrichtung des Caravan</h1>
+			<p></p>
+
+			<div class="canvas-container" id="canvasContainer">
+				<img id="backgroundImage" class="canvas-background" src="/static/images/caravanpiCaravanSenkrecht.png" alt="Caravan background">
+				<canvas id="caravanChart" width="{{ canvas_width }}" height="{{ canvas_height }}"></canvas>
+			</div>
+
+			<p></p>
+		</div>
+
+		{% include 'footer.html' %}
+	</div>
+
+	<script>
+		const canvasWidth = {{ canvas_width }};
+		const canvasHeight = {{ canvas_height }};
+		const imageWidth = {{ image_width }};
+		const imageHeight = {{ image_height }};
+
+		function fetchData() {
+			fetch('/position_latest_data')
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					if (!data.error) {
+						console.log('Fetched data:', data);
+						updateChart(data);
+					} else {
+						console.error('Error fetching data:', data.error);
+					}
+				})
+				.catch(error => console.error('Error in fetchData:', error));
+		}
+
+		function updateChart(data) {
+			const canvas = document.getElementById('caravanChart');
+			const ctx = canvas.getContext('2d');
+
+			// Clear the canvas using the constants for width and height
+			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+			// Define the points
+			const points = [
+				{x: 0.2, y: 0.1, r: data.differenz_hinten_rechts},   // hinten rechts
+				{x: 0.8, y: 0.1, r: data.differenz_hinten_links}, // hinten links
+				{x: 0.2, y: 0.75, r: data.differenz_vorne_rechts}, // vorne rechts
+				{x: 0.8, y: 0.75, r: data.differenz_vorne_links}, // vorne links
+				{x: 0.2, y: 0.45, r: data.differenz_zentral_rechts}, // zentral rechts
+				{x: 0.8, y: 0.45, r: data.differenz_zentral_links}, // zentral links
+				{x: 0.70, y: 0.90, r: data.differenz_deichsel} // deichsel
+			];
+			
+			// Draw each point and its label
+			points.forEach((point, index) => {
+				drawLabel(ctx, point, index);
+			});
+		}
+
+		function drawLabel(ctx, point, index) {
+			const x = point.x * canvasWidth;
+			const y = point.y * canvasHeight;
+			const labelOffset = 40; // Adjusted offset to move the labels closer to the center
+
+			ctx.font = 'bold 18px Arial';
+			ctx.fillStyle = 'black';
+
+			if (index === 0 || index === 2 || index === 4) {
+				// Draw values on the left side (rechts)
+				ctx.textAlign = 'left';
+				ctx.fillText(`${point.r} mm`, x - labelOffset, y);
+			} else if (index === 1 || index === 3 || index === 5) {
+				// Draw values on the right side (links)
+				ctx.textAlign = 'right';
+				ctx.fillText(`${point.r} mm`, x + labelOffset, y);
+			} else if (index === 6) {
+				// Draw value for deichsel
+				ctx.textAlign = 'center';
+				ctx.fillText(`${point.r} mm`, x, y + labelOffset);
+			}
+		}
+
+		setInterval(fetchData, 1000);
+		fetchData();
+
+		function toggleHamburgerMenu() {
+			const menu = document.getElementById('hamburgerMenu');
+			if (menu.style.display === 'block') {
+				menu.style.display = 'none';
+			} else {
+				menu.style.display = 'block';
+			}
+		}
+
+		window.addEventListener('load', () => {
+			fetchData();
+		});
+	</script>
+	
+	<!-- Einbindung des zentralen JavaScript-Scripts am Ende der Seite -->
+	<script src="{{ url_for('static', filename='js/build_menus.js') }}"></script>
+
+</body>
+</html>

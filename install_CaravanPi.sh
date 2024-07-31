@@ -947,6 +947,8 @@ install_stromPi3() {
 		# sudo minicom -D /dev/serial0 -b 38400
 	fi
 
+	echo "Python Module für die grafische Benutzeroberfläche des StromPi V3 installieren ...."
+	run_cmd "sudo apt-get install python3-pil python3-pil.imagetk"
 }
 
 # Setzen Splash Screen

@@ -22,6 +22,7 @@ from config_routes import register_config_routes
 from calibration_routes import register_calibration_routes
 from test_routes import register_test_routes
 from actors_routes import register_actors_routes
+from position_routes import register_position_routes
 
 app = Flask(__name__)
 app.secret_key = 'd@o842FTz-_M2hbcU37N-ynvcwMNLe4tEoiZoH@4' # Zeichenfolge ist nicht wichtig, sollte kompliziert sein
@@ -32,6 +33,7 @@ register_config_routes(app)
 register_calibration_routes(app)
 register_test_routes(app)
 register_actors_routes(app)
+register_position_routes(app)
 
 # Unterstützungsfunktionen
 

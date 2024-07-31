@@ -1,0 +1,8 @@
+A:
+SELECT zeitstempel AS "time", sensor_id, temperatur FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96119' ORDER BY zeitstempel ASC LIMIT 5000 
+B:
+SELECT zeitstempel AS "time", sensor_id, temperatur FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96118' ORDER BY zeitstempel ASC LIMIT 5000 
+C:
+SELECT zeitstempel, luftdruck FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96118' AND zeitstempel > NOW() - INTERVAL 1 DAY ORDER BY zeitstempel ASC LIMIT 5000 
+D:
+SELECT zeitstempel, luftfeuchtigkeit FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96118' AND zeitstempel > NOW() - INTERVAL 1 DAY ORDER BY zeitstempel ASC LIMIT 5000 

@@ -29,7 +29,7 @@
     <gassensorAlarmActive>0</gassensorAlarmActive>
     <gassensorAlarmResume>0</gassensorAlarmResume>
     <v230CheckInstalled>0</v230CheckInstalled>
-    <v230CheckADCPin>0</v230CheckADCPin>
+    <v230CheckADCPin>3</v230CheckADCPin>
     <v230CheckAlarmActive>0</v230CheckAlarmActive>
     <v230CheckAlarmResume>0</v230CheckAlarmResume>
     <v12BatteryCheckInstalled>0</v12BatteryCheckInstalled>
@@ -39,7 +39,7 @@
     <v12BatteryCheckAlarmActive>0</v12BatteryCheckAlarmActive>
     <v12BatteryCheckAlarmResume>0</v12BatteryCheckAlarmResume>
     <v12CarCheckInstalled>0</v12CarCheckInstalled>
-    <v12CarCheckADCPin>3</v12CarCheckADCPin>
+    <v12CarCheckADCPin>1</v12CarCheckADCPin>
     <v12CarR1>560</v12CarR1>
     <v12CarR2>150</v12CarR2>
     <v12CarCheckAlarmActive>0</v12CarCheckAlarmActive>
@@ -47,9 +47,9 @@
     <BuzzerGPIOPin>26</BuzzerGPIOPin>
     </caravanpiDefaults>
   <adjustmentPosition>
-    <adjustX>-0.2353596</adjustX>
-    <adjustY>1.372931</adjustY>
-    <adjustZ>8.9044382</adjustZ>
+    <adjustX>0.0392266</adjustX>
+    <adjustY>-0.3138128</adjustY>
+    <adjustZ>9.492837199999999</adjustZ>
     <toleranceX>0.2</toleranceX>
     <toleranceY>0.2</toleranceY>
     <approximationX>0.25</approximationX>
@@ -64,12 +64,12 @@
     <lengthBody>6200</lengthBody>
     </dimensionsCaravan>
   <gasScaleDefaults1>
-    <emptyWeight>30</emptyWeight>
+    <emptyWeight>3700</emptyWeight>
     <gasWeightMax>6000</gasWeightMax>
     <pin_dout>23</pin_dout>
     <pin_sck>24</pin_sck>
     <strChannel>A</strChannel>
-    <refUnit>4.687</refUnit>
+    <refUnit>-219.39014522821577</refUnit>
     </gasScaleDefaults1>
   <gasScaleDefaults2>
     <emptyWeight>30</emptyWeight>

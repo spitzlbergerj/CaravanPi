@@ -71,8 +71,12 @@ def turn_on():
 
     # bei 7 Zoll Raspian Display
     # subprocess.call("echo 0 > /sys/class/backlight/rpi_backlight/bl_power", shell=True)
+
     # bei HDMI Monitor 
-    subprocess.call("vcgencmd display_power 1", shell=True)
+    # subprocess.call("vcgencmd display_power 1", shell=True)
+
+    # bei Wayland 
+    subprocess.call("XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1 wlr-randr --output 'HDMI-A-1' --on", shell=True)
 
 def turn_off():
     global turned_off
@@ -81,9 +85,12 @@ def turn_off():
 
     # bei 7 Zoll Raspian Display
     # subprocess.call("echo 1 > /sys/class/backlight/rpi_backlight/bl_power", shell=True)
-    # bei HDMI Monitor 
-    subprocess.call("vcgencmd display_power 0", shell=True)
 
+    # bei HDMI Monitor 
+    # subprocess.call("vcgencmd display_power 0", shell=True)
+
+    # bei Wayland 
+    subprocess.call("XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1 wlr-randr --output 'HDMI-A-1' --off", shell=True)
 
 def LED_blink():
 	io.output(LED_PIN, io.LOW)

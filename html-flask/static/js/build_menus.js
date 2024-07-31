@@ -11,6 +11,7 @@ var port = window.location.port;
 var links_main = [
 	{ text: "Startseite", url: 'http://' + host + ':5000/', isExternal: false, addSeparator: true   },
 	{ text: "Status", url: 'http://' + host + ':5000/checks', isExternal: false, addSeparator: false, header: "CaravanPi"  },
+	{ text: "akt. Ausrichtung", url: 'http://' + host + ':5000/actual_position', isExternal: false, addSeparator: false  },
 	{ text: "Konfiguration", url: 'http://' + host + ':5000/configs', isExternal: false, addSeparator: false  },
 	{ text: "Kalibrierung", url: 'http://' + host + ':5000/calibration', isExternal: false, addSeparator: false  },
 	{ text: "Tests", url: 'http://' + host + ':5000/tests_home', isExternal: false, addSeparator: true  },

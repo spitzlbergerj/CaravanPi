@@ -1,0 +1,6 @@
+C:
+SELECT zeitstempel AS "time", sensor_id, temperatur FROM CaravanPiValues.temperatursensor WHERE sensor_id = 'DS1820-28-01203392085f' ORDER BY zeitstempel ASC LIMIT 5000 
+D:
+SELECT zeitstempel AS "time", sensor_id, temperatur FROM CaravanPiValues.temperatursensor WHERE sensor_id = 'DS1820-28-012032d4dd5a' ORDER BY zeitstempel ASC LIMIT 5000 
+E:
+SELECT zeitstempel AS "time", sensor_id, temperatur FROM CaravanPiValues.temperatursensor WHERE sensor_id = 'DS1820-28-012033251e15' ORDER BY zeitstempel ASC LIMIT 5000 

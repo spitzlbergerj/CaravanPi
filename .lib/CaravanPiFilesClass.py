@@ -720,6 +720,45 @@ class CaravanPiFiles:
 		self.execute_query(connection, query, values)
 
 
+	# ---------------------------------------------------------------------------------------------
+	# read_from_table
+	# Lesen von Daten aus einer beliebigen Tabelle
+	# Die Struktur und die Bedingungen werden als Tupel übergeben
+	# ----------------------------------------------------------------------------------------------
+	def read_from_table(self, connection, table_name, columns, conditions=None, order_by=None):
+		"""
+		Liest Daten aus einer angegebenen Tabelle der MariaDB-Datenbank.
+
+		:param connection: Die Datenbankverbindung
+		:param table_name: Der Name der Tabelle, aus der gelesen werden soll
+		:param columns: Eine Liste der Spalten, die ausgelesen werden sollen
+		:param conditions: Eine optionale Liste von Bedingungen für das SQL-Statement
+		:param order_by: Ein optionales ORDER BY Statement
+		:return: Die abgerufenen Daten als Liste von Tupeln
+		"""
+
+		# Erstellen der SQL-Abfrage
+		columns_string = ', '.join(columns)
+		query = f"SELECT {columns_string} FROM {table_name}"
+
+		if conditions:
+			conditions_string = ' AND '.join(conditions)
+			query += f" WHERE {conditions_string}"
+
+		if order_by:
+			query += f" ORDER BY {order_by}"
+
+		print(query)
+		cursor = connection.cursor()
+		try:
+			cursor.execute(query)
+			result = cursor.fetchall()
+			print("Query successful")
+			return result
+		except Error as e:
+			print(f"ERROR - MariaDB - Fehler aufgetreten: '{e}'")
+			return None
+		
 	# =========================================================================================================================================================
 	# 
 	# MQTT Funktionen

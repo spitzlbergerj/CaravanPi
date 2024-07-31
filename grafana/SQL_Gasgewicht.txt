@@ -1,0 +1,1 @@
+SELECT zeitstempel, sensor_id, gewicht FROM CaravanPiValues.gasfuellgrad ORDER BY zeitstempel ASC LIMIT 5000 

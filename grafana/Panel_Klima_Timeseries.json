@@ -1,0 +1,597 @@
+{
+  "datasource": {
+    "uid": "adsch3zs4b1fkc",
+    "type": "mysql"
+  },
+  "fieldConfig": {
+    "defaults": {
+      "custom": {
+        "drawStyle": "line",
+        "lineInterpolation": "linear",
+        "barAlignment": 0,
+        "lineWidth": 2,
+        "fillOpacity": 7,
+        "gradientMode": "hue",
+        "spanNulls": false,
+        "insertNulls": false,
+        "showPoints": "auto",
+        "pointSize": 5,
+        "stacking": {
+          "mode": "none",
+          "group": "A"
+        },
+        "axisPlacement": "auto",
+        "axisLabel": "",
+        "axisColorMode": "text",
+        "axisBorderShow": false,
+        "scaleDistribution": {
+          "type": "linear"
+        },
+        "axisCenteredZero": false,
+        "hideFrom": {
+          "tooltip": false,
+          "viz": false,
+          "legend": false
+        },
+        "thresholdsStyle": {
+          "mode": "dashed"
+        },
+        "axisSoftMax": 35,
+        "axisSoftMin": 10
+      },
+      "color": {
+        "mode": "palette-classic"
+      },
+      "mappings": [],
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          {
+            "color": "green",
+            "value": null
+          }
+        ]
+      },
+      "unit": "celsius"
+    },
+    "overrides": [
+      {
+        "matcher": {
+          "id": "byFrameRefID",
+          "options": "A"
+        },
+        "properties": [
+          {
+            "id": "color",
+            "value": {
+              "fixedColor": "dark-yellow",
+              "mode": "fixed"
+            }
+          },
+          {
+            "id": "displayName",
+            "value": "Innen"
+          },
+          {
+            "id": "thresholds",
+            "value": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "super-light-blue",
+                  "value": 20
+                },
+                {
+                  "value": 25,
+                  "color": "blue"
+                },
+                {
+                  "value": 30,
+                  "color": "dark-blue"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "id": "byFrameRefID",
+          "options": "B"
+        },
+        "properties": [
+          {
+            "id": "color",
+            "value": {
+              "fixedColor": "dark-red",
+              "mode": "fixed"
+            }
+          },
+          {
+            "id": "displayName",
+            "value": "Außen"
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "id": "byFrameRefID",
+          "options": "C"
+        },
+        "properties": [
+          {
+            "id": "custom.axisPlacement",
+            "value": "left"
+          },
+          {
+            "id": "unit",
+            "value": "pressurehpa"
+          },
+          {
+            "id": "custom.axisSoftMax",
+            "value": 1100
+          },
+          {
+            "id": "color",
+            "value": {
+              "mode": "fixed",
+              "fixedColor": "purple"
+            }
+          },
+          {
+            "id": "custom.axisColorMode",
+            "value": "series"
+          },
+          {
+            "id": "custom.axisSoftMin",
+            "value": 900
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "id": "byFrameRefID",
+          "options": "D"
+        },
+        "properties": [
+          {
+            "id": "custom.axisPlacement",
+            "value": "left"
+          },
+          {
+            "id": "unit",
+            "value": "humidity"
+          },
+          {
+            "id": "custom.axisSoftMax",
+            "value": 100
+          },
+          {
+            "id": "color",
+            "value": {
+              "mode": "fixed",
+              "fixedColor": "dark-blue"
+            }
+          },
+          {
+            "id": "custom.axisColorMode",
+            "value": "series"
+          }
+        ]
+      }
+    ]
+  },
+  "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 8
+  },
+  "id": 1,
+  "options": {
+    "tooltip": {
+      "mode": "none",
+      "sort": "none"
+    },
+    "legend": {
+      "showLegend": true,
+      "displayMode": "table",
+      "placement": "right",
+      "calcs": [
+        "last"
+      ],
+      "sortBy": "Name",
+      "sortDesc": false
+    },
+    "timezone": [
+      "utc"
+    ]
+  },
+  "targets": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "adsch3zs4b1fkc"
+      },
+      "dataset": "CaravanPiValues",
+      "editorMode": "builder",
+      "format": "table",
+      "rawSql": "SELECT zeitstempel AS \"time\", sensor_id, temperatur FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96119' ORDER BY zeitstempel ASC LIMIT 5000 ",
+      "refId": "A",
+      "sql": {
+        "columns": [
+          {
+            "alias": "\"time\"",
+            "parameters": [
+              {
+                "name": "zeitstempel",
+                "type": "functionParameter"
+              }
+            ],
+            "type": "function"
+          },
+          {
+            "parameters": [
+              {
+                "name": "sensor_id",
+                "type": "functionParameter"
+              }
+            ],
+            "type": "function"
+          },
+          {
+            "parameters": [
+              {
+                "name": "temperatur",
+                "type": "functionParameter"
+              }
+            ],
+            "type": "function"
+          }
+        ],
+        "groupBy": [],
+        "limit": 5000,
+        "orderBy": {
+          "property": {
+            "name": [
+              "zeitstempel"
+            ],
+            "type": "string"
+          },
+          "type": "property"
+        },
+        "orderByDirection": "ASC",
+        "whereJsonTree": {
+          "children1": [
+            {
+              "id": "88abaa9a-4567-489a-bcde-f190d6420e30",
+              "properties": {
+                "field": "sensor_id",
+                "fieldSrc": "field",
+                "operator": "equal",
+                "value": [
+                  "BME280-96119"
+                ],
+                "valueError": [
+                  null
+                ],
+                "valueSrc": [
+                  "value"
+                ],
+                "valueType": [
+                  "text"
+                ]
+              },
+              "type": "rule"
+            }
+          ],
+          "id": "a9998889-0123-4456-b89a-b190d61ea0f1",
+          "type": "group"
+        },
+        "whereString": "sensor_id = 'BME280-96119'"
+      },
+      "table": "klimasensor"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "adsch3zs4b1fkc"
+      },
+      "dataset": "CaravanPiValues",
+      "editorMode": "builder",
+      "format": "table",
+      "hide": false,
+      "rawSql": "SELECT zeitstempel AS \"time\", sensor_id, temperatur FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96118' ORDER BY zeitstempel ASC LIMIT 5000 ",
+      "refId": "B",
+      "sql": {
+        "columns": [
+          {
+            "alias": "\"time\"",
+            "parameters": [
+              {
+                "name": "zeitstempel",
+                "type": "functionParameter"
+              }
+            ],
+            "type": "function"
+          },
+          {
+            "parameters": [
+              {
+                "name": "sensor_id",
+                "type": "functionParameter"
+              }
+            ],
+            "type": "function"
+          },
+          {
+            "parameters": [
+              {
+                "name": "temperatur",
+                "type": "functionParameter"
+              }
+            ],
+            "type": "function"
+          }
+        ],
+        "groupBy": [],
+        "limit": 5000,
+        "orderBy": {
+          "property": {
+            "name": [
+              "zeitstempel"
+            ],
+            "type": "string"
+          },
+          "type": "property"
+        },
+        "orderByDirection": "ASC",
+        "whereJsonTree": {
+          "children1": [
+            {
+              "id": "88abaa9a-4567-489a-bcde-f190d6420e30",
+              "properties": {
+                "field": "sensor_id",
+                "fieldSrc": "field",
+                "operator": "equal",
+                "value": [
+                  "BME280-96118"
+                ],
+                "valueError": [
+                  null
+                ],
+                "valueSrc": [
+                  "value"
+                ],
+                "valueType": [
+                  "text"
+                ]
+              },
+              "type": "rule"
+            }
+          ],
+          "id": "a9998889-0123-4456-b89a-b190d61ea0f1",
+          "type": "group"
+        },
+        "whereString": "sensor_id = 'BME280-96118'"
+      },
+      "table": "klimasensor"
+    },
+    {
+      "datasource": {
+        "uid": "adsch3zs4b1fkc",
+        "type": "mysql"
+      },
+      "refId": "C",
+      "hide": false,
+      "format": "table",
+      "rawSql": "SELECT zeitstempel, luftdruck FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96118' AND zeitstempel > NOW() - INTERVAL 1 DAY ORDER BY zeitstempel ASC LIMIT 5000 ",
+      "editorMode": "code",
+      "sql": {
+        "columns": [
+          {
+            "type": "function",
+            "parameters": [
+              {
+                "type": "functionParameter",
+                "name": "zeitstempel"
+              }
+            ]
+          },
+          {
+            "type": "function",
+            "parameters": [
+              {
+                "type": "functionParameter",
+                "name": "luftdruck"
+              }
+            ]
+          }
+        ],
+        "groupBy": [
+          {
+            "type": "groupBy",
+            "property": {
+              "type": "string"
+            }
+          }
+        ],
+        "limit": 5000,
+        "whereJsonTree": {
+          "id": "988a8ba8-0123-4456-b89a-b19107ddcfe8",
+          "type": "group",
+          "children1": [
+            {
+              "type": "rule",
+              "id": "aab8888a-89ab-4cde-b012-319107eccd99",
+              "properties": {
+                "fieldSrc": "field",
+                "field": "sensor_id",
+                "operator": "equal",
+                "value": [
+                  "BME280-96118"
+                ],
+                "valueSrc": [
+                  "value"
+                ],
+                "valueType": [
+                  "text"
+                ],
+                "valueError": [
+                  null
+                ]
+              }
+            },
+            {
+              "type": "rule",
+              "id": "9bba88b9-89ab-4cde-b012-319107eea231",
+              "properties": {
+                "fieldSrc": "field",
+                "field": "zeitstempel",
+                "operator": "greater",
+                "value": [
+                  "Invalid date"
+                ],
+                "valueSrc": [
+                  "value"
+                ],
+                "valueType": [
+                  "datetime"
+                ],
+                "valueError": [
+                  null
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "conjunction": "AND"
+          }
+        },
+        "whereString": "(sensor_id = 'BME280-96118' AND zeitstempel > NULL)",
+        "orderBy": {
+          "type": "property",
+          "property": {
+            "type": "string",
+            "name": "zeitstempel"
+          }
+        },
+        "orderByDirection": "ASC"
+      },
+      "dataset": "CaravanPiValues",
+      "table": "klimasensor",
+      "rawQuery": true
+    },
+    {
+      "datasource": {
+        "uid": "adsch3zs4b1fkc",
+        "type": "mysql"
+      },
+      "refId": "D",
+      "hide": false,
+      "format": "table",
+      "rawSql": "SELECT zeitstempel, luftfeuchtigkeit FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96118' AND zeitstempel > NOW() - INTERVAL 1 DAY ORDER BY zeitstempel ASC LIMIT 5000 ",
+      "editorMode": "code",
+      "sql": {
+        "columns": [
+          {
+            "type": "function",
+            "parameters": [
+              {
+                "type": "functionParameter",
+                "name": "zeitstempel"
+              }
+            ]
+          },
+          {
+            "type": "function",
+            "parameters": [
+              {
+                "type": "functionParameter",
+                "name": "luftdruck"
+              }
+            ]
+          }
+        ],
+        "groupBy": [
+          {
+            "type": "groupBy",
+            "property": {
+              "type": "string"
+            }
+          }
+        ],
+        "limit": 5000,
+        "whereJsonTree": {
+          "id": "988a8ba8-0123-4456-b89a-b19107ddcfe8",
+          "type": "group",
+          "children1": [
+            {
+              "type": "rule",
+              "id": "aab8888a-89ab-4cde-b012-319107eccd99",
+              "properties": {
+                "fieldSrc": "field",
+                "field": "sensor_id",
+                "operator": "equal",
+                "value": [
+                  "BME280-96118"
+                ],
+                "valueSrc": [
+                  "value"
+                ],
+                "valueType": [
+                  "text"
+                ],
+                "valueError": [
+                  null
+                ]
+              }
+            },
+            {
+              "type": "rule",
+              "id": "9bba88b9-89ab-4cde-b012-319107eea231",
+              "properties": {
+                "fieldSrc": "field",
+                "field": "zeitstempel",
+                "operator": "greater",
+                "value": [
+                  "Invalid date"
+                ],
+                "valueSrc": [
+                  "value"
+                ],
+                "valueType": [
+                  "datetime"
+                ],
+                "valueError": [
+                  null
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "conjunction": "AND"
+          }
+        },
+        "whereString": "(sensor_id = 'BME280-96118' AND zeitstempel > NULL)",
+        "orderBy": {
+          "type": "property",
+          "property": {
+            "type": "string",
+            "name": "zeitstempel"
+          }
+        },
+        "orderByDirection": "ASC"
+      },
+      "dataset": "CaravanPiValues",
+      "table": "klimasensor",
+      "rawQuery": true
+    }
+  ],
+  "transparent": true,
+  "type": "timeseries"
+}

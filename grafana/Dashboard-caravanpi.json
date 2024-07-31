@@ -1,0 +1,1758 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "panels": [
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 1,
+            "mappings": [
+              {
+                "options": {
+                  "from": 0,
+                  "result": {
+                    "color": "dark-red",
+                    "index": 0
+                  },
+                  "to": 11.5
+                },
+                "type": "range"
+              },
+              {
+                "options": {
+                  "from": 11.51,
+                  "result": {
+                    "color": "dark-green",
+                    "index": 1
+                  },
+                  "to": 12.99999
+                },
+                "type": "range"
+              },
+              {
+                "options": {
+                  "from": 13,
+                  "result": {
+                    "color": "orange",
+                    "index": 2
+                  },
+                  "to": 15
+                },
+                "type": "range"
+              }
+            ],
+            "max": 14,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "volt"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "id": 3,
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [],
+            "fields": "/^spannung$/",
+            "limit": 1,
+            "values": true
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto"
+        },
+        "pluginVersion": "11.1.0",
+        "targets": [
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawQuery": true,
+            "rawSql": "SELECT zeitstempel, sensor_id, spannung FROM CaravanPiValues.spannung WHERE sensor_id = '12vbord' ORDER BY zeitstempel DESC LIMIT 1 ",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "spannung",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 1,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "DESC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "9bab99a8-cdef-4012-b456-7190e01d856a",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "12vbord"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "89aaba88-0123-4456-b89a-b190d69bcb79",
+                "type": "group"
+              },
+              "whereString": "sensor_id = '12vbord'"
+            },
+            "table": "spannung"
+          }
+        ],
+        "title": "Spannungswerte",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 1,
+            "mappings": [],
+            "max": 14,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "volt"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "from": 0,
+                        "result": {
+                          "color": "red",
+                          "index": 0
+                        },
+                        "to": 11.5
+                      },
+                      "type": "range"
+                    },
+                    {
+                      "options": {
+                        "from": 11.500001,
+                        "result": {
+                          "color": "green",
+                          "index": 1,
+                          "text": "Bordbatterie"
+                        },
+                        "to": 12.999999
+                      },
+                      "type": "range"
+                    },
+                    {
+                      "options": {
+                        "from": 13,
+                        "result": {
+                          "color": "yellow",
+                          "index": 2
+                        },
+                        "to": 999
+                      },
+                      "type": "range"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "B"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "from": 0,
+                        "result": {
+                          "color": "red",
+                          "index": 0,
+                          "text": "Landstrom"
+                        },
+                        "to": 229
+                      },
+                      "type": "range"
+                    },
+                    {
+                      "options": {
+                        "from": 230,
+                        "result": {
+                          "color": "green",
+                          "index": 1,
+                          "text": "Landstrom"
+                        },
+                        "to": 230
+                      },
+                      "type": "range"
+                    },
+                    {
+                      "options": {
+                        "from": 231,
+                        "result": {
+                          "color": "yellow",
+                          "index": 2
+                        },
+                        "to": 999
+                      },
+                      "type": "range"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "id": 7,
+        "options": {
+          "colorMode": "background_solid",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [],
+            "fields": "/^spannung$/",
+            "limit": 2,
+            "values": true
+          },
+          "showPercentChange": false,
+          "text": {
+            "valueSize": 20
+          },
+          "textMode": "value",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.1.0",
+        "targets": [
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawQuery": true,
+            "rawSql": "SELECT zeitstempel, sensor_id AS \"Bordbatterie\", spannung FROM CaravanPiValues.spannung WHERE sensor_id = '12vbord' ORDER BY zeitstempel DESC LIMIT 1 ",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "alias": "\"Bordbatterie\"",
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "spannung",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 1,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "DESC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "9bab99a8-cdef-4012-b456-7190e01d856a",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "12vbord"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "89aaba88-0123-4456-b89a-b190d69bcb79",
+                "type": "group"
+              },
+              "whereString": "sensor_id = '12vbord'"
+            },
+            "table": "spannung"
+          },
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawQuery": true,
+            "rawSql": "SELECT zeitstempel, sensor_id, spannung FROM CaravanPiValues.spannung WHERE sensor_id = '230v' ORDER BY zeitstempel DESC LIMIT 1 ",
+            "refId": "B",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "spannung",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 1,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "DESC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "9bab99a8-cdef-4012-b456-7190e01d856a",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "230v"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "89aaba88-0123-4456-b89a-b190d69bcb79",
+                "type": "group"
+              },
+              "whereString": "sensor_id = '230v'"
+            },
+            "table": "spannung"
+          }
+        ],
+        "transparent": true,
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [
+              {
+                "options": {
+                  "from": 0,
+                  "result": {
+                    "color": "dark-red",
+                    "index": 0
+                  },
+                  "to": 210
+                },
+                "type": "range"
+              },
+              {
+                "options": {
+                  "from": 210.1,
+                  "result": {
+                    "color": "dark-green",
+                    "index": 1
+                  },
+                  "to": 235
+                },
+                "type": "range"
+              },
+              {
+                "options": {
+                  "from": 235,
+                  "result": {
+                    "color": "orange",
+                    "index": 2
+                  },
+                  "to": 400
+                },
+                "type": "range"
+              }
+            ],
+            "max": 230,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "volt"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "id": 4,
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^spannung$/",
+            "limit": 1,
+            "values": true
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto"
+        },
+        "pluginVersion": "11.1.0",
+        "targets": [
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "rawSql": "SELECT spannung FROM CaravanPiValues.spannung WHERE sensor_id = '230v' ORDER BY zeitstempel DESC LIMIT 1 ",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "spannung",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 1,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "DESC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "b89a9aa8-89ab-4cde-b012-3190d6b6215c",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "230v"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "89aaba88-0123-4456-b89a-b190d69bcb79",
+                "properties": {
+                  "conjunction": "OR"
+                },
+                "type": "group"
+              },
+              "whereString": "sensor_id = '230v'"
+            },
+            "table": "spannung"
+          }
+        ],
+        "title": "Landstrom",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "axisSoftMax": 35,
+              "axisSoftMin": 10,
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 7,
+              "gradientMode": "hue",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "dashed"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "super-light-blue",
+                  "value": 20
+                },
+                {
+                  "color": "blue",
+                  "value": 25
+                },
+                {
+                  "color": "dark-blue",
+                  "value": 30
+                }
+              ]
+            },
+            "unit": "celsius"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "dark-yellow",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "displayName",
+                  "value": "Innen"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "B"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "dark-red",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "displayName",
+                  "value": "Außen"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [
+              "last"
+            ],
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": true,
+            "sortBy": "Name",
+            "sortDesc": false
+          },
+          "timezone": [
+            "utc"
+          ],
+          "tooltip": {
+            "mode": "none",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "rawSql": "SELECT zeitstempel AS \"time\", sensor_id, temperatur FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96119' ORDER BY zeitstempel ASC LIMIT 5000 ",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "alias": "\"time\"",
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "temperatur",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [],
+              "limit": 5000,
+              "orderBy": {
+                "property": {
+                  "name": [
+                    "zeitstempel"
+                  ],
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "88abaa9a-4567-489a-bcde-f190d6420e30",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "BME280-96119"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "a9998889-0123-4456-b89a-b190d61ea0f1",
+                "type": "group"
+              },
+              "whereString": "sensor_id = 'BME280-96119'"
+            },
+            "table": "klimasensor"
+          },
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawSql": "SELECT zeitstempel AS \"time\", sensor_id, temperatur FROM CaravanPiValues.klimasensor WHERE sensor_id = 'BME280-96118' ORDER BY zeitstempel ASC LIMIT 5000 ",
+            "refId": "B",
+            "sql": {
+              "columns": [
+                {
+                  "alias": "\"time\"",
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "temperatur",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [],
+              "limit": 5000,
+              "orderBy": {
+                "property": {
+                  "name": [
+                    "zeitstempel"
+                  ],
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "88abaa9a-4567-489a-bcde-f190d6420e30",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "BME280-96118"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "a9998889-0123-4456-b89a-b190d61ea0f1",
+                "type": "group"
+              },
+              "whereString": "sensor_id = 'BME280-96118'"
+            },
+            "table": "klimasensor"
+          }
+        ],
+        "transparent": true,
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "axisSoftMax": 20,
+              "axisSoftMin": -10,
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 14,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "line"
+              }
+            },
+            "fieldMinMax": false,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "celsius"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "C"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Getränkefach"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "light-blue",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "D"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "blue",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "displayName",
+                  "value": "Kühlfach"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "E"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "dark-blue",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "displayName",
+                  "value": "Gefrierfach"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "id": 2,
+        "options": {
+          "legend": {
+            "calcs": [
+              "last"
+            ],
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": true
+          },
+          "timezone": [
+            "utc"
+          ],
+          "tooltip": {
+            "mode": "none",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawSql": "SELECT zeitstempel AS \"time\", sensor_id, temperatur FROM CaravanPiValues.temperatursensor WHERE sensor_id = 'DS1820-28-01203392085f' ORDER BY zeitstempel ASC LIMIT 5000 ",
+            "refId": "C",
+            "sql": {
+              "columns": [
+                {
+                  "alias": "\"time\"",
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "temperatur",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 5000,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "989aaaba-89ab-4cde-b012-3190d64f5f27",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "DS1820-28-01203392085f"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "a9998889-0123-4456-b89a-b190d61ea0f1",
+                "type": "group"
+              },
+              "whereString": "sensor_id = 'DS1820-28-01203392085f'"
+            },
+            "table": "temperatursensor"
+          },
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawSql": "SELECT zeitstempel AS \"time\", sensor_id, temperatur FROM CaravanPiValues.temperatursensor WHERE sensor_id = 'DS1820-28-012032d4dd5a' ORDER BY zeitstempel ASC LIMIT 5000 ",
+            "refId": "D",
+            "sql": {
+              "columns": [
+                {
+                  "alias": "\"time\"",
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "temperatur",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 5000,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "989aaaba-89ab-4cde-b012-3190d64f5f27",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "DS1820-28-012032d4dd5a"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "a9998889-0123-4456-b89a-b190d61ea0f1",
+                "type": "group"
+              },
+              "whereString": "sensor_id = 'DS1820-28-012032d4dd5a'"
+            },
+            "table": "temperatursensor"
+          },
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawSql": "SELECT zeitstempel AS \"time\", sensor_id, temperatur FROM CaravanPiValues.temperatursensor WHERE sensor_id = 'DS1820-28-012033251e15' ORDER BY zeitstempel ASC LIMIT 5000 ",
+            "refId": "E",
+            "sql": {
+              "columns": [
+                {
+                  "alias": "\"time\"",
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "temperatur",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 5000,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "989aaaba-89ab-4cde-b012-3190d64f5f27",
+                    "properties": {
+                      "field": "sensor_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        "DS1820-28-012033251e15"
+                      ],
+                      "valueError": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "text"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "a9998889-0123-4456-b89a-b190d61ea0f1",
+                "type": "group"
+              },
+              "whereString": "sensor_id = 'DS1820-28-012033251e15'"
+            },
+            "table": "temperatursensor"
+          }
+        ],
+        "transparent": true,
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "filterable": false,
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "id": 8,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true
+        },
+        "pluginVersion": "11.1.0",
+        "targets": [
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "rawSql": "SELECT zeitstempel, sensor_id, spannung FROM CaravanPiValues.spannung GROUP BY sensor_id ORDER BY zeitstempel DESC LIMIT 5000 ",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "spannung",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "name": "sensor_id",
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 5000,
+              "orderBy": {
+                "property": {
+                  "name": "zeitstempel",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "DESC"
+            },
+            "table": "spannung"
+          }
+        ],
+        "title": "Panel Title",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "adsch3zs4b1fkc"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "axisSoftMax": 6000,
+              "axisSoftMin": 0,
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 20,
+              "gradientMode": "hue",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "dashed"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "super-light-green",
+                  "value": null
+                },
+                {
+                  "color": "light-green",
+                  "value": 1500
+                },
+                {
+                  "color": "green",
+                  "value": 3000
+                },
+                {
+                  "color": "semi-dark-green",
+                  "value": 4500
+                },
+                {
+                  "color": "dark-green",
+                  "value": 6000
+                }
+              ]
+            },
+            "unit": "massg"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "dark-purple",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "displayName",
+                  "value": "Flasche 1"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        },
+        "id": 6,
+        "options": {
+          "legend": {
+            "calcs": [
+              "last"
+            ],
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": false
+          },
+          "timezone": [
+            "utc"
+          ],
+          "tooltip": {
+            "mode": "none",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "dataset": "CaravanPiValues",
+            "datasource": {
+              "type": "mysql",
+              "uid": "adsch3zs4b1fkc"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawSql": "SELECT zeitstempel, sensor_id, gewicht FROM CaravanPiValues.gasfuellgrad ORDER BY zeitstempel ASC LIMIT 5000 ",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "zeitstempel",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "sensor_id",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "gewicht",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 5000,
+              "orderBy": {
+                "property": {
+                  "name": [
+                    "zeitstempel"
+                  ],
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC"
+            },
+            "table": "gasfuellgrad"
+          }
+        ],
+        "transparent": true,
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-22h",
+      "to": "now+2h"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "MagicMirrorGrafen",
+    "uid": "adscjfa89xu68a",
+    "version": 62,
+    "weekStart": ""
+  }
